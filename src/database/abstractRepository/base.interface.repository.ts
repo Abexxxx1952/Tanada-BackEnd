@@ -18,7 +18,11 @@ export interface BaseInterfaceRepository<T> {
   findAllByCondition(options: FindOptionsWhere<T>): Promise<T[]>;
   findOneWithCondition(filterCondition: FindOneOptions<T>): Promise<T>;
   findAllWithCondition(filterCondition: FindManyOptions<T>): Promise<T[]>;
-  findAll(options?: FindManyOptions<T>): Promise<T[]>;
+  findAll(
+    offset?: number,
+    limit?: number,
+    options?: FindManyOptions<T>,
+  ): Promise<T[]>;
   updateOneByIdSoft(
     id: any,
     data: QueryDeepPartialEntity<T>,

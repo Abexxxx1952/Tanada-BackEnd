@@ -11,6 +11,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   Req,
   UseGuards,
   UseInterceptors,
@@ -38,6 +39,7 @@ import { CreateUserDtoLocal } from './dto/createLocal.dto';
 import { LoginUserDtoLocal } from './dto/loginUserLocal.dto';
 import { UpdateUserDto } from './dto/update.dto';
 import { UpdateResult } from 'typeorm';
+import { PaginationParams } from '../../database/abstractRepository/paginationDto/pagination.dto';
 
 @ApiTags('users')
 @Controller('v1/users')
@@ -49,8 +51,10 @@ export class UserController {
   ) {}
 
   @Get()
-  async findAll(): Promise<UserEntity[]> {
-    return await this.usersRepository.findAll();
+  async findAll(
+    @Query() { offset, limit }: PaginationParams,
+  ): Promise<UserEntity[]> {
+    return await this.usersRepository.findAll(offset, limit);
   }
 
   @Get(':id')
@@ -67,9 +71,14 @@ export class UserController {
 
   @Post('findManyBy')
   async findManyByCondition(
+    @Query() { offset, limit }: PaginationParams,
     @Body() condition: FindByConditionsDto,
   ): Promise<UserEntity[]> {
-    return await this.usersRepository.findAllByCondition(condition);
+    return await this.usersRepository.findAllByCondition(
+      condition,
+      offset,
+      limit,
+    );
   }
 
   @Post('findOneWith')
@@ -81,9 +90,14 @@ export class UserController {
 
   @Post('findAllWith')
   async findAllWithCondition(
+    @Query() { offset, limit }: PaginationParams,
     @Body() condition: FindAllWithConditionsDto,
   ): Promise<UserEntity[]> {
-    return await this.usersRepository.findAllWithCondition(condition);
+    return await this.usersRepository.findAllWithCondition(
+      condition,
+      offset,
+      limit,
+    );
   }
 
   @Post('registration')

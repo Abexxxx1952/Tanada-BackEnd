@@ -99,12 +99,19 @@ export abstract class BaseAbstractRepository<T extends HasId>
     }
   }
 
-  public async findAllByCondition(options: FindOptionsWhere<T>): Promise<T[]> {
+  public async findAllByCondition(
+    options: FindOptionsWhere<T>,
+    offset?: number,
+    limit?: number,
+  ): Promise<T[]> {
     try {
       const entities = await this.entity.findBy(options);
 
       if (!entities.length) {
         throw new NotFoundException(`${this.entityName} not found`);
+      }
+      if (offset && limit) {
+        return entities.slice(offset, offset + limit);
       }
       return entities;
     } catch (error) {
@@ -134,11 +141,16 @@ export abstract class BaseAbstractRepository<T extends HasId>
 
   public async findAllWithCondition(
     filterCondition: FindManyOptions<T>,
+    offset?: number,
+    limit?: number,
   ): Promise<T[]> {
     try {
       const entities = await this.entity.find(filterCondition);
       if (!entities.length) {
         throw new NotFoundException(`${this.entityName}s not found`);
+      }
+      if (offset && limit) {
+        return entities.slice(offset, offset + limit);
       }
       return entities;
     } catch (error) {
@@ -149,11 +161,18 @@ export abstract class BaseAbstractRepository<T extends HasId>
     }
   }
 
-  public async findAll(options?: FindManyOptions<T>): Promise<T[]> {
+  public async findAll(
+    offset?: number,
+    limit?: number,
+    options?: FindManyOptions<T>,
+  ): Promise<T[]> {
     try {
       const entities = await this.entity.find(options);
       if (!entities.length) {
         throw new NotFoundException(`${this.entityName}s not found`);
+      }
+      if (offset && limit) {
+        return entities.slice(offset, offset + limit);
       }
       return entities;
     } catch (error) {

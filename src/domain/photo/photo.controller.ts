@@ -11,6 +11,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   Req,
   UseGuards,
   UseInterceptors,
@@ -37,6 +38,7 @@ import {
 import { CreatePhotoDto } from './dto/create.dto';
 import { UpdatePhotoDto } from './dto/update.dto';
 import { InsertResult, UpdateResult } from 'typeorm';
+import { PaginationParams } from '../../database/abstractRepository/paginationDto/pagination.dto';
 
 @ApiTags('photos')
 @Controller('v1/photos')
@@ -47,8 +49,10 @@ export class PhotoController {
   ) {}
 
   @Get()
-  async findAll(): Promise<PhotoEntity[]> {
-    return await this.photosRepository.findAll();
+  async findAll(
+    @Query() { offset, limit }: PaginationParams,
+  ): Promise<PhotoEntity[]> {
+    return await this.photosRepository.findAll(offset, limit);
   }
 
   @Get(':id')
@@ -65,9 +69,14 @@ export class PhotoController {
 
   @Post('findManyBy')
   async findManyByCondition(
+    @Query() { offset, limit }: PaginationParams,
     @Body() condition: FindByConditionsDto,
   ): Promise<PhotoEntity[]> {
-    return await this.photosRepository.findAllByCondition(condition);
+    return await this.photosRepository.findAllByCondition(
+      condition,
+      offset,
+      limit,
+    );
   }
 
   @Post('findOneWith')
@@ -79,9 +88,14 @@ export class PhotoController {
 
   @Post('findAllWith')
   async findAllWithCondition(
+    @Query() { offset, limit }: PaginationParams,
     @Body() condition: FindAllWithConditionsDto,
   ): Promise<PhotoEntity[]> {
-    return await this.photosRepository.findAllWithCondition(condition);
+    return await this.photosRepository.findAllWithCondition(
+      condition,
+      offset,
+      limit,
+    );
   }
 
   @Post()
