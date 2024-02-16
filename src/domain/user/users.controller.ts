@@ -30,7 +30,10 @@ import { CurrentUser } from 'src/common/decorators/currentUser.decorator';
 import { UsersRepository } from './repository/users.repository';
 import { UserEntity } from './entity/user.entity';
 import { FindByConditionsDto } from './dto/findByConditions.dto';
-import { FindWithConditionsDto } from './dto/findWithConditions.dto';
+import {
+  FindOneWithConditionsDto,
+  FindAllWithConditionsDto,
+} from './dto/findWithConditions.dto';
 import { CreateUserDtoLocal } from './dto/createLocal.dto';
 import { LoginUserDtoLocal } from './dto/loginUserLocal.dto';
 import { UpdateUserDto } from './dto/update.dto';
@@ -57,28 +60,28 @@ export class UserController {
 
   @Post('findOneBy')
   async findOneByCondition(
-    @Body('findOneByCondition') condition: FindByConditionsDto,
+    @Body() condition: FindByConditionsDto,
   ): Promise<UserEntity> {
     return await this.usersRepository.findOneByCondition(condition);
   }
 
   @Post('findManyBy')
   async findManyByCondition(
-    @Body('findManyByCondition') condition: FindByConditionsDto,
+    @Body() condition: FindByConditionsDto,
   ): Promise<UserEntity[]> {
     return await this.usersRepository.findAllByCondition(condition);
   }
 
   @Post('findOneWith')
   async findOneWithCondition(
-    @Body('findOneWithCondition') condition: FindWithConditionsDto,
+    @Body() condition: FindOneWithConditionsDto,
   ): Promise<UserEntity> {
     return await this.usersRepository.findOneWithCondition(condition);
   }
 
   @Post('findAllWith')
   async findAllWithCondition(
-    @Body('findAllWithCondition') condition: FindWithConditionsDto,
+    @Body() condition: FindAllWithConditionsDto,
   ): Promise<UserEntity[]> {
     return await this.usersRepository.findAllWithCondition(condition);
   }
@@ -96,7 +99,7 @@ export class UserController {
   @Patch()
   async updateUser(
     @CurrentUser('id') currentUserId: string,
-    @Body('user') updateUserDto: UpdateUserDto,
+    @Body() updateUserDto: UpdateUserDto,
   ): Promise<UpdateResult> {
     return await this.usersRepository.updateOneByIdSoft(
       currentUserId,

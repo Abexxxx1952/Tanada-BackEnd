@@ -1,11 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
-
 export class CreatePhotoDto {
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
   readonly link: string;
-
-  @IsNotEmpty()
-  @IsString()
-  readonly userId: string;
 }

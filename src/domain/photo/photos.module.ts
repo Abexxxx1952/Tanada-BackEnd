@@ -4,9 +4,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PhotoEntity } from './entity/photo.entity';
 
 import { PhotosRepository } from './repository/photos.repository';
+import { UsersModule } from '../user/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PhotoEntity])],
+  imports: [TypeOrmModule.forFeature([PhotoEntity]), UsersModule],
   controllers: [PhotoController],
   providers: [
     {

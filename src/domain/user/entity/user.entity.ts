@@ -42,9 +42,6 @@ export class UserEntity {
   })
   photo: PhotoEntity[];
 
-  /*  constructor(partial: Partial<UserEntity>) {
-    Object.assign(this, partial);
-  } */
   @BeforeInsert()
   generateId() {
     if (!this.id) {

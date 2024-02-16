@@ -1,4 +1,7 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreatePhotoDto } from './create.dto';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-export class UpdateUserDto extends PartialType(CreatePhotoDto) {}
+export class UpdatePhotoDto {
+  @IsString()
+  @IsNotEmpty()
+  readonly link: string;
+}

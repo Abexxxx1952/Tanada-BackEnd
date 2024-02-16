@@ -1,17 +1,20 @@
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-
 export class CreateUserDtoLocal {
-  @IsOptional()
   @IsString()
+  @IsOptional()
+  @IsNotEmpty()
   readonly name?: string;
 
   @IsEmail()
+  @IsNotEmpty()
   readonly email: string;
 
+  @IsString()
   @IsNotEmpty()
   readonly password: string;
 
-  @IsOptional()
   @IsString()
-  icon?: string;
+  @IsOptional()
+  @IsNotEmpty()
+  readonly icon?: string;
 }

@@ -25,8 +25,4 @@ export class PhotoEntity {
 
   @ManyToOne(() => UserEntity, (user) => user.photo, { cascade: true })
   user: UserEntity;
-
-  /*  constructor(partial: Partial<UserEntity>) {
-    Object.assign(this, partial);
-  } */
 }

@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsDate,
@@ -7,38 +8,37 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 import { PhotoEntity } from 'src/domain/photo/entity/photo.entity';
-export class FindByConditionsDto {
+
+export class UserDto {
   @IsString()
   @IsNotEmpty()
-  @IsOptional()
-  readonly id?: string;
+  readonly id: string;
 
   @IsString()
-  @IsNotEmpty()
   @IsOptional()
+  @IsNotEmpty()
   readonly name?: string;
 
   @IsEmail()
   @IsNotEmpty()
-  @IsOptional()
-  readonly email?: string;
+  readonly email: string;
 
   @IsString()
   @IsNotEmpty()
+  readonly password: string;
+
+  @IsString()
   @IsOptional()
   readonly icon?: string;
 
   @IsDate()
   @IsNotEmpty()
-  @IsOptional()
-  readonly createdAt?: Date;
+  readonly createdAt: Date;
 
   @IsDate()
   @IsNotEmpty()
-  @IsOptional()
-  readonly updatedAt?: Date;
+  readonly updatedAt: Date;
 
   @IsArray()
   @ValidateNested({ each: true })

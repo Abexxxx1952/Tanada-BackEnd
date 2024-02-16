@@ -30,9 +30,12 @@ import { CurrentUser } from 'src/common/decorators/currentUser.decorator';
 import { PhotosRepository } from './repository/photos.repository';
 import { PhotoEntity } from './entity/photo.entity';
 import { FindByConditionsDto } from './dto/findByConditions.dto';
-import { FindWithConditionsDto } from './dto/findWithConditions.dto';
+import {
+  FindOneWithConditionsDto,
+  FindAllWithConditionsDto,
+} from './dto/findWithConditions.dto';
 import { CreatePhotoDto } from './dto/create.dto';
-import { UpdateUserDto } from './dto/update.dto';
+import { UpdatePhotoDto } from './dto/update.dto';
 import { InsertResult, UpdateResult } from 'typeorm';
 
 @ApiTags('photos')
@@ -55,42 +58,47 @@ export class PhotoController {
 
   @Post('findOneBy')
   async findOneByCondition(
-    @Body('findOneByCondition') condition: FindByConditionsDto,
+    @Body() condition: FindByConditionsDto,
   ): Promise<PhotoEntity> {
-    console.log(condition);
     return await this.photosRepository.findOneByCondition(condition);
   }
 
-  @Get('findManyBy')
+  @Post('findManyBy')
   async findManyByCondition(
-    @Body('findManyByCondition') condition: FindByConditionsDto,
+    @Body() condition: FindByConditionsDto,
   ): Promise<PhotoEntity[]> {
     return await this.photosRepository.findAllByCondition(condition);
   }
 
-  @Get('findOneWith')
+  @Post('findOneWith')
   async findOneWithCondition(
-    @Body('findOneWithCondition') condition: FindWithConditionsDto,
+    @Body() condition: FindOneWithConditionsDto,
   ): Promise<PhotoEntity> {
     return await this.photosRepository.findOneWithCondition(condition);
   }
 
-  @Get('findAllWith')
+  @Post('findAllWith')
   async findAllWithCondition(
-    @Body('findAllWithCondition') condition: FindWithConditionsDto,
+    @Body() condition: FindAllWithConditionsDto,
   ): Promise<PhotoEntity[]> {
     return await this.photosRepository.findAllWithCondition(condition);
   }
 
   @Post()
-  async create(@Body() createPhotoDto: CreatePhotoDto): Promise<PhotoEntity> {
-    return await this.photosRepository.createPhoto(createPhotoDto);
+  async create(
+    @CurrentUser('id') currentUserId: string,
+    @Body() createPhotoDto: CreatePhotoDto,
+  ): Promise<PhotoEntity> {
+    return await this.photosRepository.createPhoto(
+      currentUserId,
+      createPhotoDto,
+    );
   }
 
   @Put()
   async updateUserHard(
     @CurrentUser('id') currentUserId: string,
-    @Body('photo') updatePhotoDto: UpdateUserDto,
+    @Body('photo') updatePhotoDto: UpdatePhotoDto,
   ): Promise<InsertResult> {
     return await this.photosRepository.updateOneByIdHard(
       currentUserId,
@@ -101,7 +109,7 @@ export class PhotoController {
   @Patch()
   async updateUserSoft(
     @CurrentUser('id') currentUserId: string,
-    @Body('photo') updatePhotoDto: UpdateUserDto,
+    @Body('photo') updatePhotoDto: UpdatePhotoDto,
   ): Promise<UpdateResult> {
     return await this.photosRepository.updateOneByIdSoft(
       currentUserId,

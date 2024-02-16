@@ -23,11 +23,15 @@ export class UsersRepository extends BaseAbstractRepository<UserEntity> {
     const errorResponse = {
       errors: {},
     };
-    let user: DeepPartial<UserEntity>;
+    let user:
+      | DeepPartial<UserEntity>
+      | NotFoundException
+      | InternalServerErrorException;
     try {
       user = await this.findOneByCondition({
         [this.uniqueProperty]: data.email,
       });
+
       if (user) {
         errorResponse.errors[this.uniqueProperty] = 'Has already been taken';
       }
@@ -35,13 +39,14 @@ export class UsersRepository extends BaseAbstractRepository<UserEntity> {
         throw new ConflictException();
       }
     } catch (error) {
-      if (error instanceof NotFoundException) return;
-
       if (error instanceof ConflictException) {
         throw new ConflictException(errorResponse);
       }
-      throw new InternalServerErrorException(error);
+      if (!(error instanceof NotFoundException)) {
+        throw new InternalServerErrorException(error);
+      }
     }
+
     if (!user) {
       const entity = this.create(data);
       if (!entity) {
