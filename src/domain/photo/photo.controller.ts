@@ -40,7 +40,7 @@ import { UpdatePhotoDto } from './dto/update.dto';
 import { InsertResult, UpdateResult } from 'typeorm';
 import { PaginationParams } from '../../database/abstractRepository/paginationDto/pagination.dto';
 
-@ApiTags('photos')
+@ApiTags('v1/photos')
 @Controller('v1/photos')
 export class PhotoController {
   constructor(

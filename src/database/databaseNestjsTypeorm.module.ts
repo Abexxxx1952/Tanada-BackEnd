@@ -2,6 +2,7 @@ import { Module, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { DatabaseLogger } from './logger/dbLogger';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { DataSource } from 'typeorm';
           synchronize:
             configService.getOrThrow('MODE') === 'production' ? false : true,
           migrations: [__dirname + '/../migrations/**/*{.ts,.js}'],
-          logging: true,
+          logger: new DatabaseLogger(),
         };
       },
 

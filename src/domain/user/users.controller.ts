@@ -13,6 +13,7 @@ import {
   Put,
   Query,
   Req,
+  Res,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -40,10 +41,12 @@ import { LoginUserDtoLocal } from './dto/loginUserLocal.dto';
 import { UpdateUserDto } from './dto/update.dto';
 import { UpdateResult } from 'typeorm';
 import { PaginationParams } from '../../database/abstractRepository/paginationDto/pagination.dto';
+import { LoggerHelperInterceptor } from '../../common/interceptors/loggerHelperInterceptor';
 
-@ApiTags('users')
+@ApiTags('v1/users')
 @Controller('v1/users')
 @UseInterceptors(ClassSerializerInterceptor)
+@UseInterceptors(LoggerHelperInterceptor)
 export class UserController {
   constructor(
     @Inject('UsersRepository')
@@ -58,7 +61,7 @@ export class UserController {
   }
 
   @Get(':id')
-  async findOneById(@Param('id') id: string): Promise<UserEntity> {
+  async findOneById(@Param('id') id: string): Promise<any> {
     return await this.usersRepository.findOneById(id);
   }
 

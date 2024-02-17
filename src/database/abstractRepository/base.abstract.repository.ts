@@ -37,6 +37,7 @@ export abstract class BaseAbstractRepository<T extends HasId>
     if (!entity) {
       throw new BadRequestException(`Failed to create ${this.entityName}`);
     }
+
     return entity;
   }
   public createMany(data: DeepPartial<T>[]): T[] {
