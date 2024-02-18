@@ -6,7 +6,7 @@ export class LoggerMiddleware implements NestMiddleware {
   private logger = new Logger('HTTP/HTTPS Logger');
 
   use(req: Request, res: Response, next: () => void) {
-    const { method, originalUrl, params, query, body } = req;
+    const { method, originalUrl, params, query } = req;
     const start = Date.now();
 
     res.on('finish', () => {
@@ -18,13 +18,13 @@ export class LoggerMiddleware implements NestMiddleware {
         URL: ${originalUrl}
         Params: ${JSON.stringify(params)}
         Query: ${JSON.stringify(query)}
-        Body: ${JSON.stringify(body)}
+        Body: ${JSON.stringify(res.locals.requestData)}
       `;
       const responseLogsBody = `Response <--- 
         Status Code: ${statusCode}
         Status Message: ${statusMessage}
         Response Time: ${responseTime}ms
-        body: ${JSON.stringify(res.locals.responseData)}
+        Body: ${JSON.stringify(res.locals.responseData)}
       `;
 
       if (statusCode >= 500) {

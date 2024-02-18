@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { v5 as uuidv5 } from 'uuid';
 import { PhotoEntity } from '../../photo/entity/photo.entity';
+import { PermissionEnum, PermissionEnumKeys } from '../permission/permission';
 
 @Entity('user')
 export class UserEntity {
@@ -37,10 +38,21 @@ export class UserEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @Column({ type: 'jsonb', array: true, nullable: true })
+  payload: Record<string, string>[];
+
   @OneToMany(() => PhotoEntity, (photo) => photo.user, {
     eager: true,
   })
   photo: PhotoEntity[];
+
+  @Column({
+    type: 'enum',
+    enum: PermissionEnum,
+    array: true,
+    default: ['CreatePhoto', 'UpdatePhoto', 'DeletePhoto'],
+  })
+  permissions: PermissionEnumKeys[];
 
   @BeforeInsert()
   generateId() {

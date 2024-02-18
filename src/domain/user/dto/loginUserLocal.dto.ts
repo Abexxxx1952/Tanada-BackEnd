@@ -1,4 +1,5 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
 export class LoginUserDtoLocal {
   @IsEmail()
   @IsNotEmpty()
@@ -6,5 +7,8 @@ export class LoginUserDtoLocal {
 
   @IsString()
   @IsNotEmpty()
+  @Transform(({ obj }) => {
+    return `[${typeof obj.password}]`;
+  })
   readonly password: string;
 }

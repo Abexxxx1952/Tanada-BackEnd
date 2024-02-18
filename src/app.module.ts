@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { validate } from './configs/env.validate';
 import { DomainModule } from './domain/domain.module';
 import { DatabaseModule } from './database/databaseNestjsTypeorm.module';
-import { LoggerMiddleware } from './common/middleware/loggerMiddleware';
+import { LoggerMiddleware } from './common/middleware/logger.middleware';
 
 @Module({
   imports: [

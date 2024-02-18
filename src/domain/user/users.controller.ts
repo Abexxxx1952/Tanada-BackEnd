@@ -41,7 +41,8 @@ import { LoginUserDtoLocal } from './dto/loginUserLocal.dto';
 import { UpdateUserDto } from './dto/update.dto';
 import { UpdateResult } from 'typeorm';
 import { PaginationParams } from '../../database/abstractRepository/paginationDto/pagination.dto';
-import { LoggerHelperInterceptor } from '../../common/interceptors/loggerHelperInterceptor';
+import { LoggerHelperInterceptor } from '../../common/interceptors/loggerHelper.interceptor';
+import { ParseRequestBodyWhenLogging } from '../../utils/loggerHelpers/setMetadataRequestBodyLogging';
 
 @ApiTags('v1/users')
 @Controller('v1/users')
@@ -104,11 +105,13 @@ export class UserController {
   }
 
   @Post('registration')
+  @ParseRequestBodyWhenLogging(CreateUserDtoLocal)
   async create(@Body() createUserDto: CreateUserDtoLocal): Promise<UserEntity> {
     return await this.usersRepository.createUser(createUserDto);
   }
 
   @Post('login')
+  @ParseRequestBodyWhenLogging(LoginUserDtoLocal)
   async login(@Body() loginUserDto: LoginUserDtoLocal): Promise<UserEntity> {
     return await this.usersRepository.createUser(loginUserDto);
   }
