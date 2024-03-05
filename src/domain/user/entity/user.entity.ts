@@ -38,6 +38,9 @@ export class UserEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  @Column({ nullable: true })
+  hashedRefreshToken?: string;
+
   @Column({ type: 'jsonb', array: true, nullable: true })
   payload: Record<string, string>[];
 

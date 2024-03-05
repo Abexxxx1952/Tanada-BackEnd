@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
+import * as cookieParser from 'cookie-parser';
 import { createSwagger } from './swagger/swagger';
 
 async function bootstrap() {
@@ -18,6 +19,7 @@ async function bootstrap() {
     }),
   );
   app.use(helmet());
+  app.use(cookieParser());
 
   createSwagger(app);
 

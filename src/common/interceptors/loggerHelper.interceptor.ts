@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Reflector } from '@nestjs/core';
 import { plainToInstance } from 'class-transformer';
-import { REQUEST_BODY_LOGGING_KEY } from '../../utils/loggerHelpers/setMetadataRequestBodyLogging';
+import { REQUEST_BODY_LOGGING_KEY } from '../decorators/setMetadataRequestBodyLogging.decorator';
 @Injectable()
 export class LoggerHelperInterceptor implements NestInterceptor {
   constructor(private readonly reflector: Reflector) {}

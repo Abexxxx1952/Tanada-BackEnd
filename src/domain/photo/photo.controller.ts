@@ -39,6 +39,9 @@ import { CreatePhotoDto } from './dto/create.dto';
 import { UpdatePhotoDto } from './dto/update.dto';
 import { InsertResult, UpdateResult } from 'typeorm';
 import { PaginationParams } from '../../database/abstractRepository/paginationDto/pagination.dto';
+import { AccessTokenAuthGuard } from '../user/auth/guards/accessToken.guard';
+import { PermissionGuard } from 'src/common/guard/permission.guard';
+import { PhotosPermission } from './permission/photos.permission.enum';
 
 @ApiTags('v1/photos')
 @Controller('v1/photos')
@@ -98,8 +101,10 @@ export class PhotoController {
     );
   }
 
-  @Post()
-  async create(
+  @Post('create')
+  @UseGuards(PermissionGuard([PhotosPermission.CreatePhoto]))
+  @UseGuards(AccessTokenAuthGuard)
+  async createPhoto(
     @CurrentUser('id') currentUserId: string,
     @Body() createPhotoDto: CreatePhotoDto,
   ): Promise<PhotoEntity> {
@@ -109,32 +114,39 @@ export class PhotoController {
     );
   }
 
-  @Put()
-  async updateUserHard(
+  @Put('updatePhotoHard')
+  @UseGuards(PermissionGuard([PhotosPermission.UpdatePhoto]))
+  @UseGuards(AccessTokenAuthGuard)
+  async updatePhotoHard(
     @CurrentUser('id') currentUserId: string,
     @Body('photo') updatePhotoDto: UpdatePhotoDto,
   ): Promise<InsertResult> {
-    return await this.photosRepository.updateOneByIdHard(
+    return await this.photosRepository.updateOnePhotoByIdHard(
       currentUserId,
       updatePhotoDto,
     );
   }
 
-  @Patch()
-  async updateUserSoft(
+  @Patch('updatePhotoSoft')
+  @UseGuards(PermissionGuard([PhotosPermission.UpdatePhoto]))
+  @UseGuards(AccessTokenAuthGuard)
+  async updatePhotoSoft(
     @CurrentUser('id') currentUserId: string,
     @Body('photo') updatePhotoDto: UpdatePhotoDto,
   ): Promise<UpdateResult> {
-    return await this.photosRepository.updateOneByIdSoft(
+    return await this.photosRepository.updateOnePhotoByIdSoft(
       currentUserId,
       updatePhotoDto,
     );
   }
 
-  @Delete()
-  async deleteUser(
+  @Delete('deletePhoto/:id')
+  @UseGuards(PermissionGuard([PhotosPermission.DeletePhoto]))
+  @UseGuards(AccessTokenAuthGuard)
+  async deletePhoto(
     @CurrentUser('id') currentUserId: string,
+    @Param('id') id: number,
   ): Promise<PhotoEntity> {
-    return await this.photosRepository.removeById(currentUserId);
+    return await this.photosRepository.removePhotoById(currentUserId, id);
   }
 }

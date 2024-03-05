@@ -17,6 +17,8 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { UpdateResult } from 'typeorm';
+import { Response } from 'express';
 
 import {
   ApiBadRequestResponse,
@@ -29,20 +31,28 @@ import {
 } from '@nestjs/swagger';
 
 import { CurrentUser } from 'src/common/decorators/currentUser.decorator';
+import { ParseRequestBodyWhenLogging } from '../../common/decorators/setMetadataRequestBodyLogging.decorator';
+import { LoggerHelperInterceptor } from '../../common/interceptors/loggerHelper.interceptor';
 import { UsersRepository } from './repository/users.repository';
+import { AuthService } from './auth/auth.service';
 import { UserEntity } from './entity/user.entity';
 import { FindByConditionsDto } from './dto/findByConditions.dto';
 import {
   FindOneWithConditionsDto,
   FindAllWithConditionsDto,
 } from './dto/findWithConditions.dto';
-import { CreateUserDtoLocal } from './dto/createLocal.dto';
-import { LoginUserDtoLocal } from './dto/loginUserLocal.dto';
+import {
+  CreateUserDtoLocal,
+  CreateUserDtoLocalWithoutPassword,
+} from './dto/createLocal.dto';
+import { LoginLocalUserDtoWithoutPassword } from './dto/loginUserLocal.dto';
 import { UpdateUserDto } from './dto/update.dto';
-import { UpdateResult } from 'typeorm';
 import { PaginationParams } from '../../database/abstractRepository/paginationDto/pagination.dto';
-import { LoggerHelperInterceptor } from '../../common/interceptors/loggerHelper.interceptor';
-import { ParseRequestBodyWhenLogging } from '../../utils/loggerHelpers/setMetadataRequestBodyLogging';
+import { LocalAuthGuard } from './auth/guards/local-auth.guard';
+import { RefreshTokenAuthGuard } from './auth/guards/refreshToken.guard';
+import { AttachedUserWithRt } from './auth/types/attachedUserWithRt';
+import { AttachedUser } from './auth/types/attachedUser';
+import { AccessTokenAuthGuard } from './auth/guards/accessToken.guard';
 
 @ApiTags('v1/users')
 @Controller('v1/users')
@@ -52,6 +62,7 @@ export class UserController {
   constructor(
     @Inject('UsersRepository')
     private readonly usersRepository: UsersRepository,
+    private readonly authService: AuthService,
   ) {}
 
   @Get()
@@ -105,18 +116,42 @@ export class UserController {
   }
 
   @Post('registration')
-  @ParseRequestBodyWhenLogging(CreateUserDtoLocal)
+  @ParseRequestBodyWhenLogging(CreateUserDtoLocalWithoutPassword)
   async create(@Body() createUserDto: CreateUserDtoLocal): Promise<UserEntity> {
-    return await this.usersRepository.createUser(createUserDto);
+    return await this.usersRepository.createUserLocal(createUserDto);
   }
 
-  @Post('login')
-  @ParseRequestBodyWhenLogging(LoginUserDtoLocal)
-  async login(@Body() loginUserDto: LoginUserDtoLocal): Promise<UserEntity> {
-    return await this.usersRepository.createUser(loginUserDto);
+  @Post('loginLocal')
+  @UseGuards(LocalAuthGuard)
+  @ParseRequestBodyWhenLogging(LoginLocalUserDtoWithoutPassword)
+  async loginLocal(
+    @CurrentUser() currentUser: UserEntity,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<AttachedUser> {
+    return await this.authService.loginLocal(currentUser, response);
   }
 
-  @Patch()
+  @Post('logOut')
+  @UseGuards(AccessTokenAuthGuard)
+  async logout(
+    @CurrentUser() currentUser: AttachedUser,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<AttachedUser> {
+    console.log(currentUser);
+    return this.authService.logout(currentUser, response);
+  }
+
+  @Post('refresh')
+  @UseGuards(RefreshTokenAuthGuard)
+  async refreshTokens(
+    @CurrentUser() currentUserWithRt: AttachedUserWithRt,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<string> {
+    return this.authService.refreshTokens(currentUserWithRt, response);
+  }
+
+  @Patch('update')
+  @UseGuards(AccessTokenAuthGuard)
   async updateUser(
     @CurrentUser('id') currentUserId: string,
     @Body() updateUserDto: UpdateUserDto,
@@ -127,7 +162,8 @@ export class UserController {
     );
   }
 
-  @Delete()
+  @Delete('delete')
+  @UseGuards(AccessTokenAuthGuard)
   async deleteUser(
     @CurrentUser('id') currentUserId: string,
   ): Promise<UserEntity> {

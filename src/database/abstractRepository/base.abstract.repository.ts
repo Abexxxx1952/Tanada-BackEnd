@@ -101,12 +101,12 @@ export abstract class BaseAbstractRepository<T extends HasId>
   }
 
   public async findAllByCondition(
-    options: FindOptionsWhere<T>,
+    condition: FindOptionsWhere<T>,
     offset?: number,
     limit?: number,
   ): Promise<T[]> {
     try {
-      const entities = await this.entity.findBy(options);
+      const entities = await this.entity.findBy(condition);
 
       if (!entities.length) {
         throw new NotFoundException(`${this.entityName} not found`);
@@ -123,11 +123,9 @@ export abstract class BaseAbstractRepository<T extends HasId>
     }
   }
 
-  public async findOneWithCondition(
-    filterCondition: FindOneOptions<T>,
-  ): Promise<T> {
+  public async findOneWithCondition(condition: FindOneOptions<T>): Promise<T> {
     try {
-      const entity = await this.entity.findOne(filterCondition);
+      const entity = await this.entity.findOne(condition);
       if (!entity) {
         throw new NotFoundException(`${this.entityName} not found`);
       }
@@ -141,12 +139,12 @@ export abstract class BaseAbstractRepository<T extends HasId>
   }
 
   public async findAllWithCondition(
-    filterCondition: FindManyOptions<T>,
+    condition: FindManyOptions<T>,
     offset?: number,
     limit?: number,
   ): Promise<T[]> {
     try {
-      const entities = await this.entity.find(filterCondition);
+      const entities = await this.entity.find(condition);
       if (!entities.length) {
         throw new NotFoundException(`${this.entityName}s not found`);
       }
@@ -165,10 +163,10 @@ export abstract class BaseAbstractRepository<T extends HasId>
   public async findAll(
     offset?: number,
     limit?: number,
-    options?: FindManyOptions<T>,
+    condition?: FindManyOptions<T>,
   ): Promise<T[]> {
     try {
-      const entities = await this.entity.find(options);
+      const entities = await this.entity.find(condition);
       if (!entities.length) {
         throw new NotFoundException(`${this.entityName}s not found`);
       }
@@ -189,16 +187,17 @@ export abstract class BaseAbstractRepository<T extends HasId>
     id: any,
     data: QueryDeepPartialEntity<T>,
   ): Promise<UpdateResult> {
-    const options: FindOptionsWhere<T> = {
+    const condition: FindOptionsWhere<T> = {
       id: id,
     };
 
     try {
-      const entity = await this.entity.findOneBy(options);
+      const entity = await this.entity.findOneBy(condition);
 
       if (!entity) {
         throw new NotFoundException(`${this.entityName} not found`);
       }
+
       const updateResult: UpdateResult = await this.entity.update(id, data);
       return updateResult;
     } catch (error) {
@@ -217,14 +216,15 @@ export abstract class BaseAbstractRepository<T extends HasId>
 
   /*Method:  Put */
   public async updateOneByIdHard(
-    id: any,
     data: QueryDeepPartialEntity<T>,
   ): Promise<InsertResult> {
     try {
       const insertResult: InsertResult = await this.entity.upsert([data], {
-        conflictPaths: [id],
+        conflictPaths: ['id'],
         skipUpdateIfNoValuesChanged: true, // supported by postgres, skips update if it would not change row values
+        upsertType: 'on-conflict-do-update',
       });
+
       return insertResult;
     } catch (error) {
       throw new InternalServerErrorException(error);
@@ -248,10 +248,10 @@ export abstract class BaseAbstractRepository<T extends HasId>
   }
 
   public async removeAllByCondition(
-    options: FindOptionsWhere<T>,
+    condition: FindOptionsWhere<T>,
   ): Promise<T[]> {
     try {
-      const entityToRemove = await this.findAllByCondition(options);
+      const entityToRemove = await this.findAllByCondition(condition);
       if (!entityToRemove.length) {
         throw new NotFoundException(`${this.entityName}s not found`);
       }

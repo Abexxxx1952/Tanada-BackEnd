@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeepPartial } from 'typeorm';
 import { BaseAbstractRepository } from '../../../database/abstractRepository/base.abstract.repository';
 import { UserEntity } from '../entity/user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersRepository extends BaseAbstractRepository<UserEntity> {
@@ -19,7 +20,9 @@ export class UsersRepository extends BaseAbstractRepository<UserEntity> {
   ) {
     super(UserRepository, 'User');
   }
-  public async createUser(data: DeepPartial<UserEntity>): Promise<UserEntity> {
+  public async createUserLocal(
+    createUserDto: DeepPartial<UserEntity>,
+  ): Promise<UserEntity> {
     const errorResponse = {
       errors: {},
     };
@@ -29,7 +32,7 @@ export class UsersRepository extends BaseAbstractRepository<UserEntity> {
       | InternalServerErrorException;
     try {
       user = await this.findOneByCondition({
-        [this.uniqueProperty]: data.email,
+        [this.uniqueProperty]: createUserDto.email,
       });
 
       if (user) {
@@ -48,11 +51,24 @@ export class UsersRepository extends BaseAbstractRepository<UserEntity> {
     }
 
     if (!user) {
-      const entity = this.create(data);
+      const hashedPassword: string = await this.hashPassword(
+        createUserDto.password,
+      );
+
+      const entity = this.create({
+        ...createUserDto,
+        password: hashedPassword,
+      });
       if (!entity) {
         throw new BadRequestException(`Failed to create ${this.entityName}`);
       }
       return await this.save(entity);
     }
+  }
+
+  private async hashPassword(password: string) {
+    const saltOrRounds = 10;
+
+    return await bcrypt.hash(password, saltOrRounds);
   }
 }
