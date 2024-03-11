@@ -1,22 +1,36 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 export class UpdateUserDto {
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @IsOptional()
+  @ApiPropertyOptional()
   readonly name?: string;
 
-  @IsEmail()
-  @IsNotEmpty()
   @IsOptional()
-  readonly email?: string;
-
   @IsString()
   @IsNotEmpty()
-  @IsOptional()
+  @ApiPropertyOptional()
   readonly password?: string;
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @IsOptional()
+  @ApiPropertyOptional()
   readonly icon?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @ApiPropertyOptional({
+    isArray: true,
+    type: Object,
+  })
+  payload?: Record<string, string>[];
 }

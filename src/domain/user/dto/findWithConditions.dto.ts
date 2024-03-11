@@ -1,5 +1,5 @@
 import { IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
-import { FindByConditionsDto } from './findByConditions.dto';
+import { FindUserByConditionsDto } from './findByConditions.dto';
 import {
   FindOneOptions,
   FindOptionsSelect,
@@ -8,51 +8,62 @@ import {
   FindOptionsRelations,
   FindManyOptions,
 } from 'typeorm';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 
-export class FindOneWithConditionsDto
-  implements FindOneOptions<FindByConditionsDto>
+export class FindOneUserWithConditionsDto
+  implements FindOneOptions<FindUserByConditionsDto>
 {
+  @IsOptional()
   @IsObject()
-  @IsOptional()
-  readonly where?: FindByConditionsDto | FindByConditionsDto[];
+  @ApiPropertyOptional()
+  readonly where?: FindUserByConditionsDto | FindUserByConditionsDto[];
 
+  @IsOptional()
   @IsString({ each: true })
-  @IsOptional()
+  @ApiPropertyOptional()
   readonly select?:
-    | FindOptionsSelect<FindByConditionsDto>
-    | FindOptionsSelectByString<FindByConditionsDto>;
+    | FindOptionsSelect<FindUserByConditionsDto>
+    | FindOptionsSelectByString<FindUserByConditionsDto>;
 
   @IsOptional()
-  readonly order?: FindOptionsOrder<FindByConditionsDto>;
+  @ApiPropertyOptional()
+  readonly order?: FindOptionsOrder<FindUserByConditionsDto>;
 
   @IsOptional()
-  readonly relations?: FindOptionsRelations<FindByConditionsDto>;
+  @ApiPropertyOptional()
+  readonly relations?: FindOptionsRelations<FindUserByConditionsDto>;
 }
 
-export class FindAllWithConditionsDto
-  implements FindManyOptions<FindByConditionsDto>
+export class FindAllUserWithConditionsDto
+  implements FindManyOptions<FindUserByConditionsDto>
 {
+  @IsOptional()
   @IsObject()
-  @IsOptional()
-  readonly where?: FindByConditionsDto | FindByConditionsDto[];
+  @ApiPropertyOptional()
+  readonly where?: FindUserByConditionsDto | FindUserByConditionsDto[];
 
+  @IsOptional()
   @IsString({ each: true })
-  @IsOptional()
+  @ApiPropertyOptional()
   readonly select?:
-    | FindOptionsSelect<FindByConditionsDto>
-    | FindOptionsSelectByString<FindByConditionsDto>;
+    | FindOptionsSelect<FindUserByConditionsDto>
+    | FindOptionsSelectByString<FindUserByConditionsDto>;
 
   @IsOptional()
-  readonly order?: FindOptionsOrder<FindByConditionsDto>;
+  @ApiPropertyOptional()
+  readonly order?: FindOptionsOrder<FindUserByConditionsDto>;
 
   @IsOptional()
-  readonly relations?: FindOptionsRelations<FindByConditionsDto>;
+  @ApiPropertyOptional()
+  readonly relations?: FindOptionsRelations<FindUserByConditionsDto>;
 
   @IsOptional()
   @IsNumber()
+  @ApiPropertyOptional()
   readonly skip?: number;
 
   @IsOptional()
   @IsNumber()
+  @ApiPropertyOptional()
   readonly take?: number;
 }

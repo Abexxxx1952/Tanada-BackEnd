@@ -1,7 +1,9 @@
 import {
+  ConflictException,
   ForbiddenException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -14,6 +16,8 @@ import { ModuleRef } from '@nestjs/core';
 import { UserEntity } from '../entity/user.entity';
 import { AttachedUser } from './types/attachedUser';
 import { AttachedUserWithRt } from './types/attachedUserWithRt';
+import { RegistrationSources } from './types/providersOAuth.enum';
+import { ParseUserOAuth } from './types/parseUserOAuth';
 
 @Injectable()
 export class AuthService {
@@ -30,7 +34,7 @@ export class AuthService {
     });
   }
 
-  async loginLocal(
+  async login(
     currentUser: UserEntity,
     response: Response,
   ): Promise<AttachedUser> {
@@ -50,7 +54,7 @@ export class AuthService {
         permissions: currentUser.permissions,
       };
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw error;
     }
   }
 
@@ -70,7 +74,7 @@ export class AuthService {
 
       return currentUser;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw error;
     }
   }
 
@@ -82,10 +86,13 @@ export class AuthService {
     try {
       userExist = await this.usersRepository.findOneById(currentUser.id);
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      if (error instanceof NotFoundException) {
+        throw new ForbiddenException('Access Denied');
+      }
+      throw error;
     }
 
-    if (!userExist || !userExist.hashedRefreshToken)
+    if (!userExist.hashedRefreshToken)
       throw new ForbiddenException('Access Denied');
 
     const rtMatches = await bcrypt.compare(
@@ -107,29 +114,89 @@ export class AuthService {
 
       return 'Refresh Successful';
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw error;
     }
   }
 
-  async validateUser(email: string, password: string): Promise<UserEntity> {
-    const userExists = await this.usersRepository.findOneByCondition({
-      email: email,
-    });
+  async validateUserLocal(
+    email: string,
+    password: string,
+  ): Promise<UserEntity> {
+    try {
+      const userExists = await this.usersRepository.findOneByCondition({
+        email: email,
+      });
 
-    if (!userExists) throw new ForbiddenException('Access Denied');
+      if (
+        !userExists ||
+        !userExists.password ||
+        !userExists.registrationSources.includes(RegistrationSources.Local)
+      )
+        throw new ForbiddenException('Access Denied');
 
-    const passwordMatches = await bcrypt.compare(password, userExists.password);
+      const passwordMatches = await bcrypt.compare(
+        password,
+        userExists.password,
+      );
 
-    if (!passwordMatches) throw new ForbiddenException('Access Denied');
+      if (!passwordMatches) throw new ForbiddenException('Access Denied');
 
-    return userExists;
+      return userExists;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async validateUserOAuth(
+    profile: any,
+    provider: RegistrationSources,
+  ): Promise<UserEntity> {
+    let parseUserOAuth: ParseUserOAuth;
+
+    let existUser: UserEntity;
+    switch (provider) {
+      case RegistrationSources.Google: {
+        parseUserOAuth = this.parseGoogleUser(profile);
+        break;
+      }
+      case RegistrationSources.GitHub: {
+        parseUserOAuth = this.parseGitHubUser(profile);
+        break;
+      }
+      default:
+        throw new InternalServerErrorException('Invalid provider');
+    }
+
+    try {
+      existUser = await this.usersRepository.findOneByCondition({
+        email: parseUserOAuth.email,
+      });
+    } catch (error) {
+      if (!(error instanceof NotFoundException)) {
+        throw error;
+      }
+    }
+
+    if (!existUser) {
+      try {
+        existUser = await this.usersRepository.createUserOAuth(parseUserOAuth);
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    return existUser;
   }
 
   private async updateRtHash(userId: string, rt: string): Promise<void> {
-    const hash = await bcrypt.hash(rt, 10);
-    await this.usersRepository.updateOneByIdSoft(userId, {
-      hashedRefreshToken: hash,
-    });
+    try {
+      const hash = await bcrypt.hash(rt, 10);
+      await this.usersRepository.updateOneByIdSoft(userId, {
+        hashedRefreshToken: hash,
+      });
+    } catch (error) {
+      throw error;
+    }
   }
   private async getTokens(
     currentUser: UserEntity | AttachedUserWithRt,
@@ -145,22 +212,16 @@ export class AuthService {
         secret: this.configService.getOrThrow<string>(
           'JWT_ACCESS_TOKEN_SECRET',
         ),
-        expiresIn: parseInt(
-          this.configService.getOrThrow<string>(
-            'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
-          ),
-          10,
+        expiresIn: this.configService.getOrThrow<number>(
+          'JWT_ACCESS_TOKEN_EXPIRATION_TIME',
         ),
       }),
       this.jwtService.signAsync(jwtPayload, {
         secret: this.configService.getOrThrow<string>(
           'JWT_REFRESH_TOKEN_SECRET',
         ),
-        expiresIn: parseInt(
-          this.configService.getOrThrow<string>(
-            'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
-          ),
-          10,
+        expiresIn: this.configService.getOrThrow<number>(
+          'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
         ),
       }),
     ]);
@@ -179,5 +240,34 @@ export class AuthService {
     );
 
     return expiresTime;
+  }
+  private parseGoogleUser(profile: any): ParseUserOAuth {
+    const {
+      displayName: name,
+      emails: [{ value: email }],
+      photos: [{ value: icon }],
+    } = profile;
+
+    return {
+      name,
+      email,
+      icon,
+      registrationSources: [RegistrationSources.Google],
+    };
+  }
+
+  private parseGitHubUser(profile: any): ParseUserOAuth {
+    const {
+      username: name,
+      emails: [{ value: email }],
+      photos: [{ value: icon }],
+    } = profile;
+
+    return {
+      name,
+      email,
+      icon,
+      registrationSources: [RegistrationSources.GitHub],
+    };
   }
 }

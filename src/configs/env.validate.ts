@@ -1,6 +1,5 @@
-import { plainToClass } from 'class-transformer';
+import { Transform, plainToClass } from 'class-transformer';
 import {
-  IsEmail,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -14,74 +13,73 @@ export enum Environment {
 }
 
 class EnvironmentVariables {
-  @IsNotEmpty()
   @IsEnum(Environment)
+  @IsNotEmpty()
   MODE: Environment;
 
-  @IsNotEmpty()
   @IsNumber()
+  @IsNotEmpty()
   PORT: number;
 
   @IsString()
+  @IsNotEmpty()
   DATABASE_TYPE: string;
 
   @IsString()
+  @IsNotEmpty()
   DATABASE_HOST: string;
 
   @IsString()
+  @IsNotEmpty()
   DATABASE_NAME: string;
 
   @IsString()
+  @IsNotEmpty()
   DATABASE_PASSWORD: string;
 
   @IsString()
+  @IsNotEmpty()
   DATABASE_USER: string;
 
+  @IsString()
   @IsNotEmpty()
-  @IsString()
   DB_CONNECTION_STRING: string;
-  /* 
+
   @IsString()
+  @IsNotEmpty()
   JWT_ACCESS_TOKEN_SECRET: string;
 
   @IsNumber()
+  @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
   JWT_ACCESS_TOKEN_EXPIRATION_TIME: number;
 
   @IsString()
+  @IsNotEmpty()
   JWT_REFRESH_TOKEN_SECRET: string;
 
   @IsNumber()
-  JWT_REFRESH_TOKEN_EXPIRATION_TIME: number; 
-
-   @IsEmail()
-  GMAIL: string;
-
-  @IsString()
-  GMAIL_PASSWORD: string;
+  @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
+  JWT_REFRESH_TOKEN_EXPIRATION_TIME: number;
 
   @IsString()
-  BUCKET_NAME: string;
-
-  @IsString()
-  GOOGLE_APPLICATION_CREDENTIALS: string;
-
-  @IsString()
+  @IsNotEmpty()
   GOOGLE_OAUTH2_CLIENT_ID: string;
 
   @IsString()
+  @IsNotEmpty()
   GOOGLE_OAUTH2_CLIENT_SECRET: string;
 
   @IsString()
+  @IsNotEmpty()
+  GOOGLE_CALLBACK_URL: string;
+
+  /* @IsString()
   GITHUB_OAUTH2_CLIENT_ID: string;
 
   @IsString()
-  GITHUB_OAUTH2_CLIENT_SECRET: string;
-
-  @IsString()
-  FACEBOOK_OAUTH2_APP_ID: string;
-
-  @IsString()
-  FACEBOOK_OAUTH2_APP_SECRET: string; */
+  GITHUB_OAUTH2_CLIENT_SECRET: string; */
 }
 
 export function validate(config: Record<string, unknown>) {

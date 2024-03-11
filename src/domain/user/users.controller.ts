@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Inject,
   Param,
+  ParseUUIDPipe,
   Patch,
   Post,
   Put,
@@ -23,6 +24,8 @@ import { Response } from 'express';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiBody,
+  ApiCookieAuth,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -36,10 +39,10 @@ import { LoggerHelperInterceptor } from '../../common/interceptors/loggerHelper.
 import { UsersRepository } from './repository/users.repository';
 import { AuthService } from './auth/auth.service';
 import { UserEntity } from './entity/user.entity';
-import { FindByConditionsDto } from './dto/findByConditions.dto';
+import { FindUserByConditionsDto } from './dto/findByConditions.dto';
 import {
-  FindOneWithConditionsDto,
-  FindAllWithConditionsDto,
+  FindOneUserWithConditionsDto,
+  FindAllUserWithConditionsDto,
 } from './dto/findWithConditions.dto';
 import {
   CreateUserDtoLocal,
@@ -48,11 +51,33 @@ import {
 import { LoginLocalUserDtoWithoutPassword } from './dto/loginUserLocal.dto';
 import { UpdateUserDto } from './dto/update.dto';
 import { PaginationParams } from '../../database/abstractRepository/paginationDto/pagination.dto';
-import { LocalAuthGuard } from './auth/guards/local-auth.guard';
+import { LocalAuthGuard } from './auth/guards/localAuth.guard';
 import { RefreshTokenAuthGuard } from './auth/guards/refreshToken.guard';
 import { AttachedUserWithRt } from './auth/types/attachedUserWithRt';
 import { AttachedUser } from './auth/types/attachedUser';
 import { AccessTokenAuthGuard } from './auth/guards/accessToken.guard';
+import { GoogleGuard } from './auth/guards/google.guard';
+import { GitHubGuard } from './auth/guards/gitHub.guard';
+import {
+  ApiUsersGet,
+  ApiUsersGetFindById,
+  ApiUsersPostFindOneBy,
+  ApiUsersPostFindManyBy,
+  ApiUsersPostFindOneWith,
+  ApiUsersPostFindAllWith,
+  ApiUsersPostRegistration,
+  ApiUsersPostLoginLocal,
+  ApiUsersPostLogOut,
+  ApiUsersPostRefresh,
+  ApiUsersGetLoginGoogle,
+  ApiUsersGetLoginGoogleCallback,
+  ApiUsersGetLoginGitHub,
+  ApiUsersGetLoginGitHubCallback,
+  ApiUsersGetStatus,
+  ApiUsersPatchUpdate,
+  ApiUsersDeleteDelete,
+} from 'src/swagger/users';
+import { UUID } from 'crypto';
 
 @ApiTags('v1/users')
 @Controller('v1/users')
@@ -66,28 +91,35 @@ export class UserController {
   ) {}
 
   @Get()
+  @HttpCode(HttpStatus.OK)
+  @ApiUsersGet()
   async findAll(
     @Query() { offset, limit }: PaginationParams,
   ): Promise<UserEntity[]> {
     return await this.usersRepository.findAll(offset, limit);
   }
 
-  @Get(':id')
-  async findOneById(@Param('id') id: string): Promise<any> {
+  @Get('findById/:id')
+  @ApiUsersGetFindById()
+  async findOneById(@Param('id', ParseUUIDPipe) id: UUID): Promise<UserEntity> {
     return await this.usersRepository.findOneById(id);
   }
 
   @Post('findOneBy')
+  @HttpCode(HttpStatus.OK)
+  @ApiUsersPostFindOneBy()
   async findOneByCondition(
-    @Body() condition: FindByConditionsDto,
+    @Body() condition: FindUserByConditionsDto,
   ): Promise<UserEntity> {
     return await this.usersRepository.findOneByCondition(condition);
   }
 
   @Post('findManyBy')
+  @HttpCode(HttpStatus.OK)
+  @ApiUsersPostFindManyBy()
   async findManyByCondition(
     @Query() { offset, limit }: PaginationParams,
-    @Body() condition: FindByConditionsDto,
+    @Body() condition: FindUserByConditionsDto,
   ): Promise<UserEntity[]> {
     return await this.usersRepository.findAllByCondition(
       condition,
@@ -97,16 +129,20 @@ export class UserController {
   }
 
   @Post('findOneWith')
+  @HttpCode(HttpStatus.OK)
+  @ApiUsersPostFindOneWith()
   async findOneWithCondition(
-    @Body() condition: FindOneWithConditionsDto,
+    @Body() condition: FindOneUserWithConditionsDto,
   ): Promise<UserEntity> {
     return await this.usersRepository.findOneWithCondition(condition);
   }
 
   @Post('findAllWith')
+  @HttpCode(HttpStatus.OK)
+  @ApiUsersPostFindAllWith()
   async findAllWithCondition(
     @Query() { offset, limit }: PaginationParams,
-    @Body() condition: FindAllWithConditionsDto,
+    @Body() condition: FindAllUserWithConditionsDto,
   ): Promise<UserEntity[]> {
     return await this.usersRepository.findAllWithCondition(
       condition,
@@ -117,32 +153,41 @@ export class UserController {
 
   @Post('registration')
   @ParseRequestBodyWhenLogging(CreateUserDtoLocalWithoutPassword)
-  async create(@Body() createUserDto: CreateUserDtoLocal): Promise<UserEntity> {
-    return await this.usersRepository.createUserLocal(createUserDto);
+  @HttpCode(HttpStatus.CREATED)
+  @ApiUsersPostRegistration()
+  async create(
+    @Body() createUserLocalDto: CreateUserDtoLocal,
+  ): Promise<UserEntity> {
+    return await this.usersRepository.createUserLocal(createUserLocalDto);
   }
 
   @Post('loginLocal')
   @UseGuards(LocalAuthGuard)
   @ParseRequestBodyWhenLogging(LoginLocalUserDtoWithoutPassword)
+  @HttpCode(HttpStatus.OK)
+  @ApiUsersPostLoginLocal()
   async loginLocal(
     @CurrentUser() currentUser: UserEntity,
     @Res({ passthrough: true }) response: Response,
   ): Promise<AttachedUser> {
-    return await this.authService.loginLocal(currentUser, response);
+    return await this.authService.login(currentUser, response);
   }
 
   @Post('logOut')
   @UseGuards(AccessTokenAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiUsersPostLogOut()
   async logout(
     @CurrentUser() currentUser: AttachedUser,
     @Res({ passthrough: true }) response: Response,
   ): Promise<AttachedUser> {
-    console.log(currentUser);
     return this.authService.logout(currentUser, response);
   }
 
   @Post('refresh')
   @UseGuards(RefreshTokenAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiUsersPostRefresh()
   async refreshTokens(
     @CurrentUser() currentUserWithRt: AttachedUserWithRt,
     @Res({ passthrough: true }) response: Response,
@@ -150,13 +195,59 @@ export class UserController {
     return this.authService.refreshTokens(currentUserWithRt, response);
   }
 
+  @Get('loginGoogle')
+  @UseGuards(GoogleGuard)
+  @ApiUsersGetLoginGoogle()
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  googleAuth() {}
+
+  @Get('loginGoogle/callback')
+  @UseGuards(GoogleGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiUsersGetLoginGoogleCallback()
+  async googleAuthCallBack(
+    @CurrentUser() currentUser: UserEntity,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<AttachedUser> {
+    return await this.authService.login(currentUser, response);
+  }
+
+  @Get('loginGitHub')
+  @UseGuards(GitHubGuard)
+  @ApiUsersGetLoginGitHub()
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  gitHubAuth() {}
+
+  @Get('loginGitHub/callback')
+  @UseGuards(GitHubGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiUsersGetLoginGitHubCallback()
+  async gitHubAuthCallBack(
+    @CurrentUser() currentUser: UserEntity,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<AttachedUser> {
+    return await this.authService.login(currentUser, response);
+  }
+
+  @Get('status')
+  @UseGuards(AccessTokenAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiUsersGetStatus()
+  async status(@CurrentUser() currentUser: AttachedUser): Promise<UserEntity> {
+    return await this.usersRepository.findOneByCondition({
+      email: currentUser.email,
+    });
+  }
+
   @Patch('update')
   @UseGuards(AccessTokenAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiUsersPatchUpdate()
   async updateUser(
     @CurrentUser('id') currentUserId: string,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<UpdateResult> {
-    return await this.usersRepository.updateOneByIdSoft(
+    return await this.usersRepository.updateOneUserByIdSoft(
       currentUserId,
       updateUserDto,
     );
@@ -164,99 +255,11 @@ export class UserController {
 
   @Delete('delete')
   @UseGuards(AccessTokenAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiUsersDeleteDelete()
   async deleteUser(
     @CurrentUser('id') currentUserId: string,
   ): Promise<UserEntity> {
     return await this.usersRepository.removeById(currentUserId);
   }
-
-  /*  @ApiOperation({ summary: 'Update user' })
-  @ApiBearerAuth()
-  @ApiOkResponse({ description: 'Return updated user credentials' })
-  @ApiBadRequestResponse({ description: 'Bad Request' })
-  @ApiForbiddenResponse({ description: "Request doesn't have access-token" })
-  @ApiNotFoundResponse({ description: 'User not found' })
-  // swagger
-  @Put(':id')
-  @UseGuards(AuthUserGuard)
-  async update(
-    @Req() req: AuthUserRequest,
-    @Param('id') userId: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
-    await this.usersService.findOne('id', userId, {
-      me: req.user,
-      notFoundException: true,
-    });
-
-    return this.usersService.update(userId, updateUserDto, req.user);
-  }
-
-  @ApiOperation({ summary: 'Delete user' })
-  @ApiBearerAuth()
-  @ApiOkResponse({ description: 'User deleted' })
-  @ApiBadRequestResponse({ description: 'Bad Request' })
-  @ApiNotFoundResponse({ description: 'User not found' })
-  // swagger
-  @Delete(':id')
-  @UseGuards(AuthUserGuard)
-  async delete(@Req() req: AuthUserRequest, @Param('id') userId: string) {
-    await this.usersService.findOne('id', userId, {
-      me: req.user,
-      notFoundException: true,
-    });
-
-    return this.usersService.delete(userId, req.user);
-  }
-
-  @ApiOperation({ summary: 'Subscibe/unsubscribe user' })
-  @ApiBearerAuth()
-  @ApiOkResponse({ description: 'Subscibed/unsubscribed' })
-  @ApiBadRequestResponse({ description: 'Bad request' })
-  @ApiNotFoundResponse({ description: 'User not found' })
-  // swagger
-  @Post(':id/subscribe')
-  @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthUserGuard)
-  async subscribe(@Req() req: AuthUserRequest, @Param('id') userId: string) {
-    await this.usersService.findOne('id', userId, {
-      me: req.user,
-      notFoundException: true,
-    });
-
-    return this.usersService.subscribe(userId, req.user);
-  }
-
-  @ApiOperation({ summary: 'Find user by username' })
-  @ApiOkResponse({ description: 'Return user' })
-  @ApiNotFoundResponse({ description: 'User not found' })
-  // swagger
-  @Get('username/:username')
-  @UseGuards(AuthVisitorGuard)
-  async findOneById(
-    @Req() req: AuthVisitorRequest,
-    @Param('username') username: string,
-  ) {
-    return this.usersService.findOne('username', username, {
-      me: req.user,
-      notFoundException: true,
-    });
-  }
-
-  @ApiOperation({ summary: 'Find user subscriptions' })
-  @ApiOkResponse({ description: 'Return subscribtions' })
-  @ApiNotFoundResponse({ description: 'User not found' })
-  // swagger
-  @UseGuards(AuthVisitorGuard)
-  @Get('username/:username/subscriptions')
-  async subscriptions(
-    @Req() req: AuthVisitorRequest,
-    @Param('username') username: string,
-  ) {
-    const user = await this.usersService.findOne('username', username, {
-      notFoundException: true,
-    });
-
-    return this.usersService.subscriptions(user.id, req.user);
-  } */
 }

@@ -6,10 +6,12 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DeepPartial } from 'typeorm';
+import { Repository, DeepPartial, UpdateResult } from 'typeorm';
 import { BaseAbstractRepository } from '../../../database/abstractRepository/base.abstract.repository';
 import { UserEntity } from '../entity/user.entity';
 import * as bcrypt from 'bcrypt';
+import { RegistrationSources } from '../auth/types/providersOAuth.enum';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 @Injectable()
 export class UsersRepository extends BaseAbstractRepository<UserEntity> {
@@ -21,24 +23,20 @@ export class UsersRepository extends BaseAbstractRepository<UserEntity> {
     super(UserRepository, 'User');
   }
   public async createUserLocal(
-    createUserDto: DeepPartial<UserEntity>,
+    createUserLocalDto: DeepPartial<UserEntity>,
   ): Promise<UserEntity> {
     const errorResponse = {
       errors: {},
     };
-    let user:
-      | DeepPartial<UserEntity>
-      | NotFoundException
-      | InternalServerErrorException;
+    let user: DeepPartial<UserEntity>;
+
     try {
       user = await this.findOneByCondition({
-        [this.uniqueProperty]: createUserDto.email,
+        [this.uniqueProperty]: createUserLocalDto.email,
       });
 
       if (user) {
         errorResponse.errors[this.uniqueProperty] = 'Has already been taken';
-      }
-      if (user) {
         throw new ConflictException();
       }
     } catch (error) {
@@ -51,24 +49,66 @@ export class UsersRepository extends BaseAbstractRepository<UserEntity> {
     }
 
     if (!user) {
-      const hashedPassword: string = await this.hashPassword(
-        createUserDto.password,
-      );
+      try {
+        const hashedPassword: string = await this.hashPassword(
+          createUserLocalDto.password,
+        );
 
-      const entity = this.create({
-        ...createUserDto,
-        password: hashedPassword,
-      });
-      if (!entity) {
-        throw new BadRequestException(`Failed to create ${this.entityName}`);
+        const entity = this.create({
+          ...createUserLocalDto,
+          password: hashedPassword,
+          registrationSources: [RegistrationSources.Local],
+        });
+
+        return await this.save(entity);
+      } catch (error) {
+        throw error;
       }
-      return await this.save(entity);
     }
   }
 
-  private async hashPassword(password: string) {
+  public async createUserOAuth(
+    createUserOAuthDto: DeepPartial<UserEntity>,
+  ): Promise<UserEntity> {
+    try {
+      const entity: UserEntity = this.create(createUserOAuthDto);
+
+      return await this.save(entity);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  private async hashPassword(password: string): Promise<string> {
     const saltOrRounds = 10;
 
     return await bcrypt.hash(password, saltOrRounds);
+  }
+
+  public async updateOneUserByIdSoft(
+    id: string,
+    data: QueryDeepPartialEntity<UserEntity>,
+  ): Promise<UpdateResult> {
+    if (data.password) {
+      data.password = await this.hashPassword(data.password.toString());
+      let existUser: UserEntity;
+      try {
+        existUser = await this.findOneById(id);
+      } catch (error) {
+        throw error;
+      }
+
+      if (!existUser.registrationSources.includes(RegistrationSources.Local)) {
+        data.registrationSources = [
+          ...existUser.registrationSources,
+          RegistrationSources.Local,
+        ];
+      }
+    }
+    try {
+      return await this.UserRepository.update(id, data);
+    } catch (error) {
+      throw error;
+    }
   }
 }

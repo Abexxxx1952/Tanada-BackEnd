@@ -1,23 +1,28 @@
 import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateUserDtoLocal {
-  @IsString()
   @IsOptional()
+  @IsString()
   @IsNotEmpty()
+  @ApiPropertyOptional()
   readonly name?: string;
 
   @IsEmail()
   @IsNotEmpty()
+  @ApiProperty({ type: 'string', format: 'email' })
   readonly email: string;
 
   @IsString()
   @IsNotEmpty()
+  @ApiProperty()
   readonly password: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   @IsNotEmpty()
+  @ApiPropertyOptional()
   readonly icon?: string;
 }
 

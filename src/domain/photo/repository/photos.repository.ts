@@ -1,11 +1,20 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Inject,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DeepPartial, UpdateResult, InsertResult } from 'typeorm';
+import {
+  Repository,
+  DeepPartial,
+  UpdateResult,
+  InsertResult,
+  FindOptionsWhere,
+  FindOneOptions,
+} from 'typeorm';
 import { BaseAbstractRepository } from '../../../database/abstractRepository/base.abstract.repository';
 import { PhotoEntity } from '../entity/photo.entity';
 import { UsersRepository } from '../../user/repository/users.repository';
@@ -30,40 +39,42 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
         currentUserId,
       );
 
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-
       const entity = this.create({ ...data, user });
 
-      if (!entity) {
-        throw new BadRequestException(`Failed to create ${this.entityName}`);
-      }
       return await this.save(entity);
     } catch (error) {
       throw error;
     }
   }
-
   public async updateOnePhotoByIdHard(
     currentUserId: string,
     data: DeepPartial<PhotoEntity>,
-  ): Promise<InsertResult> {
-    try {
-      const user: UserEntity = await this.usersRepository.findOneWithCondition({
-        where: {
-          id: currentUserId,
-          photo: {
-            id: data.id,
-          },
-        },
-      });
+  ): Promise<PhotoEntity> {
+    const options: FindOneOptions<PhotoEntity> = {
+      where: {
+        id: data.id,
+      },
+      relations: ['user'],
+    };
 
-      if (!user) {
-        throw new NotFoundException('User not found');
+    try {
+      const entityToUpdate: PhotoEntity = await this.entity.findOne(options);
+
+      if (entityToUpdate && entityToUpdate?.user?.id !== currentUserId) {
+        throw new ForbiddenException('Access Denied');
       }
 
-      return await this.updateOneByIdHard(data);
+      if (entityToUpdate) {
+        Object.assign(entityToUpdate, data);
+        return await this.save(entityToUpdate);
+      }
+      const user: UserEntity = await this.usersRepository.findOneById(
+        currentUserId,
+      );
+
+      const entity: PhotoEntity = this.create({ ...data, user });
+
+      return await this.entity.save(entity);
     } catch (error) {
       throw error;
     }
@@ -74,7 +85,7 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
     data: DeepPartial<PhotoEntity>,
   ): Promise<UpdateResult> {
     try {
-      const user: UserEntity = await this.usersRepository.findOneWithCondition({
+      await this.usersRepository.findOneWithCondition({
         where: {
           id: currentUserId,
           photo: {
@@ -83,12 +94,15 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
         },
       });
 
-      if (!user) {
-        throw new NotFoundException('User not found');
+      return await this.entity.update(data.id, data);
+    } catch (error) {
+      if (
+        error instanceof NotFoundException &&
+        error.message === 'User not found'
+      ) {
+        throw new ForbiddenException('Access Denied');
       }
 
-      return await this.updateOneByIdSoft(data.id, data);
-    } catch (error) {
       throw error;
     }
   }
@@ -98,7 +112,7 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
     id: number,
   ): Promise<PhotoEntity> {
     try {
-      const user: UserEntity = await this.usersRepository.findOneWithCondition({
+      await this.usersRepository.findOneWithCondition({
         where: {
           id: currentUserId,
           photo: {
@@ -107,12 +121,14 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
         },
       });
 
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-
       return await this.removeById(id);
     } catch (error) {
+      if (
+        error instanceof NotFoundException &&
+        error.message === 'User not found'
+      ) {
+        throw new ForbiddenException('Access Denied');
+      }
       throw error;
     }
   }

@@ -3,10 +3,11 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export function createSwagger(app: INestApplication) {
   const config = new DocumentBuilder()
-    .setTitle('Travel blog')
+    .addCookieAuth('Authentication')
+    .setTitle('Travel Blog')
     .setDescription('Travel blog about fictional country named Tanada')
     .setVersion('1.0')
-    .addTag('Photos')
+    .addTag('Travel blog API')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);

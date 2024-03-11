@@ -11,14 +11,14 @@ export class RefreshTokenStrategy extends PassportStrategy(
   Strategy,
   'refresh',
 ) {
-  constructor(private readonly config: ConfigService) {
+  constructor(private readonly configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
           return request?.cookies?.Authentication?.refresh_token;
         },
       ]),
-      secretOrKey: config.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+      secretOrKey: configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
       passReqToCallback: true,
     });
   }

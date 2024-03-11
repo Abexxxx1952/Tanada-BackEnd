@@ -9,44 +9,56 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
 import { v5 as uuidv5 } from 'uuid';
 import { PhotoEntity } from '../../photo/entity/photo.entity';
 import { PermissionEnum, PermissionEnumKeys } from '../permission/permission';
+import { RegistrationSources } from '../auth/types/providersOAuth.enum';
 
 @Entity('user')
 export class UserEntity {
   @PrimaryColumn('uuid')
+  @ApiProperty({ type: 'string', format: 'UUID' })
   id: string;
 
   @Column({ nullable: true })
-  name?: string;
+  @ApiProperty()
+  name: string;
 
   @Column({ unique: true })
   @Index()
+  @ApiProperty()
   email: string;
 
   @Exclude()
-  @Column()
+  @Column({ nullable: true })
+  @ApiProperty()
   password: string;
 
   @Column({ nullable: true })
-  icon?: string;
+  @ApiProperty()
+  icon: string;
 
   @CreateDateColumn()
+  @ApiProperty()
   createdAt: Date;
 
   @UpdateDateColumn()
+  @ApiProperty()
   updatedAt: Date;
 
   @Column({ nullable: true })
+  @ApiProperty()
   hashedRefreshToken?: string;
 
   @Column({ type: 'jsonb', array: true, nullable: true })
+  @ApiProperty()
   payload: Record<string, string>[];
 
   @OneToMany(() => PhotoEntity, (photo) => photo.user, {
     eager: true,
   })
+  @ApiProperty({ type: () => [PhotoEntity] })
   photo: PhotoEntity[];
 
   @Column({
@@ -55,7 +67,17 @@ export class UserEntity {
     array: true,
     default: ['CreatePhoto', 'UpdatePhoto', 'DeletePhoto'],
   })
+  @ApiProperty()
   permissions: PermissionEnumKeys[];
+
+  @Column({
+    type: 'enum',
+    enum: RegistrationSources,
+    array: true,
+    default: [],
+  })
+  @ApiProperty()
+  registrationSources: RegistrationSources[];
 
   @BeforeInsert()
   generateId() {

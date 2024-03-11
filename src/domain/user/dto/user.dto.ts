@@ -3,12 +3,15 @@ import {
   IsArray,
   IsDate,
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
 import { PhotoEntity } from 'src/domain/photo/entity/photo.entity';
+import { PermissionEnum, PermissionEnumKeys } from '../permission/permission';
+import { RegistrationSources } from '../auth/types/providersOAuth.enum';
 
 export class UserDto {
   @IsString()
@@ -45,4 +48,15 @@ export class UserDto {
   @Type(() => PhotoEntity)
   @IsOptional()
   readonly photo?: PhotoEntity[];
+
+  @IsEnum(PermissionEnum, { each: true })
+  readonly permissions: PermissionEnumKeys[];
+
+  @IsEnum(RegistrationSources, { each: true })
+  registrationSources: RegistrationSources[];
+
+  @IsArray()
+  @IsOptional()
+  @ValidateNested({ each: true })
+  payload?: Record<string, string>[];
 }

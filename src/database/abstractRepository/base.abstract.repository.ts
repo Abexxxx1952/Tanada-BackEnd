@@ -53,7 +53,7 @@ export abstract class BaseAbstractRepository<T extends HasId>
       const entity = await this.entity.save(data);
       return entity;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error.message);
     }
   }
   public async saveMany(data: DeepPartial<T>[]): Promise<T[]> {
@@ -61,7 +61,7 @@ export abstract class BaseAbstractRepository<T extends HasId>
       const entities = await this.entity.save(data);
       return entities;
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -80,7 +80,7 @@ export abstract class BaseAbstractRepository<T extends HasId>
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
       }
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -96,7 +96,7 @@ export abstract class BaseAbstractRepository<T extends HasId>
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
       }
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -119,7 +119,7 @@ export abstract class BaseAbstractRepository<T extends HasId>
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
       }
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -134,7 +134,7 @@ export abstract class BaseAbstractRepository<T extends HasId>
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
       }
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -156,7 +156,7 @@ export abstract class BaseAbstractRepository<T extends HasId>
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
       }
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -178,7 +178,7 @@ export abstract class BaseAbstractRepository<T extends HasId>
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
       }
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -210,40 +210,29 @@ export abstract class BaseAbstractRepository<T extends HasId>
         );
       }
 
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error.message);
     }
   }
 
-  /*Method:  Put */
-  public async updateOneByIdHard(
-    data: QueryDeepPartialEntity<T>,
-  ): Promise<InsertResult> {
-    try {
-      const insertResult: InsertResult = await this.entity.upsert([data], {
-        conflictPaths: ['id'],
-        skipUpdateIfNoValuesChanged: true, // supported by postgres, skips update if it would not change row values
-        upsertType: 'on-conflict-do-update',
-      });
+  public async updateOneByIdHard(id: any, data: DeepPartial<T>): Promise<T> {
+    const options: FindOptionsWhere<T> = {
+      id: id,
+    };
 
-      return insertResult;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
-    }
-  }
-
-  /*Method:  Put */
-  public async updateManyHard(
-    param: any[],
-    data: QueryDeepPartialEntity<T>[],
-  ): Promise<InsertResult> {
     try {
-      const insertResult: InsertResult = await this.entity.upsert(data, {
-        conflictPaths: param,
-        skipUpdateIfNoValuesChanged: true, // supported by postgres, skips update if it would not change row values
-      });
-      return insertResult;
+      const entityToUpdate: T = await this.entity.findOneBy(options);
+      if (entityToUpdate) {
+        Object.assign(entityToUpdate, data);
+        return await this.save(entityToUpdate);
+      }
+
+      const entity: T = this.create(data);
+      return await this.entity.save(entity);
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      if (error instanceof BadRequestException) {
+        throw new BadRequestException(error.message);
+      }
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -262,7 +251,7 @@ export abstract class BaseAbstractRepository<T extends HasId>
         throw new NotFoundException(error.message);
       }
 
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -280,7 +269,7 @@ export abstract class BaseAbstractRepository<T extends HasId>
         throw new NotFoundException(error.message);
       }
 
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -295,7 +284,7 @@ export abstract class BaseAbstractRepository<T extends HasId>
     try {
       return await this.entity.preload(entityLike);
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException(error.message);
     }
   }
   public serialize(entity: T): Record<string, any> {

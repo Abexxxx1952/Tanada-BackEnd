@@ -1,6 +1,5 @@
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -8,6 +7,7 @@ import {
   HttpStatus,
   Inject,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Put,
@@ -37,7 +37,7 @@ import {
 } from './dto/findWithConditions.dto';
 import { CreatePhotoDto } from './dto/create.dto';
 import { UpdatePhotoDto } from './dto/update.dto';
-import { InsertResult, UpdateResult } from 'typeorm';
+import { UpdateResult } from 'typeorm';
 import { PaginationParams } from '../../database/abstractRepository/paginationDto/pagination.dto';
 import { AccessTokenAuthGuard } from '../user/auth/guards/accessToken.guard';
 import { PermissionGuard } from 'src/common/guard/permission.guard';
@@ -52,18 +52,23 @@ export class PhotoController {
   ) {}
 
   @Get()
+  @HttpCode(HttpStatus.OK)
   async findAll(
     @Query() { offset, limit }: PaginationParams,
   ): Promise<PhotoEntity[]> {
     return await this.photosRepository.findAll(offset, limit);
   }
 
-  @Get(':id')
-  async findOneById(@Param('id') id: string): Promise<PhotoEntity> {
+  @Get('findById/:id')
+  @HttpCode(HttpStatus.OK)
+  async findOneById(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<PhotoEntity> {
     return await this.photosRepository.findOneById(id);
   }
 
   @Post('findOneBy')
+  @HttpCode(HttpStatus.OK)
   async findOneByCondition(
     @Body() condition: FindByConditionsDto,
   ): Promise<PhotoEntity> {
@@ -71,6 +76,7 @@ export class PhotoController {
   }
 
   @Post('findManyBy')
+  @HttpCode(HttpStatus.OK)
   async findManyByCondition(
     @Query() { offset, limit }: PaginationParams,
     @Body() condition: FindByConditionsDto,
@@ -83,6 +89,7 @@ export class PhotoController {
   }
 
   @Post('findOneWith')
+  @HttpCode(HttpStatus.OK)
   async findOneWithCondition(
     @Body() condition: FindOneWithConditionsDto,
   ): Promise<PhotoEntity> {
@@ -90,6 +97,7 @@ export class PhotoController {
   }
 
   @Post('findAllWith')
+  @HttpCode(HttpStatus.OK)
   async findAllWithCondition(
     @Query() { offset, limit }: PaginationParams,
     @Body() condition: FindAllWithConditionsDto,
@@ -104,6 +112,7 @@ export class PhotoController {
   @Post('create')
   @UseGuards(PermissionGuard([PhotosPermission.CreatePhoto]))
   @UseGuards(AccessTokenAuthGuard)
+  @HttpCode(HttpStatus.CREATED)
   async createPhoto(
     @CurrentUser('id') currentUserId: string,
     @Body() createPhotoDto: CreatePhotoDto,
@@ -117,10 +126,11 @@ export class PhotoController {
   @Put('updatePhotoHard')
   @UseGuards(PermissionGuard([PhotosPermission.UpdatePhoto]))
   @UseGuards(AccessTokenAuthGuard)
+  @HttpCode(HttpStatus.OK)
   async updatePhotoHard(
     @CurrentUser('id') currentUserId: string,
     @Body('photo') updatePhotoDto: UpdatePhotoDto,
-  ): Promise<InsertResult> {
+  ): Promise<PhotoEntity> {
     return await this.photosRepository.updateOnePhotoByIdHard(
       currentUserId,
       updatePhotoDto,
@@ -130,6 +140,7 @@ export class PhotoController {
   @Patch('updatePhotoSoft')
   @UseGuards(PermissionGuard([PhotosPermission.UpdatePhoto]))
   @UseGuards(AccessTokenAuthGuard)
+  @HttpCode(HttpStatus.OK)
   async updatePhotoSoft(
     @CurrentUser('id') currentUserId: string,
     @Body('photo') updatePhotoDto: UpdatePhotoDto,
@@ -143,6 +154,7 @@ export class PhotoController {
   @Delete('deletePhoto/:id')
   @UseGuards(PermissionGuard([PhotosPermission.DeletePhoto]))
   @UseGuards(AccessTokenAuthGuard)
+  @HttpCode(HttpStatus.OK)
   async deletePhoto(
     @CurrentUser('id') currentUserId: string,
     @Param('id') id: number,

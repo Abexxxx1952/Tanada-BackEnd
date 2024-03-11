@@ -6,14 +6,14 @@ import { AttachedUser } from '../types/attachedUser';
 
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(Strategy, 'access') {
-  constructor(private readonly config: ConfigService) {
+  constructor(private readonly configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: any) => {
           return request?.cookies?.Authentication?.access_token;
         },
       ]),
-      secretOrKey: config.getOrThrow<string>('JWT_ACCESS_TOKEN_SECRET'),
+      secretOrKey: configService.getOrThrow<string>('JWT_ACCESS_TOKEN_SECRET'),
     });
   }
 

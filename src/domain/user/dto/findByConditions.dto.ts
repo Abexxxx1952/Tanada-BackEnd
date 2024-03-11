@@ -5,44 +5,53 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PhotoEntity } from 'src/domain/photo/entity/photo.entity';
-export class FindByConditionsDto {
-  @IsString()
-  @IsNotEmpty()
+export class FindUserByConditionsDto {
   @IsOptional()
+  @IsUUID()
+  @IsNotEmpty()
+  @ApiPropertyOptional({ type: 'string', format: 'UUID' })
   readonly id?: string;
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @IsOptional()
+  @ApiPropertyOptional()
   readonly name?: string;
 
+  @IsOptional()
   @IsEmail()
   @IsNotEmpty()
-  @IsOptional()
+  @ApiPropertyOptional({ type: 'string', format: 'email' })
   readonly email?: string;
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @IsOptional()
+  @ApiPropertyOptional()
   readonly icon?: string;
 
+  @IsOptional()
   @IsDate()
   @IsNotEmpty()
-  @IsOptional()
+  @ApiPropertyOptional()
   readonly createdAt?: Date;
 
+  @IsOptional()
   @IsDate()
   @IsNotEmpty()
-  @IsOptional()
+  @ApiPropertyOptional()
   readonly updatedAt?: Date;
 
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => PhotoEntity)
-  @IsOptional()
+  @ApiPropertyOptional({ type: () => PhotoEntity })
   readonly photo?: PhotoEntity[];
 }

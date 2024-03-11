@@ -27,14 +27,7 @@ export interface BaseInterfaceRepository<T> {
     id: any,
     data: QueryDeepPartialEntity<T>,
   ): Promise<UpdateResult>;
-  updateOneByIdHard(
-    id: any,
-    data: QueryDeepPartialEntity<T>,
-  ): Promise<InsertResult>;
-  updateManyHard(
-    param: any[],
-    data: QueryDeepPartialEntity<T>[],
-  ): Promise<InsertResult>;
+  updateOneByIdHard(id: any, data: DeepPartial<T>): Promise<T>;
   removeAllByCondition(options: FindOptionsWhere<T>): Promise<T[]>;
   removeById(id: any): Promise<T>;
   removeAll(): Promise<void>;

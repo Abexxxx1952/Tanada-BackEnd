@@ -6,31 +6,37 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { UserEntity } from 'src/domain/user/entity/user.entity';
 import { Type } from 'class-transformer';
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { UserEntity } from 'src/domain/user/entity/user.entity';
+
 export class FindByConditionsDto {
+  @IsOptional()
   @IsNumber()
   @IsNotEmpty()
-  @IsOptional()
+  @ApiPropertyOptional()
   readonly id?: number;
 
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  @IsOptional()
+  @ApiPropertyOptional()
   readonly link?: string;
 
+  @IsOptional()
   @IsDate()
   @IsNotEmpty()
-  @IsOptional()
+  @ApiPropertyOptional()
   readonly createdAt?: Date;
 
+  @IsOptional()
   @IsDate()
   @IsNotEmpty()
-  @IsOptional()
   readonly updatedAt?: Date;
 
   @IsOptional()
   @ValidateNested()
   @Type(() => UserEntity)
+  @ApiPropertyOptional()
   readonly user?: UserEntity;
 }
