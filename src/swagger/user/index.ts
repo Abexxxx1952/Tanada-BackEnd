@@ -1,17 +1,8 @@
-import {
-  ApiProperty,
-  ApiOperation,
-  ApiBody,
-  ApiResponse,
-  ApiQuery,
-  ApiParam,
-  ApiBearerAuth,
-  ApiCookieAuth,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiBody, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { UserEntity } from 'src/domain/user/entity/user.entity';
 import { LoginDto } from 'src/domain/user/dto/login.dto';
 import { AttachedUser } from 'src/domain/user/auth/types/attachedUser';
-import { UpdateResult } from 'typeorm';
+import { UpdateResult } from '../types';
 
 export function ApiUsersGet() {
   return function (
@@ -281,6 +272,10 @@ export function ApiUsersPostLogOut() {
       description: 'Unauthorized',
     })(target, propertyKey, descriptor);
     ApiResponse({
+      status: 403,
+      description: 'Forbidden',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
       status: 500,
       description: 'Internal Server Error',
     })(target, propertyKey, descriptor);
@@ -333,7 +328,7 @@ export function ApiUsersGetLoginGoogle() {
       descriptor,
     );
     ApiResponse({
-      status: 200,
+      status: 301,
       description: 'User redirected',
     })(target, propertyKey, descriptor);
   };
@@ -374,7 +369,7 @@ export function ApiUsersGetLoginGitHub() {
       descriptor,
     );
     ApiResponse({
-      status: 200,
+      status: 301,
       description: 'User redirected',
     })(target, propertyKey, descriptor);
   };
@@ -424,8 +419,8 @@ export function ApiUsersGetStatus() {
       description: 'Unauthorized',
     })(target, propertyKey, descriptor);
     ApiResponse({
-      status: 404,
-      description: 'User not found',
+      status: 403,
+      description: 'Forbidden',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 500,
@@ -453,8 +448,8 @@ export function ApiUsersPatchUpdate() {
       description: 'Unauthorized',
     })(target, propertyKey, descriptor);
     ApiResponse({
-      status: 404,
-      description: 'User not found',
+      status: 403,
+      description: 'Forbidden',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 500,
@@ -482,8 +477,8 @@ export function ApiUsersDeleteDelete() {
       description: 'Unauthorized',
     })(target, propertyKey, descriptor);
     ApiResponse({
-      status: 404,
-      description: 'User not found',
+      status: 403,
+      description: 'Forbidden',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 500,

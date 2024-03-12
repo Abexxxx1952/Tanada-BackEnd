@@ -74,6 +74,9 @@ export class AuthService {
 
       return currentUser;
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new ForbiddenException('Access Denied');
+      }
       throw error;
     }
   }
@@ -128,7 +131,6 @@ export class AuthService {
       });
 
       if (
-        !userExists ||
         !userExists.password ||
         !userExists.registrationSources.includes(RegistrationSources.Local)
       )
@@ -143,6 +145,9 @@ export class AuthService {
 
       return userExists;
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new ForbiddenException('Access Denied');
+      }
       throw error;
     }
   }

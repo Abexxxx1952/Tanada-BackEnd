@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Inject,
   Param,
+  ParseIntPipe,
   ParseUUIDPipe,
   Patch,
   Post,
@@ -76,7 +77,7 @@ import {
   ApiUsersGetStatus,
   ApiUsersPatchUpdate,
   ApiUsersDeleteDelete,
-} from 'src/swagger/users';
+} from 'src/swagger/user';
 import { UUID } from 'crypto';
 
 @ApiTags('v1/users')
@@ -234,9 +235,7 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @ApiUsersGetStatus()
   async status(@CurrentUser() currentUser: AttachedUser): Promise<UserEntity> {
-    return await this.usersRepository.findOneByCondition({
-      email: currentUser.email,
-    });
+    return await this.usersRepository.status(currentUser.email);
   }
 
   @Patch('update')
@@ -260,6 +259,6 @@ export class UserController {
   async deleteUser(
     @CurrentUser('id') currentUserId: string,
   ): Promise<UserEntity> {
-    return await this.usersRepository.removeById(currentUserId);
+    return await this.usersRepository.removeUserById(currentUserId);
   }
 }

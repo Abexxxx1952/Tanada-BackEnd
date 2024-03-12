@@ -1,18 +1,15 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { AttachedUser } from 'src/domain/user/auth/types/attachedUser';
-import { PermissionEnumKeys } from 'src/domain/user/permission/permission';
-export class AttachedUserClass implements AttachedUser {
-  @ApiProperty({ type: 'string', format: 'UUID' })
-  id: string;
-  @ApiProperty({ type: 'string', format: 'email' })
-  email: string;
-  @ApiProperty()
-  permissions: PermissionEnumKeys[];
-}
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
-export class LoginBody {
-  @ApiProperty({ type: 'string', format: 'email' })
-  email: string;
+export class UpdateResult {
   @ApiProperty()
-  password: string;
+  raw: any;
+  @ApiPropertyOptional()
+  affected?: number;
+  @ApiProperty({
+    isArray: true,
+    type: Object,
+  })
+  generatedMaps: {
+    [key: string]: any;
+  }[];
 }

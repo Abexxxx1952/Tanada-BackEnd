@@ -1,5 +1,5 @@
 import { IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
-import { FindByConditionsDto } from './findByConditions.dto';
+import { FindPhotoByConditionsDto } from './findByConditions.dto';
 import {
   FindOneOptions,
   FindOptionsSelect,
@@ -8,54 +8,76 @@ import {
   FindOptionsRelations,
   FindManyOptions,
 } from 'typeorm';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 
-export class FindOneWithConditionsDto
-  implements FindOneOptions<FindByConditionsDto>
+export class FindOnePhotoWithConditionsDto
+  implements FindOneOptions<FindPhotoByConditionsDto>
 {
   @IsOptional()
   @IsObject()
-  @ApiPropertyOptional()
-  readonly where?: FindByConditionsDto | FindByConditionsDto[];
+  @ApiPropertyOptional({
+    oneOf: [
+      { type: 'object', $ref: getSchemaPath(FindPhotoByConditionsDto) },
+      {
+        type: 'array',
+        items: {
+          type: 'object',
+          $ref: getSchemaPath(FindPhotoByConditionsDto),
+        },
+      },
+    ],
+  })
+  readonly where?: FindPhotoByConditionsDto | FindPhotoByConditionsDto[];
 
   @IsOptional()
   @IsString({ each: true })
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: FindPhotoByConditionsDto })
   readonly select?:
-    | FindOptionsSelect<FindByConditionsDto>
-    | FindOptionsSelectByString<FindByConditionsDto>;
+    | FindOptionsSelect<FindPhotoByConditionsDto>
+    | FindOptionsSelectByString<FindPhotoByConditionsDto>;
 
   @IsOptional()
-  @ApiPropertyOptional()
-  readonly order?: FindOptionsOrder<FindByConditionsDto>;
+  @ApiPropertyOptional({ type: Object })
+  readonly order?: FindOptionsOrder<FindPhotoByConditionsDto>;
 
   @IsOptional()
-  @ApiPropertyOptional()
-  readonly relations?: FindOptionsRelations<FindByConditionsDto>;
+  @ApiPropertyOptional({ type: [String] })
+  readonly relations?: FindOptionsRelations<FindPhotoByConditionsDto>;
 }
 
-export class FindAllWithConditionsDto
-  implements FindManyOptions<FindByConditionsDto>
+export class FindAllPhotoWithConditionsDto
+  implements FindManyOptions<FindPhotoByConditionsDto>
 {
   @IsOptional()
   @IsObject()
-  @ApiPropertyOptional()
-  readonly where?: FindByConditionsDto | FindByConditionsDto[];
+  @ApiPropertyOptional({
+    oneOf: [
+      { type: 'object', $ref: getSchemaPath(FindPhotoByConditionsDto) },
+      {
+        type: 'array',
+        items: {
+          type: 'object',
+          $ref: getSchemaPath(FindPhotoByConditionsDto),
+        },
+      },
+    ],
+  })
+  readonly where?: FindPhotoByConditionsDto | FindPhotoByConditionsDto[];
 
   @IsOptional()
   @IsString({ each: true })
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: FindPhotoByConditionsDto })
   readonly select?:
-    | FindOptionsSelect<FindByConditionsDto>
-    | FindOptionsSelectByString<FindByConditionsDto>;
+    | FindOptionsSelect<FindPhotoByConditionsDto>
+    | FindOptionsSelectByString<FindPhotoByConditionsDto>;
 
   @IsOptional()
-  @ApiPropertyOptional()
-  readonly order?: FindOptionsOrder<FindByConditionsDto>;
+  @ApiPropertyOptional({ type: Object })
+  readonly order?: FindOptionsOrder<FindPhotoByConditionsDto>;
 
   @IsOptional()
-  @ApiPropertyOptional()
-  readonly relations?: FindOptionsRelations<FindByConditionsDto>;
+  @ApiPropertyOptional({ type: [String] })
+  readonly relations?: FindOptionsRelations<FindPhotoByConditionsDto>;
 
   @IsOptional()
   @IsNumber()

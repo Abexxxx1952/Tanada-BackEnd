@@ -4,6 +4,7 @@ import {
   BadRequestException,
   NotFoundException,
   InternalServerErrorException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeepPartial, UpdateResult } from 'typeorm';
@@ -79,10 +80,17 @@ export class UsersRepository extends BaseAbstractRepository<UserEntity> {
     }
   }
 
-  private async hashPassword(password: string): Promise<string> {
-    const saltOrRounds = 10;
-
-    return await bcrypt.hash(password, saltOrRounds);
+  public async status(email: string): Promise<UserEntity> {
+    try {
+      return await this.findOneByCondition({
+        email,
+      });
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new ForbiddenException('Access Denied');
+      }
+      throw error;
+    }
   }
 
   public async updateOneUserByIdSoft(
@@ -95,6 +103,9 @@ export class UsersRepository extends BaseAbstractRepository<UserEntity> {
       try {
         existUser = await this.findOneById(id);
       } catch (error) {
+        if (error instanceof NotFoundException) {
+          throw new ForbiddenException('Access Denied');
+        }
         throw error;
       }
 
@@ -110,5 +121,22 @@ export class UsersRepository extends BaseAbstractRepository<UserEntity> {
     } catch (error) {
       throw error;
     }
+  }
+
+  public async removeUserById(id: string): Promise<UserEntity> {
+    try {
+      return await this.removeById(id);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new ForbiddenException('Access Denied');
+      }
+      throw error;
+    }
+  }
+
+  private async hashPassword(password: string): Promise<string> {
+    const saltOrRounds = 10;
+
+    return await bcrypt.hash(password, saltOrRounds);
   }
 }

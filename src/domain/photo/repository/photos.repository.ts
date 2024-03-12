@@ -43,6 +43,9 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
 
       return await this.save(entity);
     } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new ForbiddenException('Access Denied');
+      }
       throw error;
     }
   }
@@ -96,10 +99,7 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
 
       return await this.entity.update(data.id, data);
     } catch (error) {
-      if (
-        error instanceof NotFoundException &&
-        error.message === 'User not found'
-      ) {
+      if (error instanceof NotFoundException) {
         throw new ForbiddenException('Access Denied');
       }
 
@@ -123,10 +123,7 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
 
       return await this.removeById(id);
     } catch (error) {
-      if (
-        error instanceof NotFoundException &&
-        error.message === 'User not found'
-      ) {
+      if (error instanceof NotFoundException) {
         throw new ForbiddenException('Access Denied');
       }
       throw error;

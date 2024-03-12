@@ -8,29 +8,40 @@ import {
   FindOptionsRelations,
   FindManyOptions,
 } from 'typeorm';
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 
 export class FindOneUserWithConditionsDto
   implements FindOneOptions<FindUserByConditionsDto>
 {
   @IsOptional()
   @IsObject()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    oneOf: [
+      { type: 'object', $ref: getSchemaPath(FindUserByConditionsDto) },
+      {
+        type: 'array',
+        items: {
+          type: 'object',
+          $ref: getSchemaPath(FindUserByConditionsDto),
+        },
+      },
+    ],
+  })
   readonly where?: FindUserByConditionsDto | FindUserByConditionsDto[];
 
   @IsOptional()
   @IsString({ each: true })
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: FindUserByConditionsDto })
   readonly select?:
     | FindOptionsSelect<FindUserByConditionsDto>
     | FindOptionsSelectByString<FindUserByConditionsDto>;
 
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: Object })
   readonly order?: FindOptionsOrder<FindUserByConditionsDto>;
 
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: [String] })
   readonly relations?: FindOptionsRelations<FindUserByConditionsDto>;
 }
 
@@ -39,22 +50,33 @@ export class FindAllUserWithConditionsDto
 {
   @IsOptional()
   @IsObject()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    oneOf: [
+      { type: 'object', $ref: getSchemaPath(FindUserByConditionsDto) },
+      {
+        type: 'array',
+        items: {
+          type: 'object',
+          $ref: getSchemaPath(FindUserByConditionsDto),
+        },
+      },
+    ],
+  })
   readonly where?: FindUserByConditionsDto | FindUserByConditionsDto[];
 
   @IsOptional()
   @IsString({ each: true })
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: FindUserByConditionsDto })
   readonly select?:
     | FindOptionsSelect<FindUserByConditionsDto>
     | FindOptionsSelectByString<FindUserByConditionsDto>;
 
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: Object })
   readonly order?: FindOptionsOrder<FindUserByConditionsDto>;
 
   @IsOptional()
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: [String] })
   readonly relations?: FindOptionsRelations<FindUserByConditionsDto>;
 
   @IsOptional()

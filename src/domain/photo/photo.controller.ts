@@ -12,35 +12,36 @@ import {
   Post,
   Put,
   Query,
-  Req,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 
-import {
-  ApiBadRequestResponse,
-  ApiBearerAuth,
-  ApiForbiddenResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
-
+import { ApiTags } from '@nestjs/swagger';
+import { UpdateResult } from 'typeorm';
 import { CurrentUser } from 'src/common/decorators/currentUser.decorator';
-import { PhotosRepository } from './repository/photos.repository';
-import { PhotoEntity } from './entity/photo.entity';
-import { FindByConditionsDto } from './dto/findByConditions.dto';
 import {
-  FindOneWithConditionsDto,
-  FindAllWithConditionsDto,
+  ApiPhotosGet,
+  ApiPhotosGetFindById,
+  ApiPhotosPostFindOneBy,
+  ApiPhotosPostFindManyBy,
+  ApiPhotosPostFindOneWith,
+  ApiPhotosPostFindAllWith,
+  ApiPhotosPostCreate,
+  ApiPhotosPutUpdatePhotoHard,
+  ApiPhotosPatchUpdatePhotoSoft,
+  ApiPhotosDeletePhoto,
+} from '../../swagger/photo/index';
+import { PhotosRepository } from './repository/photos.repository';
+import { AccessTokenAuthGuard } from '../user/auth/guards/accessToken.guard';
+import { PermissionGuard } from 'src/common/guard/permission.guard';
+import { PhotoEntity } from './entity/photo.entity';
+import { FindPhotoByConditionsDto } from './dto/findByConditions.dto';
+import {
+  FindOnePhotoWithConditionsDto,
+  FindAllPhotoWithConditionsDto,
 } from './dto/findWithConditions.dto';
 import { CreatePhotoDto } from './dto/create.dto';
 import { UpdatePhotoDto } from './dto/update.dto';
-import { UpdateResult } from 'typeorm';
 import { PaginationParams } from '../../database/abstractRepository/paginationDto/pagination.dto';
-import { AccessTokenAuthGuard } from '../user/auth/guards/accessToken.guard';
-import { PermissionGuard } from 'src/common/guard/permission.guard';
 import { PhotosPermission } from './permission/photos.permission.enum';
 
 @ApiTags('v1/photos')
@@ -53,6 +54,7 @@ export class PhotoController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
+  @ApiPhotosGet()
   async findAll(
     @Query() { offset, limit }: PaginationParams,
   ): Promise<PhotoEntity[]> {
@@ -61,6 +63,7 @@ export class PhotoController {
 
   @Get('findById/:id')
   @HttpCode(HttpStatus.OK)
+  @ApiPhotosGetFindById()
   async findOneById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<PhotoEntity> {
@@ -69,17 +72,19 @@ export class PhotoController {
 
   @Post('findOneBy')
   @HttpCode(HttpStatus.OK)
+  @ApiPhotosPostFindOneBy()
   async findOneByCondition(
-    @Body() condition: FindByConditionsDto,
+    @Body() condition: FindPhotoByConditionsDto,
   ): Promise<PhotoEntity> {
     return await this.photosRepository.findOneByCondition(condition);
   }
 
   @Post('findManyBy')
   @HttpCode(HttpStatus.OK)
+  @ApiPhotosPostFindManyBy()
   async findManyByCondition(
     @Query() { offset, limit }: PaginationParams,
-    @Body() condition: FindByConditionsDto,
+    @Body() condition: FindPhotoByConditionsDto,
   ): Promise<PhotoEntity[]> {
     return await this.photosRepository.findAllByCondition(
       condition,
@@ -90,17 +95,19 @@ export class PhotoController {
 
   @Post('findOneWith')
   @HttpCode(HttpStatus.OK)
+  @ApiPhotosPostFindOneWith()
   async findOneWithCondition(
-    @Body() condition: FindOneWithConditionsDto,
+    @Body() condition: FindOnePhotoWithConditionsDto,
   ): Promise<PhotoEntity> {
     return await this.photosRepository.findOneWithCondition(condition);
   }
 
   @Post('findAllWith')
   @HttpCode(HttpStatus.OK)
+  @ApiPhotosPostFindAllWith()
   async findAllWithCondition(
     @Query() { offset, limit }: PaginationParams,
-    @Body() condition: FindAllWithConditionsDto,
+    @Body() condition: FindAllPhotoWithConditionsDto,
   ): Promise<PhotoEntity[]> {
     return await this.photosRepository.findAllWithCondition(
       condition,
@@ -113,6 +120,7 @@ export class PhotoController {
   @UseGuards(PermissionGuard([PhotosPermission.CreatePhoto]))
   @UseGuards(AccessTokenAuthGuard)
   @HttpCode(HttpStatus.CREATED)
+  @ApiPhotosPostCreate()
   async createPhoto(
     @CurrentUser('id') currentUserId: string,
     @Body() createPhotoDto: CreatePhotoDto,
@@ -127,9 +135,10 @@ export class PhotoController {
   @UseGuards(PermissionGuard([PhotosPermission.UpdatePhoto]))
   @UseGuards(AccessTokenAuthGuard)
   @HttpCode(HttpStatus.OK)
+  @ApiPhotosPutUpdatePhotoHard()
   async updatePhotoHard(
     @CurrentUser('id') currentUserId: string,
-    @Body('photo') updatePhotoDto: UpdatePhotoDto,
+    @Body() updatePhotoDto: UpdatePhotoDto,
   ): Promise<PhotoEntity> {
     return await this.photosRepository.updateOnePhotoByIdHard(
       currentUserId,
@@ -141,9 +150,10 @@ export class PhotoController {
   @UseGuards(PermissionGuard([PhotosPermission.UpdatePhoto]))
   @UseGuards(AccessTokenAuthGuard)
   @HttpCode(HttpStatus.OK)
+  @ApiPhotosPatchUpdatePhotoSoft()
   async updatePhotoSoft(
     @CurrentUser('id') currentUserId: string,
-    @Body('photo') updatePhotoDto: UpdatePhotoDto,
+    @Body() updatePhotoDto: UpdatePhotoDto,
   ): Promise<UpdateResult> {
     return await this.photosRepository.updateOnePhotoByIdSoft(
       currentUserId,
@@ -155,9 +165,10 @@ export class PhotoController {
   @UseGuards(PermissionGuard([PhotosPermission.DeletePhoto]))
   @UseGuards(AccessTokenAuthGuard)
   @HttpCode(HttpStatus.OK)
+  @ApiPhotosDeletePhoto()
   async deletePhoto(
     @CurrentUser('id') currentUserId: string,
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
   ): Promise<PhotoEntity> {
     return await this.photosRepository.removePhotoById(currentUserId, id);
   }

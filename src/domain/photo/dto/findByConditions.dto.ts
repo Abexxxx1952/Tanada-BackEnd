@@ -10,7 +10,7 @@ import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { UserEntity } from 'src/domain/user/entity/user.entity';
 
-export class FindByConditionsDto {
+export class FindPhotoByConditionsDto {
   @IsOptional()
   @IsNumber()
   @IsNotEmpty()
@@ -37,6 +37,6 @@ export class FindByConditionsDto {
   @IsOptional()
   @ValidateNested()
   @Type(() => UserEntity)
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ type: () => UserEntity })
   readonly user?: UserEntity;
 }
