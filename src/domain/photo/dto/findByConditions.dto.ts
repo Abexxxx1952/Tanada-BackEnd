@@ -2,9 +2,9 @@ import {
   IsDate,
   IsNotEmpty,
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
-  ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
@@ -32,10 +32,11 @@ export class FindPhotoByConditionsDto {
   @IsOptional()
   @IsDate()
   @IsNotEmpty()
+  @ApiPropertyOptional()
   readonly updatedAt?: Date;
 
   @IsOptional()
-  @ValidateNested()
+  @IsObject()
   @Type(() => UserEntity)
   @ApiPropertyOptional({ type: () => UserEntity })
   readonly user?: UserEntity;

@@ -2,7 +2,11 @@ import { ApiOperation, ApiBody, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { UserEntity } from 'src/domain/user/entity/user.entity';
 import { LoginDto } from 'src/domain/user/dto/login.dto';
 import { AttachedUser } from 'src/domain/user/auth/types/attachedUser';
-import { UpdateResult } from '../types';
+import {
+  FindAllUserWithConditionsDto,
+  FindOneUserWithConditionsDto,
+  UpdateResult,
+} from '../types';
 
 export function ApiUsersGet() {
   return function (
@@ -136,6 +140,11 @@ export function ApiUsersPostFindOneWith() {
       propertyKey,
       descriptor,
     );
+    ApiBody({ type: FindOneUserWithConditionsDto })(
+      target,
+      propertyKey,
+      descriptor,
+    );
     ApiResponse({
       status: 200,
       description: 'Got the user by condition',
@@ -148,6 +157,10 @@ export function ApiUsersPostFindOneWith() {
     ApiResponse({
       status: 404,
       description: 'User not found',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 500,
@@ -167,6 +180,11 @@ export function ApiUsersPostFindAllWith() {
       propertyKey,
       descriptor,
     );
+    ApiBody({ type: FindAllUserWithConditionsDto })(
+      target,
+      propertyKey,
+      descriptor,
+    );
     ApiResponse({
       status: 200,
       description: 'Got all user by condition',
@@ -179,6 +197,10 @@ export function ApiUsersPostFindAllWith() {
     ApiResponse({
       status: 404,
       description: 'Users not found',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 500,
@@ -210,6 +232,10 @@ export function ApiUsersPostRegistration() {
     ApiResponse({
       status: 409,
       description: 'Conflict. Email has already been taken',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 500,
@@ -245,6 +271,10 @@ export function ApiUsersPostLoginLocal() {
       description: 'Forbidden',
     })(target, propertyKey, descriptor);
     ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
       status: 500,
       description: 'Internal Server Error',
     })(target, propertyKey, descriptor);
@@ -274,6 +304,10 @@ export function ApiUsersPostLogOut() {
     ApiResponse({
       status: 403,
       description: 'Forbidden',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 500,
@@ -310,6 +344,10 @@ export function ApiUsersPostRefresh() {
       description: 'Forbidden',
     })(target, propertyKey, descriptor);
     ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
       status: 500,
       description: 'Internal Server Error',
     })(target, propertyKey, descriptor);
@@ -330,6 +368,10 @@ export function ApiUsersGetLoginGoogle() {
     ApiResponse({
       status: 301,
       description: 'User redirected',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
     })(target, propertyKey, descriptor);
   };
 }
@@ -371,6 +413,10 @@ export function ApiUsersGetLoginGitHub() {
     ApiResponse({
       status: 301,
       description: 'User redirected',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
     })(target, propertyKey, descriptor);
   };
 }
@@ -423,6 +469,10 @@ export function ApiUsersGetStatus() {
       description: 'Forbidden',
     })(target, propertyKey, descriptor);
     ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
       status: 500,
       description: 'Internal Server Error',
     })(target, propertyKey, descriptor);
@@ -452,6 +502,10 @@ export function ApiUsersPatchUpdate() {
       description: 'Forbidden',
     })(target, propertyKey, descriptor);
     ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
       status: 500,
       description: 'Internal Server Error',
     })(target, propertyKey, descriptor);
@@ -479,6 +533,10 @@ export function ApiUsersDeleteDelete() {
     ApiResponse({
       status: 403,
       description: 'Forbidden',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 500,

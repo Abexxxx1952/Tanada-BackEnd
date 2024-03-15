@@ -1,4 +1,10 @@
-import { IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { FindUserByConditionsDto } from './findByConditions.dto';
 import {
   FindOneOptions,
@@ -8,40 +14,41 @@ import {
   FindOptionsRelations,
   FindManyOptions,
 } from 'typeorm';
-import { ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
+type Direction = 'ASC' | 'DESC' | 'asc' | 'desc' | 1 | -1;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+interface OrderOptions {
+  direction?: Omit<Direction, 1 | -1>;
+  nulls?: 'first' | 'last' | 'FIRST' | 'LAST';
+}
+
+class OrderObject {
+  [key: string]: Direction | OrderOptions;
+}
 export class FindOneUserWithConditionsDto
   implements FindOneOptions<FindUserByConditionsDto>
 {
   @IsOptional()
   @IsObject()
-  @ApiPropertyOptional({
-    oneOf: [
-      { type: 'object', $ref: getSchemaPath(FindUserByConditionsDto) },
-      {
-        type: 'array',
-        items: {
-          type: 'object',
-          $ref: getSchemaPath(FindUserByConditionsDto),
-        },
-      },
-    ],
-  })
   readonly where?: FindUserByConditionsDto | FindUserByConditionsDto[];
 
   @IsOptional()
+  @IsArray()
   @IsString({ each: true })
-  @ApiPropertyOptional({ type: FindUserByConditionsDto })
   readonly select?:
     | FindOptionsSelect<FindUserByConditionsDto>
     | FindOptionsSelectByString<FindUserByConditionsDto>;
 
   @IsOptional()
-  @ApiPropertyOptional({ type: Object })
+  @IsObject()
+  @Type(() => OrderObject)
   readonly order?: FindOptionsOrder<FindUserByConditionsDto>;
 
   @IsOptional()
-  @ApiPropertyOptional({ type: [String] })
+  @IsArray()
+  @IsString({ each: true })
   readonly relations?: FindOptionsRelations<FindUserByConditionsDto>;
 }
 
@@ -50,42 +57,30 @@ export class FindAllUserWithConditionsDto
 {
   @IsOptional()
   @IsObject()
-  @ApiPropertyOptional({
-    oneOf: [
-      { type: 'object', $ref: getSchemaPath(FindUserByConditionsDto) },
-      {
-        type: 'array',
-        items: {
-          type: 'object',
-          $ref: getSchemaPath(FindUserByConditionsDto),
-        },
-      },
-    ],
-  })
   readonly where?: FindUserByConditionsDto | FindUserByConditionsDto[];
 
   @IsOptional()
+  @IsArray()
   @IsString({ each: true })
-  @ApiPropertyOptional({ type: FindUserByConditionsDto })
   readonly select?:
     | FindOptionsSelect<FindUserByConditionsDto>
     | FindOptionsSelectByString<FindUserByConditionsDto>;
 
   @IsOptional()
-  @ApiPropertyOptional({ type: Object })
+  @IsObject()
+  @Type(() => OrderObject)
   readonly order?: FindOptionsOrder<FindUserByConditionsDto>;
 
   @IsOptional()
-  @ApiPropertyOptional({ type: [String] })
+  @IsArray()
+  @IsString({ each: true })
   readonly relations?: FindOptionsRelations<FindUserByConditionsDto>;
 
   @IsOptional()
   @IsNumber()
-  @ApiPropertyOptional()
   readonly skip?: number;
 
   @IsOptional()
   @IsNumber()
-  @ApiPropertyOptional()
   readonly take?: number;
 }

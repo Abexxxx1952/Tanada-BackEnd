@@ -75,11 +75,22 @@ class EnvironmentVariables {
   @IsNotEmpty()
   GOOGLE_CALLBACK_URL: string;
 
-  /* @IsString()
+  @IsString()
+  @IsNotEmpty()
   GITHUB_OAUTH2_CLIENT_ID: string;
 
   @IsString()
-  GITHUB_OAUTH2_CLIENT_SECRET: string; */
+  @IsNotEmpty()
+  GITHUB_OAUTH2_CLIENT_SECRET: string;
+
+  @IsString()
+  @IsNotEmpty()
+  GITHUB_CALLBACK_URL: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
+  CACHE_TTL: number;
 }
 
 export function validate(config: Record<string, unknown>) {

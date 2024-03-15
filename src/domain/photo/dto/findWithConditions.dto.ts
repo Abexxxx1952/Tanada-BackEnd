@@ -1,4 +1,10 @@
-import { IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { FindPhotoByConditionsDto } from './findByConditions.dto';
 import {
   FindOneOptions,
@@ -8,40 +14,42 @@ import {
   FindOptionsRelations,
   FindManyOptions,
 } from 'typeorm';
-import { ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+
+type Direction = 'ASC' | 'DESC' | 'asc' | 'desc' | 1 | -1;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+interface OrderOptions {
+  direction?: Omit<Direction, 1 | -1>;
+  nulls?: 'first' | 'last' | 'FIRST' | 'LAST';
+}
+
+class OrderObject {
+  [key: string]: Direction | OrderOptions;
+}
 
 export class FindOnePhotoWithConditionsDto
   implements FindOneOptions<FindPhotoByConditionsDto>
 {
   @IsOptional()
   @IsObject()
-  @ApiPropertyOptional({
-    oneOf: [
-      { type: 'object', $ref: getSchemaPath(FindPhotoByConditionsDto) },
-      {
-        type: 'array',
-        items: {
-          type: 'object',
-          $ref: getSchemaPath(FindPhotoByConditionsDto),
-        },
-      },
-    ],
-  })
   readonly where?: FindPhotoByConditionsDto | FindPhotoByConditionsDto[];
 
   @IsOptional()
+  @IsArray()
   @IsString({ each: true })
-  @ApiPropertyOptional({ type: FindPhotoByConditionsDto })
   readonly select?:
     | FindOptionsSelect<FindPhotoByConditionsDto>
     | FindOptionsSelectByString<FindPhotoByConditionsDto>;
 
   @IsOptional()
-  @ApiPropertyOptional({ type: Object })
+  @IsObject()
+  @Type(() => OrderObject)
   readonly order?: FindOptionsOrder<FindPhotoByConditionsDto>;
 
   @IsOptional()
-  @ApiPropertyOptional({ type: [String] })
+  @IsArray()
+  @IsString({ each: true })
   readonly relations?: FindOptionsRelations<FindPhotoByConditionsDto>;
 }
 
@@ -50,42 +58,30 @@ export class FindAllPhotoWithConditionsDto
 {
   @IsOptional()
   @IsObject()
-  @ApiPropertyOptional({
-    oneOf: [
-      { type: 'object', $ref: getSchemaPath(FindPhotoByConditionsDto) },
-      {
-        type: 'array',
-        items: {
-          type: 'object',
-          $ref: getSchemaPath(FindPhotoByConditionsDto),
-        },
-      },
-    ],
-  })
   readonly where?: FindPhotoByConditionsDto | FindPhotoByConditionsDto[];
 
   @IsOptional()
+  @IsArray()
   @IsString({ each: true })
-  @ApiPropertyOptional({ type: FindPhotoByConditionsDto })
   readonly select?:
     | FindOptionsSelect<FindPhotoByConditionsDto>
     | FindOptionsSelectByString<FindPhotoByConditionsDto>;
 
   @IsOptional()
-  @ApiPropertyOptional({ type: Object })
+  @IsObject()
+  @Type(() => OrderObject)
   readonly order?: FindOptionsOrder<FindPhotoByConditionsDto>;
 
   @IsOptional()
-  @ApiPropertyOptional({ type: [String] })
+  @IsArray()
+  @IsString({ each: true })
   readonly relations?: FindOptionsRelations<FindPhotoByConditionsDto>;
 
   @IsOptional()
   @IsNumber()
-  @ApiPropertyOptional()
   readonly skip?: number;
 
   @IsOptional()
   @IsNumber()
-  @ApiPropertyOptional()
   readonly take?: number;
 }

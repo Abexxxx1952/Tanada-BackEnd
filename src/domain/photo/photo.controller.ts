@@ -13,6 +13,7 @@ import {
   Put,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 
 import { ApiTags } from '@nestjs/swagger';
@@ -43,6 +44,10 @@ import { CreatePhotoDto } from './dto/create.dto';
 import { UpdatePhotoDto } from './dto/update.dto';
 import { PaginationParams } from '../../database/abstractRepository/paginationDto/pagination.dto';
 import { PhotosPermission } from './permission/photos.permission.enum';
+import {
+  UseInterceptorsCacheInterceptor,
+  CacheOptions,
+} from 'src/common/interceptors/cache.interceptor';
 
 @ApiTags('v1/photos')
 @Controller('v1/photos')
@@ -54,6 +59,7 @@ export class PhotoController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor()
   @ApiPhotosGet()
   async findAll(
     @Query() { offset, limit }: PaginationParams,
@@ -63,6 +69,7 @@ export class PhotoController {
 
   @Get('findById/:id')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor()
   @ApiPhotosGetFindById()
   async findOneById(
     @Param('id', ParseIntPipe) id: number,
@@ -72,6 +79,7 @@ export class PhotoController {
 
   @Post('findOneBy')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor()
   @ApiPhotosPostFindOneBy()
   async findOneByCondition(
     @Body() condition: FindPhotoByConditionsDto,
@@ -81,6 +89,7 @@ export class PhotoController {
 
   @Post('findManyBy')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor()
   @ApiPhotosPostFindManyBy()
   async findManyByCondition(
     @Query() { offset, limit }: PaginationParams,
@@ -95,6 +104,7 @@ export class PhotoController {
 
   @Post('findOneWith')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor()
   @ApiPhotosPostFindOneWith()
   async findOneWithCondition(
     @Body() condition: FindOnePhotoWithConditionsDto,
@@ -104,6 +114,7 @@ export class PhotoController {
 
   @Post('findAllWith')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor()
   @ApiPhotosPostFindAllWith()
   async findAllWithCondition(
     @Query() { offset, limit }: PaginationParams,
@@ -120,6 +131,7 @@ export class PhotoController {
   @UseGuards(PermissionGuard([PhotosPermission.CreatePhoto]))
   @UseGuards(AccessTokenAuthGuard)
   @HttpCode(HttpStatus.CREATED)
+  @UseInterceptorsCacheInterceptor({ cache: CacheOptions.InvalidateAllCache })
   @ApiPhotosPostCreate()
   async createPhoto(
     @CurrentUser('id') currentUserId: string,
@@ -135,6 +147,7 @@ export class PhotoController {
   @UseGuards(PermissionGuard([PhotosPermission.UpdatePhoto]))
   @UseGuards(AccessTokenAuthGuard)
   @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor({ cache: CacheOptions.InvalidateAllCache })
   @ApiPhotosPutUpdatePhotoHard()
   async updatePhotoHard(
     @CurrentUser('id') currentUserId: string,
@@ -150,6 +163,7 @@ export class PhotoController {
   @UseGuards(PermissionGuard([PhotosPermission.UpdatePhoto]))
   @UseGuards(AccessTokenAuthGuard)
   @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor({ cache: CacheOptions.InvalidateAllCache })
   @ApiPhotosPatchUpdatePhotoSoft()
   async updatePhotoSoft(
     @CurrentUser('id') currentUserId: string,
@@ -165,6 +179,7 @@ export class PhotoController {
   @UseGuards(PermissionGuard([PhotosPermission.DeletePhoto]))
   @UseGuards(AccessTokenAuthGuard)
   @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor({ cache: CacheOptions.InvalidateAllCache })
   @ApiPhotosDeletePhoto()
   async deletePhoto(
     @CurrentUser('id') currentUserId: string,

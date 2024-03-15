@@ -8,7 +8,11 @@ import {
   ApiExtraModels,
 } from '@nestjs/swagger';
 import { PhotoEntity } from 'src/domain/photo/entity/photo.entity';
-import { UpdateResult } from '../types';
+import {
+  FindAllPhotoWithConditionsDto,
+  FindOnePhotoWithConditionsDto,
+  UpdateResult,
+} from '../types';
 import { FindPhotoByConditionsDto } from 'src/domain/photo/dto/findByConditions.dto';
 
 export function ApiPhotosGet() {
@@ -30,6 +34,10 @@ export function ApiPhotosGet() {
     ApiResponse({
       status: 404,
       description: 'Photos not found',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 500,
@@ -68,6 +76,10 @@ export function ApiPhotosGetFindById() {
       description: 'Photos not found',
     })(target, propertyKey, descriptor);
     ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
       status: 500,
       description: 'Internal Server Error',
     })(target, propertyKey, descriptor);
@@ -97,6 +109,10 @@ export function ApiPhotosPostFindOneBy() {
     ApiResponse({
       status: 404,
       description: 'Photo not found',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 500,
@@ -130,6 +146,10 @@ export function ApiPhotosPostFindManyBy() {
       description: 'Photos not found',
     })(target, propertyKey, descriptor);
     ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
       status: 500,
       description: 'Internal Server Error',
     })(target, propertyKey, descriptor);
@@ -147,6 +167,11 @@ export function ApiPhotosPostFindOneWith() {
       propertyKey,
       descriptor,
     );
+    ApiBody({ type: FindOnePhotoWithConditionsDto })(
+      target,
+      propertyKey,
+      descriptor,
+    );
     ApiResponse({
       status: 200,
       description: 'Got the photo by condition',
@@ -159,6 +184,10 @@ export function ApiPhotosPostFindOneWith() {
     ApiResponse({
       status: 404,
       description: 'Photos not found',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 500,
@@ -178,6 +207,11 @@ export function ApiPhotosPostFindAllWith() {
       propertyKey,
       descriptor,
     );
+    ApiBody({ type: FindAllPhotoWithConditionsDto })(
+      target,
+      propertyKey,
+      descriptor,
+    );
     ApiResponse({
       status: 200,
       description: 'Got all photos by condition',
@@ -190,6 +224,10 @@ export function ApiPhotosPostFindAllWith() {
     ApiResponse({
       status: 404,
       description: 'Photos not found',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 500,
@@ -227,6 +265,10 @@ export function ApiPhotosPostCreate() {
       description: 'Forbidden',
     })(target, propertyKey, descriptor);
     ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
       status: 500,
       description: 'Internal Server Error',
     })(target, propertyKey, descriptor);
@@ -256,6 +298,10 @@ export function ApiPhotosPutUpdatePhotoHard() {
       description: 'Forbidden',
     })(target, propertyKey, descriptor);
     ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
       status: 500,
       description: 'Internal Server Error',
     })(target, propertyKey, descriptor);
@@ -283,6 +329,10 @@ export function ApiPhotosPatchUpdatePhotoSoft() {
     ApiResponse({
       status: 403,
       description: 'Forbidden',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 500,
@@ -317,6 +367,10 @@ export function ApiPhotosDeletePhoto() {
     ApiResponse({
       status: 403,
       description: 'Forbidden',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 500,

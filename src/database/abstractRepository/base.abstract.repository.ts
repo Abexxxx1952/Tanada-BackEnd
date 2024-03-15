@@ -3,7 +3,6 @@ import {
   FindManyOptions,
   FindOneOptions,
   FindOptionsWhere,
-  InsertResult,
   QueryFailedError,
   Repository,
   UpdateResult,

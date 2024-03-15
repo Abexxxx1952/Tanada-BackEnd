@@ -79,6 +79,10 @@ import {
   ApiUsersDeleteDelete,
 } from 'src/swagger/user';
 import { UUID } from 'crypto';
+import {
+  UseInterceptorsCacheInterceptor,
+  CacheOptions,
+} from 'src/common/interceptors/cache.interceptor';
 
 @ApiTags('v1/users')
 @Controller('v1/users')
@@ -93,6 +97,7 @@ export class UserController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor()
   @ApiUsersGet()
   async findAll(
     @Query() { offset, limit }: PaginationParams,
@@ -101,6 +106,7 @@ export class UserController {
   }
 
   @Get('findById/:id')
+  @UseInterceptorsCacheInterceptor()
   @ApiUsersGetFindById()
   async findOneById(@Param('id', ParseUUIDPipe) id: UUID): Promise<UserEntity> {
     return await this.usersRepository.findOneById(id);
@@ -108,6 +114,7 @@ export class UserController {
 
   @Post('findOneBy')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor()
   @ApiUsersPostFindOneBy()
   async findOneByCondition(
     @Body() condition: FindUserByConditionsDto,
@@ -117,6 +124,7 @@ export class UserController {
 
   @Post('findManyBy')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor()
   @ApiUsersPostFindManyBy()
   async findManyByCondition(
     @Query() { offset, limit }: PaginationParams,
@@ -131,6 +139,7 @@ export class UserController {
 
   @Post('findOneWith')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor()
   @ApiUsersPostFindOneWith()
   async findOneWithCondition(
     @Body() condition: FindOneUserWithConditionsDto,
@@ -140,6 +149,7 @@ export class UserController {
 
   @Post('findAllWith')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor()
   @ApiUsersPostFindAllWith()
   async findAllWithCondition(
     @Query() { offset, limit }: PaginationParams,
@@ -155,6 +165,10 @@ export class UserController {
   @Post('registration')
   @ParseRequestBodyWhenLogging(CreateUserDtoLocalWithoutPassword)
   @HttpCode(HttpStatus.CREATED)
+  @UseInterceptorsCacheInterceptor({
+    cache: CacheOptions.InvalidateCacheByKey,
+    cacheKey: ['/api/v1/users/'],
+  })
   @ApiUsersPostRegistration()
   async create(
     @Body() createUserLocalDto: CreateUserDtoLocal,
@@ -241,6 +255,10 @@ export class UserController {
   @Patch('update')
   @UseGuards(AccessTokenAuthGuard)
   @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor({
+    cache: CacheOptions.InvalidateCacheByKey,
+    cacheKey: ['/api/v1/users/'],
+  })
   @ApiUsersPatchUpdate()
   async updateUser(
     @CurrentUser('id') currentUserId: string,
@@ -255,6 +273,10 @@ export class UserController {
   @Delete('delete')
   @UseGuards(AccessTokenAuthGuard)
   @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor({
+    cache: CacheOptions.InvalidateCacheByKey,
+    cacheKey: ['/api/v1/users/'],
+  })
   @ApiUsersDeleteDelete()
   async deleteUser(
     @CurrentUser('id') currentUserId: string,

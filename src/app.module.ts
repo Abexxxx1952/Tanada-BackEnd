@@ -1,9 +1,12 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { validate } from './configs/env.validate';
 import { DomainModule } from './domain/domain.module';
 import { DatabaseModule } from './database/databaseNestjsTypeorm.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -11,11 +14,45 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
       expandVariables: true,
       validate,
     }),
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => {
+        const mode = configService.getOrThrow('MODE');
+        const skipIf = mode === 'production' ? () => false : () => true;
+        return [
+          {
+            ttl: 60000,
+            limit: 10,
+            skipIf,
+          },
+        ];
+      },
+
+      inject: [ConfigService],
+    }),
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => {
+        const ttlProd = configService.getOrThrow('CACHE_TTL');
+        const mode = configService.getOrThrow('MODE');
+        const ttl = mode === 'production' ? ttlProd : 0;
+        return {
+          ttl,
+        };
+      },
+      isGlobal: true,
+      inject: [ConfigService],
+    }),
     DatabaseModule,
     DomainModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {

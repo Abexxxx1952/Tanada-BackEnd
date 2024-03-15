@@ -6,8 +6,8 @@ export class LoginDto {
   @ApiProperty({ type: 'string', format: 'email' })
   readonly email: string;
 
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
   @MinLength(1)
   @ApiProperty({ type: 'string', format: 'password' })
   readonly password: string;
