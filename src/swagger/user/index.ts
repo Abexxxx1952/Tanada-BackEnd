@@ -1,12 +1,13 @@
 import { ApiOperation, ApiBody, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { UserEntity } from 'src/domain/user/entity/user.entity';
-import { LoginDto } from 'src/domain/user/dto/login.dto';
+
 import { AttachedUser } from 'src/domain/user/auth/types/attachedUser';
 import {
   FindAllUserWithConditionsDto,
   FindOneUserWithConditionsDto,
   UpdateResult,
 } from '../types';
+import { LoginLocalUserDto } from 'src/domain/user/dto/loginUserLocal.dto';
 
 export function ApiUsersGet() {
   return function (
@@ -255,7 +256,7 @@ export function ApiUsersPostLoginLocal() {
       descriptor,
     );
     ApiBody({
-      type: LoginDto,
+      type: LoginLocalUserDto,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 200,
@@ -450,7 +451,7 @@ export function ApiUsersGetStatus() {
     propertyKey: string,
     descriptor: PropertyDescriptor,
   ) {
-    ApiOperation({ summary: 'Get user information. (AccessToken required)' })(
+    ApiOperation({ summary: 'Get user information. (RefreshToken required)' })(
       target,
       propertyKey,
       descriptor,

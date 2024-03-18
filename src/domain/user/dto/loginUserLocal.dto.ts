@@ -1,16 +1,16 @@
 import { Transform } from 'class-transformer';
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class LoginLocalUserDto {
   @IsEmail()
-  @IsNotEmpty()
   @ApiProperty({ type: 'string', format: 'email' })
   readonly email: string;
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @MinLength(1)
+  @ApiProperty({ type: 'string', format: 'password' })
   readonly password: string;
 }
 

@@ -4,8 +4,9 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { AuthService } from '../auth.service';
 import { UserEntity } from '../../entity/user.entity';
-import { LoginDto } from '../../dto/login.dto';
+
 import { plainToClass } from 'class-transformer';
+import { LoginLocalUserDto } from '../../dto/loginUserLocal.dto';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -14,10 +15,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(
-    email: LoginDto['email'],
-    password: LoginDto['password'],
+    email: LoginLocalUserDto['email'],
+    password: LoginLocalUserDto['password'],
   ): Promise<UserEntity> {
-    const loginDto = plainToClass(LoginDto, { email, password });
+    const loginDto = plainToClass(LoginLocalUserDto, { email, password });
     try {
       await validateOrReject(loginDto);
     } catch (errors) {

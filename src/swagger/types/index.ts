@@ -14,6 +14,24 @@ import {
   FindManyOptions,
 } from 'typeorm';
 
+class CreateSignedUploadUrlResultData {
+  @ApiPropertyOptional()
+  signedUrl: string;
+
+  @ApiPropertyOptional()
+  token: string;
+
+  @ApiPropertyOptional()
+  path: string;
+}
+export class CreateSignedUploadUrlResult {
+  @ApiProperty({ type: CreateSignedUploadUrlResultData, nullable: true })
+  data: CreateSignedUploadUrlResultData | null;
+
+  @ApiProperty({ type: 'Error', nullable: true })
+  error: null | Error;
+}
+
 export class UpdateResult {
   @ApiProperty()
   raw: any;

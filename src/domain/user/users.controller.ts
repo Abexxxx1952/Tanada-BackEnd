@@ -8,13 +8,10 @@ import {
   HttpStatus,
   Inject,
   Param,
-  ParseIntPipe,
   ParseUUIDPipe,
   Patch,
   Post,
-  Put,
   Query,
-  Req,
   Res,
   UseGuards,
   UseInterceptors,
@@ -22,17 +19,7 @@ import {
 import { UpdateResult } from 'typeorm';
 import { Response } from 'express';
 
-import {
-  ApiBadRequestResponse,
-  ApiBearerAuth,
-  ApiBody,
-  ApiCookieAuth,
-  ApiForbiddenResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 
 import { CurrentUser } from 'src/common/decorators/currentUser.decorator';
 import { ParseRequestBodyWhenLogging } from '../../common/decorators/setMetadataRequestBodyLogging.decorator';
@@ -245,7 +232,7 @@ export class UserController {
   }
 
   @Get('status')
-  @UseGuards(AccessTokenAuthGuard)
+  @UseGuards(RefreshTokenAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiUsersGetStatus()
   async status(@CurrentUser() currentUser: AttachedUser): Promise<UserEntity> {

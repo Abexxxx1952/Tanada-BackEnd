@@ -1,19 +1,11 @@
-import {
-  ApiProperty,
-  ApiOperation,
-  ApiBody,
-  ApiResponse,
-  ApiQuery,
-  ApiParam,
-  ApiExtraModels,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiBody, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { PhotoEntity } from 'src/domain/photo/entity/photo.entity';
 import {
+  CreateSignedUploadUrlResult,
   FindAllPhotoWithConditionsDto,
   FindOnePhotoWithConditionsDto,
   UpdateResult,
 } from '../types';
-import { FindPhotoByConditionsDto } from 'src/domain/photo/dto/findByConditions.dto';
 
 export function ApiPhotosGet() {
   return function (
@@ -236,17 +228,54 @@ export function ApiPhotosPostFindAllWith() {
   };
 }
 
+export function ApiPhotosPostCreateSignedUploadUrl() {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) {
+    ApiOperation({
+      summary:
+        'SignedUploadUrl creation. (CreatePhoto permission required. AccessToken required)',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 201,
+      description: 'SignedUploadUrl is created',
+      type: CreateSignedUploadUrlResult,
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 400,
+      description: 'Bad Request',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 401,
+      description: 'Unauthorized',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 403,
+      description: 'Forbidden',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 500,
+      description: 'Internal Server Error',
+    })(target, propertyKey, descriptor);
+  };
+}
+
 export function ApiPhotosPostCreate() {
   return function (
     target: any,
     propertyKey: string,
     descriptor: PropertyDescriptor,
   ) {
-    ApiOperation({ summary: 'Photo creation. (AccessToken required)' })(
-      target,
-      propertyKey,
-      descriptor,
-    );
+    ApiOperation({
+      summary:
+        'Photo creation. (CreatePhoto permission required. AccessToken required)',
+    })(target, propertyKey, descriptor);
     ApiResponse({
       status: 201,
       description: 'Photo is created',
@@ -282,7 +311,8 @@ export function ApiPhotosPutUpdatePhotoHard() {
     descriptor: PropertyDescriptor,
   ) {
     ApiOperation({
-      summary: 'Update photo. (AccessToken required)',
+      summary:
+        'Update photo. (UpdatePhoto permission required. AccessToken required)',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 200,
@@ -315,7 +345,8 @@ export function ApiPhotosPatchUpdatePhotoSoft() {
     descriptor: PropertyDescriptor,
   ) {
     ApiOperation({
-      summary: 'Update photo. (AccessToken required)',
+      summary:
+        'Update photo. (UpdatePhoto permission required. AccessToken required)',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 200,
@@ -348,7 +379,8 @@ export function ApiPhotosDeletePhoto() {
     descriptor: PropertyDescriptor,
   ) {
     ApiOperation({
-      summary: 'Delete photo. (AccessToken required)',
+      summary:
+        'Delete photo. (DeletePhoto permission required. AccessToken required)',
     })(target, propertyKey, descriptor);
     ApiParam({
       name: 'id',

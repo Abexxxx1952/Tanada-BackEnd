@@ -47,6 +47,7 @@ export class UserEntity {
   @ApiProperty()
   updatedAt: Date;
 
+  @Exclude()
   @Column({ nullable: true })
   @ApiProperty()
   hashedRefreshToken?: string;

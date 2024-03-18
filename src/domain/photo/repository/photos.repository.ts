@@ -19,6 +19,13 @@ import { BaseAbstractRepository } from '../../../database/abstractRepository/bas
 import { PhotoEntity } from '../entity/photo.entity';
 import { UsersRepository } from '../../user/repository/users.repository';
 import { UserEntity } from '../../user/entity/user.entity';
+import {
+  CreateSignedUploadUrlResult,
+  ExternalStorageService,
+} from 'src/externalStorage/externalStorage.service';
+import { CreatePhotoDto } from '../dto/create.dto';
+import { CreateSignedUploadUrlDto } from '../dto/createSignedUploadUrl.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
@@ -27,12 +34,32 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
     private readonly PhotosRepository: Repository<PhotoEntity>,
     @Inject('UsersRepository')
     private readonly usersRepository: UsersRepository,
+    private readonly externalStorageService: ExternalStorageService,
+    private readonly configService: ConfigService,
   ) {
     super(PhotosRepository, 'Photo');
   }
+
+  public async createSignedUploadUrl(
+    currentUserId: string,
+    data: CreateSignedUploadUrlDto,
+  ): Promise<CreateSignedUploadUrlResult> {
+    try {
+      const result = await this.externalStorageService.createSignedUploadUrl(
+        data.fileName,
+      );
+      setTimeout(
+        async () => await this.uploadChecker(currentUserId, result.data.path),
+        600000,
+      );
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
   public async createPhoto(
     currentUserId: string,
-    data: DeepPartial<PhotoEntity>,
+    data: CreatePhotoDto,
   ): Promise<PhotoEntity> {
     try {
       const user: UserEntity = await this.usersRepository.findOneById(
@@ -112,15 +139,20 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
     id: number,
   ): Promise<PhotoEntity> {
     try {
-      await this.usersRepository.findOneWithCondition({
+      const photo = await this.findOneWithCondition({
         where: {
-          id: currentUserId,
-          photo: {
-            id: id,
+          id: id,
+          user: {
+            id: currentUserId,
           },
         },
       });
+      const deleteResultFromStorage =
+        await this.externalStorageService.deletePhoto(photo.link);
 
+      if (deleteResultFromStorage !== 'DELETED') {
+        throw new InternalServerErrorException();
+      }
       return await this.removeById(id);
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -128,5 +160,28 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
       }
       throw error;
     }
+  }
+
+  private async uploadChecker(
+    currentUserId: string,
+    path: string,
+  ): Promise<void> {
+    console.log('@Timeout');
+    const link = `${this.configService.getOrThrow<string>(
+      'SUPABASE_BUCKET_URL',
+    )}${path}`;
+    try {
+      const user: UserEntity = await this.usersRepository.findOneWithCondition({
+        where: {
+          id: currentUserId,
+          photo: {
+            link,
+          },
+        },
+      });
+      if (!user) {
+        this.externalStorageService.deletePhoto(link);
+      }
+    } catch (err) {}
   }
 }

@@ -5,8 +5,9 @@ import { DomainModule } from './domain/domain.module';
 import { DatabaseModule } from './database/databaseNestjsTypeorm.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
+import { APP_GUARD } from '@nestjs/core';
+import { CacheModule } from '@nestjs/cache-manager';
+import { ExternalStorageModule } from './externalStorage/externalStorage.module';
 
 @Module({
   imports: [
@@ -43,7 +44,9 @@ import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';
       isGlobal: true,
       inject: [ConfigService],
     }),
+
     DatabaseModule,
+    ExternalStorageModule,
     DomainModule,
   ],
   controllers: [],

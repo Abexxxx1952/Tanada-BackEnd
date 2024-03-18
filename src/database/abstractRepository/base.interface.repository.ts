@@ -4,7 +4,6 @@ import {
   FindOneOptions,
   FindOptionsWhere,
   UpdateResult,
-  InsertResult,
 } from 'typeorm';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 

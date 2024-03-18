@@ -146,6 +146,9 @@ export class CacheInterceptor implements NestInterceptor {
 export function UseInterceptorsCacheInterceptor(
   cacheOption?: MetadataCacheOptions,
 ) {
-  CacheOption(cacheOption);
+  if (cacheOption) {
+    CacheOption(cacheOption);
+  }
+
   return UseInterceptors(CacheInterceptor);
 }

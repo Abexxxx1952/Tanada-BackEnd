@@ -13,7 +13,6 @@ import {
   Put,
   Query,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 
 import { ApiTags } from '@nestjs/swagger';
@@ -26,6 +25,7 @@ import {
   ApiPhotosPostFindManyBy,
   ApiPhotosPostFindOneWith,
   ApiPhotosPostFindAllWith,
+  ApiPhotosPostCreateSignedUploadUrl,
   ApiPhotosPostCreate,
   ApiPhotosPutUpdatePhotoHard,
   ApiPhotosPatchUpdatePhotoSoft,
@@ -48,6 +48,8 @@ import {
   UseInterceptorsCacheInterceptor,
   CacheOptions,
 } from 'src/common/interceptors/cache.interceptor';
+import { CreateSignedUploadUrlResult } from 'src/externalStorage/externalStorage.service';
+import { CreateSignedUploadUrlDto } from './dto/createSignedUploadUrl.dto';
 
 @ApiTags('v1/photos')
 @Controller('v1/photos')
@@ -124,6 +126,26 @@ export class PhotoController {
       condition,
       offset,
       limit,
+    );
+  }
+
+  @Post('createSignedUploadUrl')
+  @UseGuards(
+    PermissionGuard([
+      PhotosPermission.CreatePhoto,
+      PhotosPermission.UpdatePhoto,
+    ]),
+  )
+  @UseGuards(AccessTokenAuthGuard)
+  @HttpCode(HttpStatus.CREATED)
+  @ApiPhotosPostCreateSignedUploadUrl()
+  async createSignedUploadUrl(
+    @CurrentUser('id') currentUserId: string,
+    @Body() createSignedUploadUrlDto: CreateSignedUploadUrlDto,
+  ): Promise<CreateSignedUploadUrlResult> {
+    return await this.photosRepository.createSignedUploadUrl(
+      currentUserId,
+      createSignedUploadUrlDto,
     );
   }
 
