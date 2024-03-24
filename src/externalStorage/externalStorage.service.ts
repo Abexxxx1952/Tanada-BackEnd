@@ -13,8 +13,12 @@ export type CreateSignedUploadUrlResult =
     };
 @Injectable()
 export class ExternalStorageService {
-  private supabaseClient = this.createSupabaseClient();
+  private supabaseClient: SupabaseClient;
   constructor(private readonly configService: ConfigService) {}
+
+  async onModuleInit() {
+    this.supabaseClient = this.createSupabaseClient();
+  }
 
   async createSignedUploadUrl(
     fileName: string,
@@ -25,10 +29,6 @@ export class ExternalStorageService {
       }
 
       const fileNameWithTimestamp = this.addTimestampToImageName(fileName);
-
-      if (!this.supabaseClient) {
-        this.supabaseClient = this.createSupabaseClient();
-      }
 
       const { data, error }: CreateSignedUploadUrlResult =
         await this.supabaseClient.storage
@@ -50,9 +50,6 @@ export class ExternalStorageService {
   }
 
   async deletePhoto(urlParam: string): Promise<string> {
-    if (!this.supabaseClient) {
-      this.supabaseClient = this.createSupabaseClient();
-    }
     const url = new URL(urlParam);
     const pathnameParts = url.pathname.split('/');
     const fileName: string = pathnameParts

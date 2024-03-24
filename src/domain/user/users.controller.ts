@@ -154,7 +154,7 @@ export class UserController {
   @HttpCode(HttpStatus.CREATED)
   @UseInterceptorsCacheInterceptor({
     cache: CacheOptions.InvalidateCacheByKey,
-    cacheKey: ['/api/v1/users/'],
+    cacheKey: ['/api/v1/users/', '/api/v1/stats/users'],
   })
   @ApiUsersPostRegistration()
   async create(
@@ -206,6 +206,10 @@ export class UserController {
   @Get('loginGoogle/callback')
   @UseGuards(GoogleGuard)
   @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor({
+    cache: CacheOptions.InvalidateCacheByKey,
+    cacheKey: ['/api/v1/users/', '/api/v1/stats/users'],
+  })
   @ApiUsersGetLoginGoogleCallback()
   async googleAuthCallBack(
     @CurrentUser() currentUser: UserEntity,
@@ -223,6 +227,10 @@ export class UserController {
   @Get('loginGitHub/callback')
   @UseGuards(GitHubGuard)
   @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor({
+    cache: CacheOptions.InvalidateCacheByKey,
+    cacheKey: ['/api/v1/users/', '/api/v1/stats/users'],
+  })
   @ApiUsersGetLoginGitHubCallback()
   async gitHubAuthCallBack(
     @CurrentUser() currentUser: UserEntity,
@@ -234,6 +242,10 @@ export class UserController {
   @Get('status')
   @UseGuards(RefreshTokenAuthGuard)
   @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor({
+    cache: CacheOptions.InvalidateCacheByKey,
+    cacheKey: ['/api/v1/users/', '/api/v1/stats/users'],
+  })
   @ApiUsersGetStatus()
   async status(@CurrentUser() currentUser: AttachedUser): Promise<UserEntity> {
     return await this.usersRepository.status(currentUser.email);
@@ -262,7 +274,7 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @UseInterceptorsCacheInterceptor({
     cache: CacheOptions.InvalidateCacheByKey,
-    cacheKey: ['/api/v1/users/'],
+    cacheKey: ['/api/v1/users/', '/api/v1/stats/users'],
   })
   @ApiUsersDeleteDelete()
   async deleteUser(

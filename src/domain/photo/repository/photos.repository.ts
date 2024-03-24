@@ -26,6 +26,7 @@ import {
 import { CreatePhotoDto } from '../dto/create.dto';
 import { CreateSignedUploadUrlDto } from '../dto/createSignedUploadUrl.dto';
 import { ConfigService } from '@nestjs/config';
+import { PhotoStatsRepository } from 'src/domain/stat/repository/photoStats.repository';
 
 @Injectable()
 export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
@@ -34,6 +35,8 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
     private readonly PhotosRepository: Repository<PhotoEntity>,
     @Inject('UsersRepository')
     private readonly usersRepository: UsersRepository,
+    @Inject('PhotoStatsRepository')
+    private readonly photoStatsRepository: PhotoStatsRepository,
     private readonly externalStorageService: ExternalStorageService,
     private readonly configService: ConfigService,
   ) {
@@ -68,7 +71,9 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
 
       const entity = this.create({ ...data, user });
 
-      return await this.save(entity);
+      const photo = await this.save(entity);
+      this.photoStatsRepository.createPhotoStat(photo.id);
+      return photo;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new ForbiddenException('Access Denied');
@@ -153,7 +158,10 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
       if (deleteResultFromStorage !== 'DELETED') {
         throw new InternalServerErrorException();
       }
-      return await this.removeById(id);
+
+      const photoRemoveResult = await this.removeById(id);
+      this.photoStatsRepository.deletePhotoStat(photoRemoveResult.id);
+      return photoRemoveResult;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new ForbiddenException('Access Denied');
@@ -166,7 +174,6 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
     currentUserId: string,
     path: string,
   ): Promise<void> {
-    console.log('@Timeout');
     const link = `${this.configService.getOrThrow<string>(
       'SUPABASE_BUCKET_URL',
     )}${path}`;

@@ -3,11 +3,13 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { UserEntity } from '../../user/entity/user.entity';
+import { PhotoStatEntity } from 'src/domain/stat/entity/photoStat.entity';
 
 @Entity('photo')
 export class PhotoEntity {
@@ -32,4 +34,12 @@ export class PhotoEntity {
     type: () => UserEntity,
   })
   user: UserEntity;
+
+  @OneToOne(() => PhotoStatEntity, (stats) => stats.photo, {
+    eager: true,
+  })
+  @ApiProperty({
+    type: () => PhotoStatEntity,
+  })
+  stats: PhotoStatEntity;
 }

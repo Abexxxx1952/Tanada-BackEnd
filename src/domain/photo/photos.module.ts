@@ -6,12 +6,14 @@ import { PhotosRepository } from './repository/photos.repository';
 import { UsersModule } from '../user/users.module';
 import { ExternalStorageModule } from 'src/externalStorage/externalStorage.module';
 import { ConfigModule } from '@nestjs/config';
+import { StatsModule } from '../stat/stats.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([PhotoEntity]),
     UsersModule,
     ExternalStorageModule,
+    StatsModule,
     ConfigModule,
   ],
   controllers: [PhotoController],

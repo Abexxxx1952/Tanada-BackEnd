@@ -1,10 +1,10 @@
 import {
   Injectable,
   ConflictException,
-  BadRequestException,
   NotFoundException,
   InternalServerErrorException,
   ForbiddenException,
+  Inject,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeepPartial, UpdateResult } from 'typeorm';
@@ -13,6 +13,7 @@ import { UserEntity } from '../entity/user.entity';
 import * as bcrypt from 'bcrypt';
 import { RegistrationSources } from '../auth/types/providersOAuth.enum';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+import { UserStatsRepository } from 'src/domain/stat/repository/userStats.repository';
 
 @Injectable()
 export class UsersRepository extends BaseAbstractRepository<UserEntity> {
@@ -20,6 +21,8 @@ export class UsersRepository extends BaseAbstractRepository<UserEntity> {
   constructor(
     @InjectRepository(UserEntity)
     private readonly UserRepository: Repository<UserEntity>,
+    @Inject('UserStatsRepository')
+    private readonly userStatsRepository: UserStatsRepository,
   ) {
     super(UserRepository, 'User');
   }
@@ -61,7 +64,9 @@ export class UsersRepository extends BaseAbstractRepository<UserEntity> {
           registrationSources: [RegistrationSources.Local],
         });
 
-        return await this.save(entity);
+        const user = await this.save(entity);
+        await this.userStatsRepository.createUserStat();
+        return user;
       } catch (error) {
         throw error;
       }
@@ -74,7 +79,9 @@ export class UsersRepository extends BaseAbstractRepository<UserEntity> {
     try {
       const entity: UserEntity = this.create(createUserOAuthDto);
 
-      return await this.save(entity);
+      const user = await this.save(entity);
+      await this.userStatsRepository.createUserStat();
+      return user;
     } catch (error) {
       throw error;
     }
@@ -125,7 +132,9 @@ export class UsersRepository extends BaseAbstractRepository<UserEntity> {
 
   public async removeUserById(id: string): Promise<UserEntity> {
     try {
-      return await this.removeById(id);
+      const user = await this.removeById(id);
+      await this.userStatsRepository.deleteUserStat();
+      return user;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new ForbiddenException('Access Denied');

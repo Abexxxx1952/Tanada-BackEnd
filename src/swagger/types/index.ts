@@ -468,3 +468,19 @@ export class FindAllPhotoWithConditionsDto
   @ApiPropertyOptional({ example: 8 })
   readonly take?: number;
 }
+
+export class UsersStats {
+  @ApiProperty()
+  created: number;
+  @ApiProperty()
+  deleted: number;
+}
+
+export class PhotosStats {
+  @ApiProperty()
+  created: number;
+  @ApiProperty()
+  views: number;
+  @ApiProperty()
+  deleted: number;
+}
