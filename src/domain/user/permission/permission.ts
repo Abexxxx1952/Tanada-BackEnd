@@ -1,9 +1,9 @@
 import { PhotosPermission } from '../../photo/permission/photos.permission.enum';
 
-export const PermissionEnum = {
+export const UserPermissions = {
   ...PhotosPermission,
 };
 
-type PermissionEnumType = typeof PermissionEnum;
+type UserPermissionsType = typeof UserPermissions;
 
-export type PermissionEnumKeys = keyof PermissionEnumType;
+export type UserPermissionsKeys = keyof UserPermissionsType;

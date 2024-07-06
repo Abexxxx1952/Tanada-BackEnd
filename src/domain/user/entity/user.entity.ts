@@ -9,67 +9,57 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
+
 import { v5 as uuidv5 } from 'uuid';
 import { PhotoEntity } from '../../photo/entity/photo.entity';
-import { PermissionEnum, PermissionEnumKeys } from '../permission/permission';
+import { UserPermissions, UserPermissionsKeys } from '../permission/permission';
 import { RegistrationSources } from '../auth/types/providersOAuth.enum';
+import { Payload } from '../types/payload';
 
 @Entity('user')
 export class UserEntity {
   @PrimaryColumn('uuid')
-  @ApiProperty({ type: 'string', format: 'UUID' })
   id: string;
 
   @Column({ nullable: true })
-  @ApiProperty()
-  name: string;
+  name?: string;
 
   @Column({ unique: true })
   @Index()
-  @ApiProperty()
   email: string;
 
   @Exclude()
   @Column({ nullable: true })
-  @ApiProperty()
-  password: string;
+  password?: string;
 
   @Column({ nullable: true })
-  @ApiProperty()
-  icon: string;
+  icon?: string;
 
   @CreateDateColumn()
-  @ApiProperty()
   createdAt: Date;
 
   @UpdateDateColumn()
-  @ApiProperty()
   updatedAt: Date;
 
   @Exclude()
   @Column({ nullable: true })
-  @ApiProperty()
   hashedRefreshToken?: string;
 
   @Column({ type: 'jsonb', array: true, nullable: true })
-  @ApiProperty()
-  payload: Record<string, string>[];
+  payload: Payload[];
 
   @OneToMany(() => PhotoEntity, (photo) => photo.user, {
     eager: true,
   })
-  @ApiProperty({ type: () => [PhotoEntity] })
   photo: PhotoEntity[];
 
   @Column({
     type: 'enum',
-    enum: PermissionEnum,
+    enum: UserPermissions,
     array: true,
     default: ['CreatePhoto', 'UpdatePhoto', 'DeletePhoto'],
   })
-  @ApiProperty()
-  permissions: PermissionEnumKeys[];
+  permissions: UserPermissionsKeys[];
 
   @Column({
     type: 'enum',
@@ -77,7 +67,6 @@ export class UserEntity {
     array: true,
     default: [],
   })
-  @ApiProperty()
   registrationSources: RegistrationSources[];
 
   @BeforeInsert()

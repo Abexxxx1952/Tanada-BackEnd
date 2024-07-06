@@ -33,7 +33,7 @@ import {
   FindAllUserWithConditionsDto,
 } from './dto/findWithConditions.dto';
 import {
-  CreateUserDtoLocal,
+  CreateUserLocalDto,
   CreateUserDtoLocalWithoutPassword,
 } from './dto/createLocal.dto';
 import { LoginLocalUserDtoWithoutPassword } from './dto/loginUserLocal.dto';
@@ -93,6 +93,7 @@ export class UserController {
   }
 
   @Get('findById/:id')
+  @HttpCode(HttpStatus.OK)
   @UseInterceptorsCacheInterceptor()
   @ApiUsersGetFindById()
   async findOneById(@Param('id', ParseUUIDPipe) id: UUID): Promise<UserEntity> {
@@ -149,6 +150,14 @@ export class UserController {
     );
   }
 
+  @Get('status')
+  @UseGuards(AccessTokenAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiUsersGetStatus()
+  async status(@CurrentUser() currentUser: AttachedUser): Promise<UserEntity> {
+    return await this.usersRepository.status(currentUser.email);
+  }
+
   @Post('registration')
   @ParseRequestBodyWhenLogging(CreateUserDtoLocalWithoutPassword)
   @HttpCode(HttpStatus.CREATED)
@@ -158,7 +167,7 @@ export class UserController {
   })
   @ApiUsersPostRegistration()
   async create(
-    @Body() createUserLocalDto: CreateUserDtoLocal,
+    @Body() createUserLocalDto: CreateUserLocalDto,
   ): Promise<UserEntity> {
     return await this.usersRepository.createUserLocal(createUserLocalDto);
   }
@@ -183,7 +192,7 @@ export class UserController {
     @CurrentUser() currentUser: AttachedUser,
     @Res({ passthrough: true }) response: Response,
   ): Promise<AttachedUser> {
-    return this.authService.logout(currentUser, response);
+    return await this.authService.logout(currentUser, response);
   }
 
   @Post('refresh')
@@ -194,7 +203,7 @@ export class UserController {
     @CurrentUser() currentUserWithRt: AttachedUserWithRt,
     @Res({ passthrough: true }) response: Response,
   ): Promise<string> {
-    return this.authService.refreshTokens(currentUserWithRt, response);
+    return await this.authService.refreshTokens(currentUserWithRt, response);
   }
 
   @Get('loginGoogle')
@@ -239,19 +248,8 @@ export class UserController {
     return await this.authService.login(currentUser, response);
   }
 
-  @Get('status')
-  @UseGuards(RefreshTokenAuthGuard)
-  @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor({
-    cache: CacheOptions.InvalidateCacheByKey,
-    cacheKey: ['/api/v1/users/', '/api/v1/stats/users'],
-  })
-  @ApiUsersGetStatus()
-  async status(@CurrentUser() currentUser: AttachedUser): Promise<UserEntity> {
-    return await this.usersRepository.status(currentUser.email);
-  }
-
   @Patch('update')
+  @ParseRequestBodyWhenLogging(CreateUserDtoLocalWithoutPassword)
   @UseGuards(AccessTokenAuthGuard)
   @HttpCode(HttpStatus.OK)
   @UseInterceptorsCacheInterceptor({
@@ -272,10 +270,7 @@ export class UserController {
   @Delete('delete')
   @UseGuards(AccessTokenAuthGuard)
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor({
-    cache: CacheOptions.InvalidateCacheByKey,
-    cacheKey: ['/api/v1/users/', '/api/v1/stats/users'],
-  })
+  @UseInterceptorsCacheInterceptor({ cache: CacheOptions.InvalidateAllCache })
   @ApiUsersDeleteDelete()
   async deleteUser(
     @CurrentUser('id') currentUserId: string,

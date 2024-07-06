@@ -41,9 +41,17 @@ export class AuthService {
       const tokens = await this.getTokens(currentUser);
       await this.updateRtHash(currentUser.id, tokens.refresh_token);
 
-      response.cookie('Authentication', tokens, {
+      response.cookie('Authentication_accessToken', tokens.access_token, {
         httpOnly: true,
         sameSite: true,
+        path: '/',
+        expires: this.getExpiresTimeAT(),
+      });
+
+      response.cookie('Authentication_refreshToken', tokens.refresh_token, {
+        httpOnly: true,
+        sameSite: true,
+        path: this.configService.getOrThrow<string>('REFRESH_TOKEN_PATH'),
         expires: this.getExpiresTimeRT(),
       });
 
@@ -108,12 +116,19 @@ export class AuthService {
       const tokens = await this.getTokens(currentUser);
       await this.updateRtHash(userExist.id, tokens.refresh_token);
 
-      response.cookie('Authentication', tokens, {
+      response.cookie('Authentication_accessToken', tokens.access_token, {
         httpOnly: true,
         sameSite: true,
-        expires: this.getExpiresTimeRT(),
+        path: '/',
+        expires: this.getExpiresTimeAT(),
       });
 
+      response.cookie('Authentication_refreshToken', tokens.refresh_token, {
+        httpOnly: true,
+        sameSite: true,
+        path: this.configService.getOrThrow<string>('REFRESH_TOKEN_PATH'),
+        expires: this.getExpiresTimeRT(),
+      });
       return 'Refresh Successful';
     } catch (error) {
       throw error;
@@ -236,6 +251,15 @@ export class AuthService {
     };
   }
 
+  private getExpiresTimeAT(): Date {
+    const expiresTime = new Date();
+    expiresTime.setTime(
+      expiresTime.getTime() +
+        this.configService.get('JWT_ACCESS_TOKEN_EXPIRATION_TIME') * 1000,
+    );
+
+    return expiresTime;
+  }
   private getExpiresTimeRT(): Date {
     const expiresTime = new Date();
     expiresTime.setTime(

@@ -1,12 +1,15 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { CacheModule } from '@nestjs/cache-manager';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { join } from 'path';
 import { validate } from './configs/env.validate';
 import { DomainModule } from './domain/domain.module';
 import { DatabaseModule } from './database/databaseNestjsTypeorm.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
-import { CacheModule } from '@nestjs/cache-manager';
 import { ExternalStorageModule } from './externalStorage/externalStorage.module';
 
 @Module({
@@ -43,6 +46,15 @@ import { ExternalStorageModule } from './externalStorage/externalStorage.module'
       },
       isGlobal: true,
       inject: [ConfigService],
+    }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      playground: true,
+      autoSchemaFile: true,
+      definitions: {
+        path: join(process.cwd(), 'src', 'graphql', 'index.ts'),
+        outputAs: 'class',
+      },
     }),
 
     DatabaseModule,

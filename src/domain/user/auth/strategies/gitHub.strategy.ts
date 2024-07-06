@@ -24,8 +24,8 @@ export class GitHubStrategy extends PassportStrategy(Strategy, 'gitHub') {
   }
 
   async validate(
-    _accessTokenFromGoogle: string,
-    _refreshTokenFromGoogle: string,
+    _accessTokenFromGitHub: string,
+    _refreshTokenFromGitHub: string,
     profile: any,
     done: VerifyCallback,
   ): Promise<void> {

@@ -1,16 +1,8 @@
-import {
-  Injectable,
-  ConflictException,
-  BadRequestException,
-  NotFoundException,
-  InternalServerErrorException,
-  ForbiddenException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BaseAbstractRepository } from '../../../database/abstractRepository/base.abstract.repository';
 import { PhotoStatEntity } from '../entity/photoStat.entity';
-import { PhotoEntity } from 'src/domain/photo/entity/photo.entity';
 
 @Injectable()
 export class PhotoStatsRepository extends BaseAbstractRepository<PhotoStatEntity> {
@@ -43,7 +35,7 @@ export class PhotoStatsRepository extends BaseAbstractRepository<PhotoStatEntity
     }
   }
 
-  public async viewsPhotoStat(photoId: number): Promise<PhotoStatEntity> {
+  public async addViewsPhotoStat(photoId: number): Promise<PhotoStatEntity> {
     try {
       const photoStatEntity: PhotoStatEntity = await this.findOneByCondition({
         photoId,
@@ -73,7 +65,11 @@ export class PhotoStatsRepository extends BaseAbstractRepository<PhotoStatEntity
           acc.deleted += stat.deleted;
           return acc;
         }
-        acc.views += stat.viewsCount;
+        if (stat.viewsCount) {
+          acc.views += stat.viewsCount;
+          return acc;
+        }
+
         return acc;
       }, acc);
       return acc;

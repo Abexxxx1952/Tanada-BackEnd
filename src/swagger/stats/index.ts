@@ -1,6 +1,8 @@
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { PhotosStats, UsersStats } from '../types';
-import { PhotoStatEntity } from 'src/domain/stat/entity/photoStat.entity';
+
+import { UsersStatsResultModel } from './types/usersStatsResult';
+import { PhotosStatsResultModel } from './types/photosStatsResult';
+import { PhotoStatModel } from './types/photoStats';
 
 export function ApiStatsGetUsers() {
   return function (
@@ -16,7 +18,7 @@ export function ApiStatsGetUsers() {
     ApiResponse({
       status: 200,
       description: 'Got users stats',
-      type: UsersStats,
+      type: UsersStatsResultModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 404,
@@ -47,7 +49,7 @@ export function ApiStatsGetPhotos() {
     ApiResponse({
       status: 200,
       description: 'Got photos stats',
-      type: PhotosStats,
+      type: PhotosStatsResultModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 404,
@@ -78,7 +80,7 @@ export function ApiStatsPostAddPhotoView() {
     ApiResponse({
       status: 200,
       description: 'Added photo view',
-      type: PhotoStatEntity,
+      type: PhotoStatModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,

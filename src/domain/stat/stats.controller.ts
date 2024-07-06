@@ -25,6 +25,8 @@ import {
   ApiStatsGetPhotos,
   ApiStatsPostAddPhotoView,
 } from '../../swagger/stats';
+import { UsersStatsResult } from './types/usersStatsResult';
+import { PhotosStatsResult } from './types/photosStatsResult';
 
 @ApiTags('v1/stats')
 @Controller('v1/stats')
@@ -40,10 +42,7 @@ export class StatController {
   @HttpCode(HttpStatus.OK)
   @UseInterceptorsCacheInterceptor()
   @ApiStatsGetUsers()
-  async getUsersStats(): Promise<{
-    created: number;
-    deleted: number;
-  }> {
+  async getUsersStats(): Promise<UsersStatsResult> {
     return await this.userStatsRepository.getUsersStats();
   }
 
@@ -51,24 +50,17 @@ export class StatController {
   @HttpCode(HttpStatus.OK)
   @UseInterceptorsCacheInterceptor()
   @ApiStatsGetPhotos()
-  async getPhotosStats(): Promise<{
-    created: number;
-    views: number;
-    deleted: number;
-  }> {
+  async getPhotosStats(): Promise<PhotosStatsResult> {
     return await this.photoStatsRepository.getPhotosStats();
   }
 
   @Post('addPhotoView')
   @HttpCode(HttpStatus.CREATED)
-  @UseInterceptorsCacheInterceptor({
-    cache: CacheOptions.InvalidateCacheByKey,
-    cacheKey: ['/api/v1/stats/photos'],
-  })
+  @UseInterceptorsCacheInterceptor({ cache: CacheOptions.InvalidateAllCache })
   @ApiStatsPostAddPhotoView()
   async addViewsPhotoStats(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<PhotoStatEntity> {
-    return await this.photoStatsRepository.viewsPhotoStat(id);
+    return await this.photoStatsRepository.addViewsPhotoStat(id);
   }
 }

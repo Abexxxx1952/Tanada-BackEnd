@@ -1,20 +1,10 @@
 import { faker } from '@faker-js/faker';
 import { UserEntity } from '../../domain/user/entity/user.entity';
 import { PhotoEntity } from '../../domain/photo/entity/photo.entity';
-
-function createRandomPhoto(user: UserEntity): PhotoEntity {
-  const photo = new PhotoEntity();
-  photo.id = faker.datatype.number({ min: 1 });
-  photo.link = faker.internet.url();
-  photo.user = user;
-  photo.createdAt = faker.date.past();
-  photo.updatedAt = faker.date.past();
-
-  return photo;
-}
-function createRandomPhotos(user: UserEntity): PhotoEntity[] {
-  return faker.helpers.multiple(() => createRandomPhoto(user), {
-    count: 3,
+import { PhotoStatEntity } from '../../domain/stat/entity/photoStat.entity';
+export function users(count: number): UserEntity[] {
+  return faker.helpers.multiple(createRandomUser, {
+    count,
   });
 }
 
@@ -33,8 +23,30 @@ function createRandomUser(): UserEntity {
   return user;
 }
 
-export function users(count: number): UserEntity[] {
-  return faker.helpers.multiple(createRandomUser, {
-    count,
+function createRandomPhotos(user: UserEntity): PhotoEntity[] {
+  return faker.helpers.multiple(() => createRandomPhoto(user), {
+    count: 3,
   });
+}
+
+function createRandomPhoto(user: UserEntity): PhotoEntity {
+  const photo = new PhotoEntity();
+  photo.id = faker.number.int({ min: 1, max: 1000 });
+  photo.link = faker.internet.url();
+  photo.user = user;
+  photo.createdAt = faker.date.past();
+  photo.updatedAt = faker.date.past();
+  photo.stats = createRandomPhotoStat(photo.id);
+
+  return photo;
+}
+
+function createRandomPhotoStat(photoId: number): PhotoStatEntity {
+  const photostat = new PhotoStatEntity();
+  photostat.id = faker.number.int({ min: 1, max: 100 });
+  photostat.created = faker.number.int({ min: 1, max: 100 });
+  photostat.viewsCount = faker.number.int({ min: 1, max: 100 });
+  photostat.photoId = photoId;
+
+  return photostat;
 }

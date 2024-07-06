@@ -48,7 +48,7 @@ import {
   UseInterceptorsCacheInterceptor,
   CacheOptions,
 } from 'src/common/interceptors/cache.interceptor';
-import { CreateSignedUploadUrlResult } from 'src/externalStorage/externalStorage.service';
+import { CreateSignedUploadUrlResult } from '../../externalStorage/types/createSignedUploadUrlResult';
 import { CreateSignedUploadUrlDto } from './dto/createSignedUploadUrl.dto';
 
 @ApiTags('v1/photos')
@@ -149,7 +149,7 @@ export class PhotoController {
     );
   }
 
-  @Post('create')
+  @Post('createPhoto')
   @UseGuards(PermissionGuard([PhotosPermission.CreatePhoto]))
   @UseGuards(AccessTokenAuthGuard)
   @HttpCode(HttpStatus.CREATED)

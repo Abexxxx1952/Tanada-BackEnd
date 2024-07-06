@@ -1,13 +1,27 @@
-import { ApiOperation, ApiBody, ApiResponse, ApiParam } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiBody,
+  ApiResponse,
+  ApiParam,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { UserEntity } from 'src/domain/user/entity/user.entity';
 
 import { AttachedUser } from 'src/domain/user/auth/types/attachedUser';
 import {
   FindAllUserWithConditionsDto,
   FindOneUserWithConditionsDto,
-  UpdateResult,
-} from '../types';
+} from '../types/FindUserWithConditions';
 import { LoginLocalUserDto } from 'src/domain/user/dto/loginUserLocal.dto';
+import { UpdateResult } from '../../database/abstractRepository/types/updateResult';
+import { PaginationParamsArgs } from '../types/paginationParams';
+import { UserModel } from './types/user';
+import { FindUserByConditionsArgs } from './types/findUserByConditions';
+import { CreateUserLocalArgs } from './types/createUserLocal';
+import { LoginLocalUser } from './types/loginLocalUser';
+import { UpdateUserArgs } from './types/updateUser';
+import { AttachedUserModel } from './types/attachedUser';
+import { UpdateResultModel } from '../types/updateResult';
 
 export function ApiUsersGet() {
   return function (
@@ -16,10 +30,11 @@ export function ApiUsersGet() {
     descriptor: PropertyDescriptor,
   ) {
     ApiOperation({ summary: 'Get all users' })(target, propertyKey, descriptor);
+    ApiQuery({ type: PaginationParamsArgs })(target, propertyKey, descriptor);
     ApiResponse({
       status: 200,
       description: 'Got all users',
-      type: [UserEntity],
+      type: [UserModel],
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 404,
@@ -51,7 +66,7 @@ export function ApiUsersGetFindById() {
     ApiResponse({
       status: 200,
       description: 'Got the user',
-      type: UserEntity,
+      type: UserModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
@@ -79,10 +94,15 @@ export function ApiUsersPostFindOneBy() {
       propertyKey,
       descriptor,
     );
+    ApiBody({ type: FindUserByConditionsArgs })(
+      target,
+      propertyKey,
+      descriptor,
+    );
     ApiResponse({
       status: 200,
       description: 'Got the user',
-      type: UserEntity,
+      type: UserModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
@@ -110,10 +130,16 @@ export function ApiUsersPostFindManyBy() {
       propertyKey,
       descriptor,
     );
+    ApiQuery({ type: PaginationParamsArgs })(target, propertyKey, descriptor);
+    ApiBody({ type: FindUserByConditionsArgs })(
+      target,
+      propertyKey,
+      descriptor,
+    );
     ApiResponse({
       status: 200,
       description: 'Got all user by condition',
-      type: [UserEntity],
+      type: [UserModel],
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
@@ -149,7 +175,7 @@ export function ApiUsersPostFindOneWith() {
     ApiResponse({
       status: 200,
       description: 'Got the user by condition',
-      type: UserEntity,
+      type: UserModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
@@ -181,6 +207,7 @@ export function ApiUsersPostFindAllWith() {
       propertyKey,
       descriptor,
     );
+    ApiQuery({ type: PaginationParamsArgs })(target, propertyKey, descriptor);
     ApiBody({ type: FindAllUserWithConditionsDto })(
       target,
       propertyKey,
@@ -189,7 +216,7 @@ export function ApiUsersPostFindAllWith() {
     ApiResponse({
       status: 200,
       description: 'Got all user by condition',
-      type: [UserEntity],
+      type: [UserModel],
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
@@ -221,10 +248,11 @@ export function ApiUsersPostRegistration() {
       propertyKey,
       descriptor,
     );
+    ApiBody({ type: CreateUserLocalArgs })(target, propertyKey, descriptor);
     ApiResponse({
       status: 201,
       description: 'User is registered',
-      type: UserEntity,
+      type: UserModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
@@ -256,12 +284,12 @@ export function ApiUsersPostLoginLocal() {
       descriptor,
     );
     ApiBody({
-      type: LoginLocalUserDto,
+      type: LoginLocalUser,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 200,
       description: 'User is logged in',
-      type: AttachedUser,
+      type: AttachedUserModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
@@ -296,7 +324,7 @@ export function ApiUsersPostLogOut() {
     ApiResponse({
       status: 200,
       description: 'User is logged out',
-      type: AttachedUser,
+      type: AttachedUserModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 401,
@@ -391,7 +419,7 @@ export function ApiUsersGetLoginGoogleCallback() {
     ApiResponse({
       status: 200,
       description: 'User is logged in',
-      type: AttachedUser,
+      type: AttachedUserModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 500,
@@ -436,7 +464,7 @@ export function ApiUsersGetLoginGitHubCallback() {
     ApiResponse({
       status: 200,
       description: 'User is logged in',
-      type: AttachedUser,
+      type: AttachedUserModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 500,
@@ -459,7 +487,7 @@ export function ApiUsersGetStatus() {
     ApiResponse({
       status: 200,
       description: 'Got user information',
-      type: UserEntity,
+      type: UserModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 401,
@@ -489,10 +517,11 @@ export function ApiUsersPatchUpdate() {
     ApiOperation({
       summary: 'Update user. (AccessToken required)',
     })(target, propertyKey, descriptor);
+    ApiBody({ type: UpdateUserArgs })(target, propertyKey, descriptor);
     ApiResponse({
       status: 200,
       description: 'User Updated',
-      type: UpdateResult,
+      type: UpdateResultModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 401,
@@ -525,7 +554,7 @@ export function ApiUsersDeleteDelete() {
     ApiResponse({
       status: 200,
       description: 'User deleted',
-      type: UserEntity,
+      type: UserModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 401,

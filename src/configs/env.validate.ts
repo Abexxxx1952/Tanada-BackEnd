@@ -23,6 +23,10 @@ class EnvironmentVariables {
 
   @IsString()
   @IsNotEmpty()
+  PREFIX_URL: string;
+
+  @IsString()
+  @IsNotEmpty()
   DATABASE_TYPE: string;
 
   @IsString()
@@ -62,6 +66,10 @@ class EnvironmentVariables {
   @IsNotEmpty()
   @Transform(({ value }) => parseInt(value))
   JWT_REFRESH_TOKEN_EXPIRATION_TIME: number;
+
+  @IsString()
+  @IsNotEmpty()
+  REFRESH_TOKEN_PATH: string;
 
   @IsString()
   @IsNotEmpty()

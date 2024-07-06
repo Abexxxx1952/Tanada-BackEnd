@@ -1,8 +1,4 @@
-import {
-  ApiProperty,
-  ApiPropertyOptional,
-  getSchemaPath,
-} from '@nestjs/swagger';
+import { ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { FindPhotoByConditionsDto } from 'src/domain/photo/dto/findByConditions.dto';
 import { FindUserByConditionsDto } from 'src/domain/user/dto/findByConditions.dto';
 import {
@@ -13,38 +9,6 @@ import {
   FindOptionsRelations,
   FindManyOptions,
 } from 'typeorm';
-
-class CreateSignedUploadUrlResultData {
-  @ApiPropertyOptional()
-  signedUrl: string;
-
-  @ApiPropertyOptional()
-  token: string;
-
-  @ApiPropertyOptional()
-  path: string;
-}
-export class CreateSignedUploadUrlResult {
-  @ApiProperty({ type: CreateSignedUploadUrlResultData, nullable: true })
-  data: CreateSignedUploadUrlResultData | null;
-
-  @ApiProperty({ type: 'Error', nullable: true })
-  error: null | Error;
-}
-
-export class UpdateResult {
-  @ApiProperty()
-  raw: any;
-  @ApiPropertyOptional()
-  affected?: number;
-  @ApiProperty({
-    isArray: true,
-    type: Object,
-  })
-  generatedMaps: {
-    [key: string]: any;
-  }[];
-}
 
 type FindOptionsOrderValue =
   | 'ASC'
@@ -467,20 +431,4 @@ export class FindAllPhotoWithConditionsDto
 
   @ApiPropertyOptional({ example: 8 })
   readonly take?: number;
-}
-
-export class UsersStats {
-  @ApiProperty()
-  created: number;
-  @ApiProperty()
-  deleted: number;
-}
-
-export class PhotosStats {
-  @ApiProperty()
-  created: number;
-  @ApiProperty()
-  views: number;
-  @ApiProperty()
-  deleted: number;
 }

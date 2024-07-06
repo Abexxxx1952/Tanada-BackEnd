@@ -1,15 +1,7 @@
-import {
-  Injectable,
-  ConflictException,
-  BadRequestException,
-  NotFoundException,
-  InternalServerErrorException,
-  ForbiddenException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { BaseAbstractRepository } from '../../../database/abstractRepository/base.abstract.repository';
-
 import { UserStatEntity } from '../entity/userStat.entity';
 
 @Injectable()
@@ -47,12 +39,15 @@ export class UserStatsRepository extends BaseAbstractRepository<UserStatEntity> 
       const stats: UserStatEntity[] = await this.findAll();
       const acc = { created: 0, deleted: 0 };
       stats.reduce((acc, stat) => {
-        if (acc.created) {
+        if (stat.created) {
           acc.created += stat.created;
           return acc;
         }
+        if (stat.deleted) {
+          acc.deleted += stat.deleted;
+          return acc;
+        }
 
-        acc.deleted += stat.deleted;
         return acc;
       }, acc);
       return acc;

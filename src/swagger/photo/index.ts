@@ -1,11 +1,24 @@
-import { ApiOperation, ApiBody, ApiResponse, ApiParam } from '@nestjs/swagger';
-import { PhotoEntity } from 'src/domain/photo/entity/photo.entity';
 import {
-  CreateSignedUploadUrlResult,
+  ApiOperation,
+  ApiBody,
+  ApiResponse,
+  ApiParam,
+  ApiQuery,
+} from '@nestjs/swagger';
+import {
   FindAllPhotoWithConditionsDto,
   FindOnePhotoWithConditionsDto,
-  UpdateResult,
-} from '../types';
+} from '../types/FindUserWithConditions';
+import { PaginationParamsArgs } from '../types/paginationParams';
+import { PhotoModel } from './types/photo';
+import {
+  CreateSignedUploadUrlArgs,
+  CreateSignedUploadUrlResultModel,
+} from './types/createSignedUploadUrlResult';
+import { UpdateResultModel } from '../types/updateResult';
+import { FindPhotoByConditionsArgs } from './types/findPhotoByConditions';
+import { CreatePhotoArgs } from './types/createPhoto';
+import { UpdatePhotoArgs } from './types/updatePhoto';
 
 export function ApiPhotosGet() {
   return function (
@@ -18,10 +31,11 @@ export function ApiPhotosGet() {
       propertyKey,
       descriptor,
     );
+    ApiQuery({ type: PaginationParamsArgs })(target, propertyKey, descriptor);
     ApiResponse({
       status: 200,
       description: 'Got all photos',
-      type: [PhotoEntity],
+      type: [PhotoModel],
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 404,
@@ -57,7 +71,7 @@ export function ApiPhotosGetFindById() {
     ApiResponse({
       status: 200,
       description: 'Got the photo',
-      type: PhotoEntity,
+      type: PhotoModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
@@ -89,10 +103,15 @@ export function ApiPhotosPostFindOneBy() {
       propertyKey,
       descriptor,
     );
+    ApiBody({ type: FindPhotoByConditionsArgs })(
+      target,
+      propertyKey,
+      descriptor,
+    );
     ApiResponse({
       status: 200,
       description: 'Got the photo',
-      type: PhotoEntity,
+      type: PhotoModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
@@ -124,10 +143,16 @@ export function ApiPhotosPostFindManyBy() {
       propertyKey,
       descriptor,
     );
+    ApiQuery({ type: PaginationParamsArgs })(target, propertyKey, descriptor);
+    ApiBody({ type: FindPhotoByConditionsArgs })(
+      target,
+      propertyKey,
+      descriptor,
+    );
     ApiResponse({
       status: 200,
       description: 'Got all photos by condition',
-      type: [PhotoEntity],
+      type: [PhotoModel],
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
@@ -167,7 +192,7 @@ export function ApiPhotosPostFindOneWith() {
     ApiResponse({
       status: 200,
       description: 'Got the photo by condition',
-      type: PhotoEntity,
+      type: PhotoModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
@@ -199,6 +224,7 @@ export function ApiPhotosPostFindAllWith() {
       propertyKey,
       descriptor,
     );
+    ApiQuery({ type: PaginationParamsArgs })(target, propertyKey, descriptor);
     ApiBody({ type: FindAllPhotoWithConditionsDto })(
       target,
       propertyKey,
@@ -207,7 +233,7 @@ export function ApiPhotosPostFindAllWith() {
     ApiResponse({
       status: 200,
       description: 'Got all photos by condition',
-      type: [PhotoEntity],
+      type: [PhotoModel],
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
@@ -238,10 +264,15 @@ export function ApiPhotosPostCreateSignedUploadUrl() {
       summary:
         'SignedUploadUrl creation. (CreatePhoto permission required. AccessToken required)',
     })(target, propertyKey, descriptor);
+    ApiBody({ type: CreateSignedUploadUrlArgs })(
+      target,
+      propertyKey,
+      descriptor,
+    );
     ApiResponse({
       status: 201,
       description: 'SignedUploadUrl is created',
-      type: CreateSignedUploadUrlResult,
+      type: CreateSignedUploadUrlResultModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
@@ -276,10 +307,11 @@ export function ApiPhotosPostCreate() {
       summary:
         'Photo creation. (CreatePhoto permission required. AccessToken required)',
     })(target, propertyKey, descriptor);
+    ApiBody({ type: CreatePhotoArgs })(target, propertyKey, descriptor);
     ApiResponse({
       status: 201,
       description: 'Photo is created',
-      type: PhotoEntity,
+      type: PhotoModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
@@ -314,10 +346,11 @@ export function ApiPhotosPutUpdatePhotoHard() {
       summary:
         'Update photo. (UpdatePhoto permission required. AccessToken required)',
     })(target, propertyKey, descriptor);
+    ApiBody({ type: UpdatePhotoArgs })(target, propertyKey, descriptor);
     ApiResponse({
       status: 200,
       description: 'Photo Updated',
-      type: UpdateResult,
+      type: PhotoModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 401,
@@ -348,10 +381,11 @@ export function ApiPhotosPatchUpdatePhotoSoft() {
       summary:
         'Update photo. (UpdatePhoto permission required. AccessToken required)',
     })(target, propertyKey, descriptor);
+    ApiBody({ type: UpdatePhotoArgs })(target, propertyKey, descriptor);
     ApiResponse({
       status: 200,
       description: 'Photo Updated',
-      type: UpdateResult,
+      type: UpdateResultModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 401,
@@ -390,7 +424,7 @@ export function ApiPhotosDeletePhoto() {
     ApiResponse({
       status: 200,
       description: 'Photo deleted',
-      type: PhotoEntity,
+      type: PhotoModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 401,

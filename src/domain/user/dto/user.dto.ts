@@ -10,7 +10,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { PhotoEntity } from 'src/domain/photo/entity/photo.entity';
-import { PermissionEnum, PermissionEnumKeys } from '../permission/permission';
+import { UserPermissions, UserPermissionsKeys } from '../permission/permission';
 import { RegistrationSources } from '../auth/types/providersOAuth.enum';
 
 export class UserDto {
@@ -49,8 +49,8 @@ export class UserDto {
   @IsOptional()
   readonly photo?: PhotoEntity[];
 
-  @IsEnum(PermissionEnum, { each: true })
-  readonly permissions: PermissionEnumKeys[];
+  @IsEnum(UserPermissions, { each: true })
+  readonly permissions: UserPermissionsKeys[];
 
   @IsEnum(RegistrationSources, { each: true })
   registrationSources: RegistrationSources[];

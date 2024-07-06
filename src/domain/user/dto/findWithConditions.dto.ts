@@ -24,7 +24,11 @@ interface OrderOptions {
   nulls?: 'first' | 'last' | 'FIRST' | 'LAST';
 }
 
-class OrderObject {
+type OrderObjectType = {
+  [P in keyof FindUserByConditionsDto]: Direction | OrderOptions;
+};
+
+class OrderObject implements OrderObjectType {
   [key: string]: Direction | OrderOptions;
 }
 export class FindOneUserWithConditionsDto

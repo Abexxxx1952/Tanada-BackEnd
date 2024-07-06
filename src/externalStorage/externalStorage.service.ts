@@ -1,16 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
+import { CreateSignedUploadUrlResult } from './types/createSignedUploadUrlResult';
 
-export type CreateSignedUploadUrlResult =
-  | {
-      data: { signedUrl: string; token: string; path: string };
-      error: null;
-    }
-  | {
-      data: null;
-      error: Error;
-    };
 @Injectable()
 export class ExternalStorageService {
   private supabaseClient: SupabaseClient;
@@ -24,7 +16,7 @@ export class ExternalStorageService {
     fileName: string,
   ): Promise<CreateSignedUploadUrlResult> {
     try {
-      if (!this.extensionСheck(fileName)) {
+      if (!this.extensionCheck(fileName)) {
         throw new Error('Invalid file extension');
       }
 
@@ -77,7 +69,7 @@ export class ExternalStorageService {
     );
   }
 
-  private extensionСheck(fileName: string): boolean {
+  private extensionCheck(fileName: string): boolean {
     const extension = fileName.split('.').pop();
     const imageExtensions = [
       '.jpg',
