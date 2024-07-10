@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
@@ -11,6 +11,15 @@ import { DomainModule } from './domain/domain.module';
 import { DatabaseModule } from './database/databaseNestjsTypeorm.module';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { ExternalStorageModule } from './externalStorage/externalStorage.module';
+import { LoggerGqlPlugin } from './common/plugin/loggerGql.plugin';
+import { sensitiveDirectiveTransformer } from './common/directive/sensitive.directive';
+import {
+  DirectiveLocation,
+  GraphQLDirective,
+  GraphQLList,
+  GraphQLString,
+} from 'graphql';
+import { GraphqlTypesModule } from './graphql/graphqlTypeController/graphqlType.module';
 
 @Module({
   imports: [
@@ -47,18 +56,39 @@ import { ExternalStorageModule } from './externalStorage/externalStorage.module'
       isGlobal: true,
       inject: [ConfigService],
     }),
-    GraphQLModule.forRoot<ApolloDriverConfig>({
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      playground: true,
-      autoSchemaFile: true,
-      definitions: {
-        path: join(process.cwd(), 'src', 'graphql', 'index.ts'),
-        outputAs: 'class',
-      },
+      useFactory: () => ({
+        playground: { settings: { 'request.credentials': 'include' } }, // for cookies in playground
+        autoSchemaFile: true,
+
+        definitions: {
+          path: join(process.cwd(), 'src', 'graphql', 'index.ts'),
+          outputAs: 'class',
+        },
+        context: ({ req, res }) => ({ req, res }), // for cookies
+        transformSchema: (schema) =>
+          sensitiveDirectiveTransformer(schema, 'sensitive'),
+        buildSchemaOptions: {
+          directives: [
+            new GraphQLDirective({
+              name: 'sensitive',
+              locations: [DirectiveLocation.FIELD_DEFINITION],
+              args: {
+                fields: {
+                  type: new GraphQLList(GraphQLString),
+                },
+              },
+            }),
+          ],
+        },
+        plugins: [new LoggerGqlPlugin()],
+      }),
     }),
 
     DatabaseModule,
     ExternalStorageModule,
+    GraphqlTypesModule,
     DomainModule,
   ],
   controllers: [],
@@ -71,6 +101,8 @@ import { ExternalStorageModule } from './externalStorage/externalStorage.module'
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('*');
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
   }
 }

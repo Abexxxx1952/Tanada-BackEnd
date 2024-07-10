@@ -19,6 +19,7 @@ class EnvironmentVariables {
 
   @IsNumber()
   @IsNotEmpty()
+  @Transform(({ value }) => parseInt(value))
   PORT: number;
 
   @IsString()
@@ -99,6 +100,26 @@ class EnvironmentVariables {
   @IsNotEmpty()
   @Transform(({ value }) => parseInt(value))
   CACHE_TTL: number;
+
+  @IsString()
+  @IsNotEmpty()
+  SUPABASE_URL: string;
+
+  @IsString()
+  @IsNotEmpty()
+  SUPABASE_KEY: string;
+
+  @IsString()
+  @IsNotEmpty()
+  SUPABASE_BUCKET_NAME: string;
+
+  @IsString()
+  @IsNotEmpty()
+  SUPABASE_BUCKET_FOLDER: string;
+
+  @IsString()
+  @IsNotEmpty()
+  SUPABASE_BUCKET_URL: string;
 }
 
 export function validate(config: Record<string, unknown>) {

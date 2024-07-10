@@ -110,10 +110,10 @@ export abstract class BaseAbstractRepository<T extends HasId>
       if (!entities.length) {
         throw new NotFoundException(`${this.entityName} not found`);
       }
-      if (offset && limit) {
-        return entities.slice(offset, offset + limit);
-      }
-      return entities;
+      const actualOffset = offset ?? 0;
+      const actualLimit = limit ?? entities.length;
+
+      return entities.slice(actualOffset, actualOffset + actualLimit);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
@@ -147,10 +147,10 @@ export abstract class BaseAbstractRepository<T extends HasId>
       if (!entities.length) {
         throw new NotFoundException(`${this.entityName}s not found`);
       }
-      if (offset && limit) {
-        return entities.slice(offset, offset + limit);
-      }
-      return entities;
+      const actualOffset = offset ?? 0;
+      const actualLimit = limit ?? entities.length;
+
+      return entities.slice(actualOffset, actualOffset + actualLimit);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
@@ -169,10 +169,10 @@ export abstract class BaseAbstractRepository<T extends HasId>
       if (!entities.length) {
         throw new NotFoundException(`${this.entityName}s not found`);
       }
-      if (offset && limit) {
-        return entities.slice(offset, offset + limit);
-      }
-      return entities;
+      const actualOffset = offset ?? 0;
+      const actualLimit = limit ?? entities.length;
+
+      return entities.slice(actualOffset, actualOffset + actualLimit);
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
@@ -262,7 +262,9 @@ export abstract class BaseAbstractRepository<T extends HasId>
         throw new NotFoundException(`${this.entityName} not found`);
       }
 
-      return await this.entity.remove(entityToRemove);
+      await this.entity.remove({ ...entityToRemove });
+
+      return entityToRemove;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);

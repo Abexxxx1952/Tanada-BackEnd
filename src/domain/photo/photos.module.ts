@@ -25,6 +25,6 @@ import { PhotosResolver } from './photos.resolver';
     },
     PhotosResolver,
   ],
-  exports: ['PhotosRepository'],
+  exports: [],
 })
 export class PhotosModule {}

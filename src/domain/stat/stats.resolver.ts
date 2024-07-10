@@ -19,7 +19,7 @@ export class StatsResolver {
     private readonly photoStatsRepository: PhotoStatsRepository,
   ) {}
 
-  @Query(() => [UsersStatsResultGqlModel], {
+  @Query(() => UsersStatsResultGqlModel, {
     name: 'getUsersStats',
     nullable: true,
   })

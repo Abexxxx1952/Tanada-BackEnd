@@ -43,9 +43,11 @@ export class ExternalStorageService {
 
   async deletePhoto(urlParam: string): Promise<string> {
     const url = new URL(urlParam);
+
     const pathnameParts = url.pathname.split('/');
+
     const fileName: string = pathnameParts
-      .slice(pathnameParts.length - 2, pathnameParts.length - 1)
+      .slice(pathnameParts.length - 2, pathnameParts.length)
       .join('/');
 
     try {

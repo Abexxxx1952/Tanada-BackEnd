@@ -74,7 +74,12 @@ export class AuthService {
         hashedRefreshToken: '',
       });
 
-      response.cookie('Authentication', '', {
+      response.cookie('Authentication_accessToken', '', {
+        httpOnly: true,
+        expires: new Date(),
+      });
+
+      response.cookie('Authentication_refreshToken', '', {
         httpOnly: true,
         expires: new Date(),
       });

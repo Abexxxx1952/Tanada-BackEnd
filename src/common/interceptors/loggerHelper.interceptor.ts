@@ -9,6 +9,7 @@ import { tap } from 'rxjs/operators';
 import { Reflector } from '@nestjs/core';
 import { plainToInstance } from 'class-transformer';
 import { REQUEST_BODY_LOGGING_KEY } from '../decorators/setMetadataRequestBodyLogging.decorator';
+
 @Injectable()
 export class LoggerHelperInterceptor implements NestInterceptor {
   constructor(private readonly reflector: Reflector) {}
@@ -17,7 +18,7 @@ export class LoggerHelperInterceptor implements NestInterceptor {
 
     const request = httpContext.getRequest<Request>();
 
-    const body: unknown = request.body;
+    const body = request.body;
 
     if (!body) {
       return;

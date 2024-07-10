@@ -1,4 +1,9 @@
-import { Inject } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Inject,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import {
   Resolver,
   Query,
@@ -6,30 +11,31 @@ import {
   Mutation,
   Int,
   Context,
-  GqlExecutionContext,
+  Directive,
 } from '@nestjs/graphql';
+import { Response } from 'express';
 import { UserEntity } from './entity/user.entity';
 import { UsersRepository } from './repository/users.repository';
-import { PaginationParams } from '../../database/abstractRepository/paginationDto/pagination.dto';
-import { FindUserByConditionsDto } from './dto/findByConditions.dto';
-import { FindOneUserWithConditionsDto } from './dto/findWithConditions.dto';
 import { UpdateResult } from '../../database/abstractRepository/types/updateResult';
-import { CurrentUser } from 'src/common/decorators/currentUser.decorator';
-import { UpdateUserDto } from './dto/update.dto';
+import { CurrentUserGql } from 'src/common/decorators/currentUserGql.decorator';
 import { AttachedUser } from './auth/types/attachedUser';
-import { CreateUserLocalDto } from './dto/createLocal.dto';
 import { AuthService } from './auth/auth.service';
 import { AttachedUserWithRt } from './auth/types/attachedUserWithRt';
 import { UserPaginationParamsGqlArgs } from './gql/args/pagination.args';
 import { UserGqlModel } from './gql/model/user';
-import { FindUserByConditionsGqlArgs } from './gql/args/findByConditions.args';
-import { FindOneUserWithConditionsGqlArgs } from './gql/args/findWithConditions.args';
+import { FindUserByConditionsGqlInput } from './gql/inputs/findUserByConditions.input';
+import { FindOneUserWithConditionsGqlInput } from './gql/inputs/findWithConditions.args';
 import { CreateUserGqlArgsLocal } from './gql/args/createLocal.args';
 import { AttachedUserGqlModel } from './gql/model/attachedUser';
 import { UpdateUserResultGqlModel } from './gql/model/updateResult';
 import { UpdateUserGqlArgs } from './gql/args/updateUser.args';
+import { AccessTokenGqlAuthGuard } from './auth/guards/gqlAccessToken.guard';
+import { RefreshTokenGqlAuthGuard } from './auth/guards/gqlRefreshToken.guard';
+import { LoginLocalArgs } from './gql/args/loginLocal.args';
 
-@Resolver(() => UserGqlModel)
+@Resolver()
+@UseInterceptors(ClassSerializerInterceptor)
+/* @UseInterceptors(LoggerHelperGqlInterceptor) */
 export class UsersResolver {
   constructor(
     @Inject('UsersRepository')
@@ -39,7 +45,8 @@ export class UsersResolver {
 
   @Query(() => [UserGqlModel], { name: 'getUsers', nullable: true })
   async getUsers(
-    @Args() { offset, limit }: UserPaginationParamsGqlArgs,
+    @Args()
+    { offset, limit }: UserPaginationParamsGqlArgs,
   ): Promise<UserEntity[]> {
     return await this.usersRepository.findAll(offset, limit);
   }
@@ -53,14 +60,14 @@ export class UsersResolver {
 
   @Query(() => UserGqlModel, { name: 'getUserOneBy', nullable: true })
   async getUserOneBy(
-    @Args() condition: FindUserByConditionsGqlArgs,
+    @Args('condition') condition: FindUserByConditionsGqlInput,
   ): Promise<UserEntity> {
     return await this.usersRepository.findOneByCondition(condition);
   }
 
   @Query(() => [UserGqlModel], { name: 'getUserManyBy', nullable: true })
   async getUserManyBy(
-    @Args() condition: FindUserByConditionsGqlArgs,
+    @Args('condition') condition: FindUserByConditionsGqlInput,
     @Args() { offset, limit }: UserPaginationParamsGqlArgs,
   ): Promise<UserEntity[]> {
     return await this.usersRepository.findAllByCondition(
@@ -72,14 +79,15 @@ export class UsersResolver {
 
   @Query(() => UserGqlModel, { name: 'getUserOneWith', nullable: true })
   async getUserOneWith(
-    @Args() condition: FindOneUserWithConditionsGqlArgs,
+    @Args('condition') condition: FindOneUserWithConditionsGqlInput,
   ): Promise<UserEntity> {
     return await this.usersRepository.findOneWithCondition(condition);
   }
 
-  @Query(() => UserGqlModel, { name: 'getUserStatus', nullable: true })
+  @Query(() => UserGqlModel, { name: 'userStatus', nullable: true })
+  @UseGuards(AccessTokenGqlAuthGuard)
   async getUserStatus(
-    @CurrentUser() currentUser: AttachedUser,
+    @CurrentUserGql() currentUser: AttachedUser,
   ): Promise<UserEntity> {
     return await this.usersRepository.status(currentUser.email);
   }
@@ -93,49 +101,58 @@ export class UsersResolver {
     return await this.usersRepository.createUserLocal(createUserLocal);
   }
 
+  @Directive('@sensitive(fields: ["password"])')
   @Mutation(() => AttachedUserGqlModel, {
     name: 'loginLocal',
   })
   async loginLocal(
-    @CurrentUser() currentUser: UserEntity,
-    @Context() context: GqlExecutionContext,
+    @Args() { email, password }: LoginLocalArgs,
+    @Context() context: any,
   ): Promise<AttachedUser> {
-    const ctx = GqlExecutionContext.create(context);
-    const response = ctx.getContext().res;
+    const currentUser = await this.authService.validateUserLocal(
+      email,
+      password,
+    );
+
+    const response: Response = context.res;
+
     return await this.authService.login(currentUser, response);
   }
 
   @Mutation(() => AttachedUserGqlModel, {
     name: 'logOut',
   })
+  @UseGuards(AccessTokenGqlAuthGuard)
   async logout(
-    @CurrentUser() currentUser: AttachedUser,
-    @Context() context: GqlExecutionContext,
+    @CurrentUserGql() currentUser: AttachedUser,
+    @Context() context: any,
   ): Promise<AttachedUser> {
-    const ctx = GqlExecutionContext.create(context);
-    const response = ctx.getContext().res;
+    const response: Response = context.res;
     return await this.authService.logout(currentUser, response);
   }
 
   @Mutation(() => String, {
     name: 'refresh',
   })
+  @UseGuards(RefreshTokenGqlAuthGuard)
   async refreshTokens(
-    @CurrentUser() currentUserWithRt: AttachedUserWithRt,
-    @Context() context: GqlExecutionContext,
+    @CurrentUserGql() currentUserWithRt: AttachedUserWithRt,
+    @Context() context: any,
   ): Promise<string> {
-    const ctx = GqlExecutionContext.create(context);
-    const response = ctx.getContext().res;
+    const response: Response = context.res;
     return await this.authService.refreshTokens(currentUserWithRt, response);
   }
 
+  @Directive('@sensitive(fields: ["password"])')
   @Mutation(() => UpdateUserResultGqlModel, {
     name: 'updateUser',
   })
+  @UseGuards(AccessTokenGqlAuthGuard)
   async updateUser(
-    @CurrentUser('id') currentUserId: string,
     @Args() updateUser: UpdateUserGqlArgs,
+    @CurrentUserGql('id') currentUserId: string,
   ): Promise<UpdateResult> {
+    console.log('updateUser', updateUser, currentUserId);
     return await this.usersRepository.updateOneUserByIdSoft(
       currentUserId,
       updateUser,
@@ -145,9 +162,10 @@ export class UsersResolver {
   @Mutation(() => UserGqlModel, {
     name: 'deleteUser',
   })
+  @UseGuards(AccessTokenGqlAuthGuard)
   async deleteUser(
-    @CurrentUser('id') currentUserId: string,
-  ): Promise<UserGqlModel> {
+    @CurrentUserGql('id') currentUserId: string,
+  ): Promise<UserEntity> {
     return await this.usersRepository.removeUserById(currentUserId);
   }
 }

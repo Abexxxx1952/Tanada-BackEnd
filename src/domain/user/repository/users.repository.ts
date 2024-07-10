@@ -115,7 +115,7 @@ export class UsersRepository extends BaseAbstractRepository<UserEntity> {
         }
         throw error;
       }
-
+      console.log('data.registrationSources', data.registrationSources);
       if (!existUser.registrationSources.includes(RegistrationSources.Local)) {
         data.registrationSources = [
           ...existUser.registrationSources,
@@ -133,6 +133,7 @@ export class UsersRepository extends BaseAbstractRepository<UserEntity> {
   public async removeUserById(id: string): Promise<UserEntity> {
     try {
       const user = await this.removeById(id);
+
       await this.userStatsRepository.deleteUserStat();
       return user;
     } catch (error) {

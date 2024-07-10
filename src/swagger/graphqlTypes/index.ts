@@ -1,14 +1,25 @@
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-/*
- * -------------------------------------------------------
- * THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
- * -------------------------------------------------------
- */
-
-/* tslint:disable */
-/* eslint-disable */
-
-export enum UserDirection {
+export function ApiGraphQlTypesGet() {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) {
+    ApiOperation({ summary: 'Get graphQl types' })(
+      target,
+      propertyKey,
+      descriptor,
+    );
+    ApiResponse({
+      status: 200,
+      description: 'Got index.ts file',
+      content: {
+        'application/octet-stream': {
+          schema: {
+            type: 'string',
+            format: 'binary',
+            example: `export enum UserDirection {
     ASC = "ASC",
     DESC = "DESC",
     asc = "asc",
@@ -191,8 +202,6 @@ export class UpdatePhotoResultModel {
 }
 
 export abstract class IQuery {
-    abstract getGraphqlType(): string | Promise<string>;
-
     abstract getUsers(offset?: Nullable<number>, limit?: Nullable<number>): Nullable<UserModel[]> | Promise<Nullable<UserModel[]>>;
 
     abstract getUserById(id: number): Nullable<UserModel> | Promise<Nullable<UserModel>>;
@@ -249,3 +258,15 @@ export abstract class IMutation {
 export type DateTime = any;
 export type JSONObject = any;
 type Nullable<T> = T | null;
+
+`,
+          },
+        },
+      },
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 500,
+      description: 'Internal Server Error',
+    })(target, propertyKey, descriptor);
+  };
+}

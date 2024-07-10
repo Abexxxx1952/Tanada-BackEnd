@@ -8,7 +8,7 @@ import { UserEntity } from '../../entity/user.entity';
 
 @ObjectType('UserModel')
 export class UserGqlModel implements UserEntity {
-  @Field(() => ID)
+  @Field(() => ID, { nullable: true })
   id: string;
 
   @Field({ nullable: true })
@@ -18,9 +18,6 @@ export class UserGqlModel implements UserEntity {
   email: string;
 
   @Field({ nullable: true })
-  password?: string;
-
-  @Field({ nullable: true })
   icon?: string;
 
   @Field()
@@ -28,9 +25,6 @@ export class UserGqlModel implements UserEntity {
 
   @Field()
   updatedAt: Date;
-
-  @Field({ nullable: true })
-  hashedRefreshToken?: string;
 
   @Field(() => [PayloadEGqlModel], { nullable: true })
   payload: PayloadEGqlModel[];

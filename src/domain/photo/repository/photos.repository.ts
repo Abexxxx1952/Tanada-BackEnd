@@ -59,11 +59,14 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
         currentUserId,
       );
 
-      const entity = this.create({ ...data, user });
+      const entity = this.create({ ...data });
 
       const photo = await this.save(entity);
-      this.photoStatsRepository.createPhotoStat(photo.id);
-      return photo;
+
+      const stats = await this.photoStatsRepository.createPhotoStat(photo.id);
+      const photoWithStats = await this.save({ ...photo, stats, user });
+
+      return photoWithStats;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new ForbiddenException('Access Denied');
@@ -141,17 +144,25 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
             id: currentUserId,
           },
         },
+        relations: {
+          user: true,
+          stats: true,
+        },
       });
+      console.log(photo);
       const deleteResultFromStorage =
         await this.externalStorageService.deletePhoto(photo.link);
 
       if (deleteResultFromStorage !== 'DELETED') {
         throw new InternalServerErrorException();
       }
+      photo.stats.deleted = 1;
+      photo.stats.photoId = null;
+      await this.photoStatsRepository.save(photo.stats);
 
-      const photoRemoveResult = await this.removeById(id);
-      this.photoStatsRepository.deletePhotoStat(photoRemoveResult.id);
-      return photoRemoveResult;
+      await this.removeById(id);
+
+      return photo;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new ForbiddenException('Access Denied');

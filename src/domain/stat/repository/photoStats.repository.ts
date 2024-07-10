@@ -40,8 +40,9 @@ export class PhotoStatsRepository extends BaseAbstractRepository<PhotoStatEntity
       const photoStatEntity: PhotoStatEntity = await this.findOneByCondition({
         photoId,
       });
-
+      console.log(photoStatEntity);
       photoStatEntity.viewsCount += 1;
+      console.log(photoStatEntity);
       return await this.save(photoStatEntity);
     } catch (error) {
       throw error;
@@ -55,17 +56,16 @@ export class PhotoStatsRepository extends BaseAbstractRepository<PhotoStatEntity
   }> {
     try {
       const stats: PhotoStatEntity[] = await this.findAll();
+
       const acc = { created: 0, views: 0, deleted: 0 };
       stats.reduce((acc, stat) => {
         if (stat.created) {
           acc.created += stat.created;
+          acc.views += stat.viewsCount;
           return acc;
         }
         if (stat.deleted) {
           acc.deleted += stat.deleted;
-          return acc;
-        }
-        if (stat.viewsCount) {
           acc.views += stat.viewsCount;
           return acc;
         }

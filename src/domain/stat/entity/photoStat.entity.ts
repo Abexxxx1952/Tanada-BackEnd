@@ -21,8 +21,8 @@ export class PhotoStatEntity {
   @Column({ nullable: true })
   deleted?: number;
 
-  @Column()
-  photoId: number;
+  @Column({ nullable: true })
+  photoId: number | null;
 
   @OneToOne(() => PhotoEntity, (photo) => photo.stats)
   @JoinColumn({ name: 'photoId' })

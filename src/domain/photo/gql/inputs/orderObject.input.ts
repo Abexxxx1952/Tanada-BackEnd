@@ -1,4 +1,5 @@
 import { InputType, Field, registerEnumType } from '@nestjs/graphql';
+import { IsObject, IsOptional } from 'class-validator';
 
 enum PhotoDirection {
   ASC = 'ASC',
@@ -18,20 +19,30 @@ class OrderOptions {
   nulls?: 'first' | 'last' | 'FIRST' | 'LAST';
 }
 
-@InputType('PhotoOrderObjectInput')
+@InputType()
 export class PhotoOrderObjectGqlInput {
   @Field(() => PhotoDirection || OrderOptions, { nullable: true })
+  @IsOptional()
+  @IsObject()
   id?: PhotoDirection | OrderOptions;
 
   @Field(() => PhotoDirection || OrderOptions, { nullable: true })
+  @IsOptional()
+  @IsObject()
   link?: PhotoDirection | OrderOptions;
 
   @Field(() => PhotoDirection || OrderOptions, { nullable: true })
+  @IsOptional()
+  @IsObject()
   createdAt?: PhotoDirection | OrderOptions;
 
   @Field(() => PhotoDirection || OrderOptions, { nullable: true })
+  @IsOptional()
+  @IsObject()
   updatedAt?: PhotoDirection | OrderOptions;
 
   @Field(() => PhotoDirection || OrderOptions, { nullable: true })
+  @IsOptional()
+  @IsObject()
   user?: PhotoDirection | OrderOptions;
 }

@@ -8,14 +8,17 @@ import { createSwagger } from './swagger/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
   app.enableCors({
-    origin: '*',
+    origin: 'http://localhost:4000',
+    credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   });
   app.setGlobalPrefix(process.env.PREFIX_URL || 'api');
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
+      transform: true,
     }),
   );
 
@@ -24,6 +27,7 @@ async function bootstrap() {
       crossOriginEmbedderPolicy: false,
       contentSecurityPolicy: {
         directives: {
+          // Add GraphQL PlayGround domains here
           imgSrc: [
             `'self'`,
             'data:',
