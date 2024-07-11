@@ -46,14 +46,16 @@ export class ExternalStorageService {
 
     const pathnameParts = url.pathname.split('/');
 
-    const fileName: string = pathnameParts
-      .slice(pathnameParts.length - 2, pathnameParts.length)
-      .join('/');
+    const fileName: string = pathnameParts.at(-1);
 
     try {
       const { data, error } = await this.supabaseClient.storage
         .from(this.configService.getOrThrow<string>('SUPABASE_BUCKET_NAME'))
-        .remove([fileName]);
+        .remove([
+          `${this.configService.getOrThrow<string>(
+            'SUPABASE_BUCKET_FOLDER',
+          )}/${fileName}`,
+        ]);
 
       if (error) {
         throw error;

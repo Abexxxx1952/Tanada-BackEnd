@@ -1,9 +1,7 @@
-import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { join } from 'path';
 import { Response } from 'express';
 
-@Injectable()
 export class GraphqlTypeService {
   constructor(private readonly configService: ConfigService) {}
 

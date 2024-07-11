@@ -41,6 +41,7 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
       const result = await this.externalStorageService.createSignedUploadUrl(
         data.fileName,
       );
+
       setTimeout(
         async () => await this.uploadChecker(currentUserId, result.data.path),
         600000,
@@ -149,7 +150,7 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
           stats: true,
         },
       });
-      console.log(photo);
+
       const deleteResultFromStorage =
         await this.externalStorageService.deletePhoto(photo.link);
 
@@ -177,7 +178,8 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
   ): Promise<void> {
     const link = `${this.configService.getOrThrow<string>(
       'SUPABASE_BUCKET_URL',
-    )}${path}`;
+    )}/${path}`;
+
     try {
       const user: UserEntity = await this.usersRepository.findOneWithCondition({
         where: {
