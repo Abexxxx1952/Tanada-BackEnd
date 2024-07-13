@@ -12,10 +12,21 @@ import { DatabaseLogger } from './logger/dbLogger';
         const DBType = configService.getOrThrow('DATABASE_TYPE');
         return {
           type: DBType,
-          url: configService.getOrThrow('DB_CONNECTION_STRING'),
+          /* configService.getOrThrow<string>('DB_CONNECTION_STRING') */
+          url: `postgresql://${configService.getOrThrow<string>(
+            'DATABASE_USER',
+          )}:${configService.getOrThrow<string>(
+            'DATABASE_PASSWORD',
+          )}@${configService.getOrThrow<string>(
+            'DATABASE_HOST',
+          )}/${configService.getOrThrow<string>(
+            'DATABASE_NAME',
+          )}?sslmode=require`,
           entities: [__dirname + '/../**/*.entity.{js,ts}'],
           synchronize:
-            configService.getOrThrow('MODE') === 'production' ? false : true,
+            configService.getOrThrow<string>('MODE') === 'production'
+              ? false
+              : true,
           migrations: [__dirname + '/../migrations/**/*{.ts,.js}'],
           logger: new DatabaseLogger(),
         };
