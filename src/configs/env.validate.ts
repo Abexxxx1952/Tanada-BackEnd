@@ -17,6 +17,14 @@ class EnvironmentVariables {
   @IsNotEmpty()
   MODE: Environment;
 
+  @IsString()
+  @IsNotEmpty()
+  SERVER_DOMAIN_URL: string;
+
+  @IsString()
+  @IsNotEmpty()
+  CLIENT_DOMAIN_URL: string;
+
   @IsNumber()
   @IsNotEmpty()
   @Transform(({ value }) => parseInt(value))

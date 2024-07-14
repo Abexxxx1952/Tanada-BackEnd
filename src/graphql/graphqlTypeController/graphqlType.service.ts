@@ -13,7 +13,7 @@ export class GraphqlTypeService {
 
   downloadTypesAsUrl(): string {
     return `${this.configService.getOrThrow<string>(
-      'DOMAIN_URL',
+      'SERVER_DOMAIN_URL',
     )}:${this.configService.getOrThrow<number>(
       'PORT',
     )}/${this.configService.getOrThrow<string>('PREFIX_URL')}/graphqltypes`;
