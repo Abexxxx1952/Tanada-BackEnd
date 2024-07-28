@@ -9,6 +9,44 @@ import {
   FindOptionsRelations,
   FindManyOptions,
 } from 'typeorm';
+import { PhotoModel } from '../photo/types/photo';
+import { PhotoEntity } from '../../domain/photo/entity/photo.entity';
+import { UserEntity } from '../../domain/user/entity/user.entity';
+import { PhotoStatEntity } from '../../domain/stat/entity/photoStat.entity';
+import { UserModel } from '../user/types/user';
+import { PhotoStatModel } from '../stats/types/photoStats';
+
+class FindUserByConditions implements FindUserByConditionsDto {
+  @ApiPropertyOptional()
+  readonly id?: string;
+  @ApiPropertyOptional()
+  readonly name?: string;
+  @ApiPropertyOptional()
+  readonly email?: string;
+  @ApiPropertyOptional()
+  readonly icon?: string;
+  @ApiPropertyOptional()
+  readonly createdAt?: Date;
+  @ApiPropertyOptional()
+  readonly updatedAt?: Date;
+  @ApiPropertyOptional({ type: () => PhotoModel })
+  readonly photo?: PhotoEntity[];
+}
+
+class FindPhotoByConditions implements FindPhotoByConditionsDto {
+  @ApiPropertyOptional()
+  readonly id?: number;
+  @ApiPropertyOptional()
+  readonly link?: string;
+  @ApiPropertyOptional()
+  readonly createdAt?: Date;
+  @ApiPropertyOptional()
+  readonly updatedAt?: Date;
+  @ApiPropertyOptional({ type: () => UserModel })
+  readonly user?: UserEntity;
+  @ApiPropertyOptional({ type: () => PhotoStatModel })
+  readonly stats?: PhotoStatEntity;
+}
 
 type FindOptionsOrderValue =
   | 'ASC'
@@ -274,29 +312,18 @@ class OrderPhotoByConditionsDto {
 export class FindOneUserWithConditionsDto
   implements FindOneOptions<FindUserByConditionsDto>
 {
-  @ApiPropertyOptional({
-    oneOf: [
-      { type: 'object', $ref: getSchemaPath(FindUserByConditionsDto) },
-      {
-        type: 'array',
-        items: {
-          type: 'object',
-          $ref: getSchemaPath(FindUserByConditionsDto),
-        },
-      },
-    ],
-  })
+  @ApiPropertyOptional({ type: () => FindUserByConditions })
   readonly where?: FindUserByConditionsDto | FindUserByConditionsDto[];
 
   @ApiPropertyOptional({
-    type: FindUserByConditionsDto,
+    type: FindUserByConditions,
   })
   readonly select?:
     | FindOptionsSelect<FindUserByConditionsDto>
     | FindOptionsSelectByString<FindUserByConditionsDto>;
 
   @ApiPropertyOptional({
-    type: OrderUserByConditionsDto,
+    type: FindUserByConditions,
   })
   readonly order?: FindOptionsOrder<FindUserByConditionsDto>;
 
@@ -310,24 +337,24 @@ export class FindOneUserWithConditionsDto
   readonly relations?: FindOptionsRelations<FindUserByConditionsDto>;
 }
 
-export class FindAllUserWithConditionsDto
+export class FindAllUsersWithConditionsDto
   implements FindManyOptions<FindUserByConditionsDto>
 {
   @ApiPropertyOptional({
     oneOf: [
-      { type: 'object', $ref: getSchemaPath(FindUserByConditionsDto) },
+      { type: 'object', $ref: getSchemaPath(FindUserByConditions) },
       {
         type: 'array',
         items: {
           type: 'object',
-          $ref: getSchemaPath(FindUserByConditionsDto),
+          $ref: getSchemaPath(FindUserByConditions),
         },
       },
     ],
   })
   readonly where?: FindUserByConditionsDto | FindUserByConditionsDto[];
 
-  @ApiPropertyOptional({ type: FindUserByConditionsDto })
+  @ApiPropertyOptional({ type: FindUserByConditions })
   readonly select?:
     | FindOptionsSelect<FindUserByConditionsDto>
     | FindOptionsSelectByString<FindUserByConditionsDto>;
@@ -354,31 +381,20 @@ export class FindAllUserWithConditionsDto
 }
 
 export class FindOnePhotoWithConditionsDto
-  implements FindOneOptions<FindPhotoByConditionsDto>
+  implements FindOneOptions<FindPhotoByConditions>
 {
-  @ApiPropertyOptional({
-    oneOf: [
-      { type: 'object', $ref: getSchemaPath(FindPhotoByConditionsDto) },
-      {
-        type: 'array',
-        items: {
-          type: 'object',
-          $ref: getSchemaPath(FindPhotoByConditionsDto),
-        },
-      },
-    ],
-  })
-  readonly where?: FindPhotoByConditionsDto | FindPhotoByConditionsDto[];
+  @ApiPropertyOptional({ type: () => FindPhotoByConditions })
+  readonly where?: FindPhotoByConditions | FindPhotoByConditions[];
 
-  @ApiPropertyOptional({ type: FindPhotoByConditionsDto })
+  @ApiPropertyOptional({ type: FindPhotoByConditions })
   readonly select?:
-    | FindOptionsSelect<FindPhotoByConditionsDto>
-    | FindOptionsSelectByString<FindPhotoByConditionsDto>;
+    | FindOptionsSelect<FindPhotoByConditions>
+    | FindOptionsSelectByString<FindPhotoByConditions>;
 
   @ApiPropertyOptional({
-    type: OrderPhotoByConditionsDto,
+    type: FindPhotoByConditions,
   })
-  readonly order?: FindOptionsOrder<FindPhotoByConditionsDto>;
+  readonly order?: FindOptionsOrder<FindPhotoByConditions>;
 
   @ApiPropertyOptional({
     type: 'array',
@@ -387,35 +403,35 @@ export class FindOnePhotoWithConditionsDto
       enum: ['user'],
     },
   })
-  readonly relations?: FindOptionsRelations<FindPhotoByConditionsDto>;
+  readonly relations?: FindOptionsRelations<FindPhotoByConditions>;
 }
 
-export class FindAllPhotoWithConditionsDto
-  implements FindManyOptions<FindPhotoByConditionsDto>
+export class FindAllPhotosWithConditionsDto
+  implements FindManyOptions<FindPhotoByConditions>
 {
   @ApiPropertyOptional({
     oneOf: [
-      { type: 'object', $ref: getSchemaPath(FindPhotoByConditionsDto) },
+      { type: 'object', $ref: getSchemaPath(FindPhotoByConditions) },
       {
         type: 'array',
         items: {
           type: 'object',
-          $ref: getSchemaPath(FindPhotoByConditionsDto),
+          $ref: getSchemaPath(FindPhotoByConditions),
         },
       },
     ],
   })
-  readonly where?: FindPhotoByConditionsDto | FindPhotoByConditionsDto[];
+  readonly where?: FindPhotoByConditions | FindPhotoByConditions[];
 
-  @ApiPropertyOptional({ type: FindPhotoByConditionsDto })
+  @ApiPropertyOptional({ type: FindPhotoByConditions })
   readonly select?:
-    | FindOptionsSelect<FindPhotoByConditionsDto>
-    | FindOptionsSelectByString<FindPhotoByConditionsDto>;
+    | FindOptionsSelect<FindPhotoByConditions>
+    | FindOptionsSelectByString<FindPhotoByConditions>;
 
   @ApiPropertyOptional({
     type: OrderPhotoByConditionsDto,
   })
-  readonly order?: FindOptionsOrder<FindPhotoByConditionsDto>;
+  readonly order?: FindOptionsOrder<FindPhotoByConditions>;
 
   @ApiPropertyOptional({
     type: 'array',
@@ -424,7 +440,7 @@ export class FindAllPhotoWithConditionsDto
       enum: ['user'],
     },
   })
-  readonly relations?: FindOptionsRelations<FindPhotoByConditionsDto>;
+  readonly relations?: FindOptionsRelations<FindPhotoByConditions>;
 
   @ApiPropertyOptional({ example: 1 })
   readonly skip?: number;

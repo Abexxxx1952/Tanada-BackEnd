@@ -29,7 +29,10 @@ export class PhotosResolver {
   async getPhotos(
     @Args() { offset, limit }: PhotoPaginationParamsGqlArgs,
   ): Promise<PhotoEntity[]> {
-    return await this.photosRepository.findAll(offset, limit);
+    return await this.photosRepository.findAll({
+      skip: offset,
+      take: limit,
+    });
   }
 
   @Query(() => PhotoGqlModel, { name: 'getPhotoById', nullable: true })

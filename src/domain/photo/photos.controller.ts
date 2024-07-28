@@ -66,7 +66,10 @@ export class PhotoController {
   async findAll(
     @Query() { offset, limit }: PaginationParams,
   ): Promise<PhotoEntity[]> {
-    return await this.photosRepository.findAll(offset, limit);
+    return await this.photosRepository.findAll({
+      skip: offset,
+      take: limit,
+    });
   }
 
   @Get('findById/:id')
@@ -79,54 +82,96 @@ export class PhotoController {
     return await this.photosRepository.findOneById(id);
   }
 
-  @Post('findOneBy')
+  @Get('findOneBy')
   @HttpCode(HttpStatus.OK)
   @UseInterceptorsCacheInterceptor()
   @ApiPhotosPostFindOneBy()
   async findOneByCondition(
-    @Body() condition: FindPhotoByConditionsDto,
+    @Query() condition: { condition: string },
   ): Promise<PhotoEntity> {
-    return await this.photosRepository.findOneByCondition(condition);
+    let parsedCondition: FindPhotoByConditionsDto;
+    try {
+      parsedCondition =
+        await this.photosRepository.parsedCondition<FindPhotoByConditionsDto>(
+          condition,
+          FindPhotoByConditionsDto,
+        );
+    } catch (error) {
+      throw error;
+    }
+    return await this.photosRepository.findOneByCondition(parsedCondition);
   }
 
-  @Post('findManyBy')
+  @Get('findManyBy')
   @HttpCode(HttpStatus.OK)
   @UseInterceptorsCacheInterceptor()
   @ApiPhotosPostFindManyBy()
   async findManyByCondition(
     @Query() { offset, limit }: PaginationParams,
-    @Body() condition: FindPhotoByConditionsDto,
+    @Query() condition: { condition: string },
   ): Promise<PhotoEntity[]> {
+    let parsedCondition: FindPhotoByConditionsDto;
+    try {
+      parsedCondition =
+        await this.photosRepository.parsedCondition<FindPhotoByConditionsDto>(
+          condition,
+          FindPhotoByConditionsDto,
+        );
+    } catch (error) {
+      throw error;
+    }
+
     return await this.photosRepository.findAllByCondition(
-      condition,
+      parsedCondition,
       offset,
       limit,
     );
   }
 
-  @Post('findOneWith')
+  @Get('findOneWith')
   @HttpCode(HttpStatus.OK)
   @UseInterceptorsCacheInterceptor()
   @ApiPhotosPostFindOneWith()
   async findOneWithCondition(
-    @Body() condition: FindOnePhotoWithConditionsDto,
+    @Query() condition: { condition: string },
   ): Promise<PhotoEntity> {
-    return await this.photosRepository.findOneWithCondition(condition);
+    let parsedCondition: FindOnePhotoWithConditionsDto;
+    try {
+      parsedCondition =
+        await this.photosRepository.parsedCondition<FindOnePhotoWithConditionsDto>(
+          condition,
+          FindOnePhotoWithConditionsDto,
+        );
+    } catch (error) {
+      throw error;
+    }
+    return await this.photosRepository.findOneWithCondition(parsedCondition);
   }
 
-  @Post('findAllWith')
+  @Get('findAllWith')
   @HttpCode(HttpStatus.OK)
   @UseInterceptorsCacheInterceptor()
   @ApiPhotosPostFindAllWith()
   async findAllWithCondition(
     @Query() { offset, limit }: PaginationParams,
-    @Body() condition: FindAllPhotoWithConditionsDto,
+    @Query() condition: { condition: string },
   ): Promise<PhotoEntity[]> {
-    return await this.photosRepository.findAllWithCondition(
-      condition,
-      offset,
-      limit,
-    );
+    let parsedCondition: FindAllPhotoWithConditionsDto;
+    try {
+      parsedCondition =
+        await this.photosRepository.parsedCondition<FindAllPhotoWithConditionsDto>(
+          condition,
+          FindAllPhotoWithConditionsDto,
+        );
+    } catch (error) {
+      throw error;
+    }
+
+    return await this.photosRepository.findAllWithCondition({
+      ...parsedCondition,
+      skip: offset,
+      take: limit,
+    });
   }
 
   @Post('createSignedUploadUrl')

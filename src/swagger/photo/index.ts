@@ -6,9 +6,9 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import {
-  FindAllPhotoWithConditionsDto,
+  FindAllPhotosWithConditionsDto,
   FindOnePhotoWithConditionsDto,
-} from '../types/FindUserWithConditions';
+} from '../types/findWithConditions';
 import { PaginationParamsArgs } from '../types/paginationParams';
 import { PhotoModel } from './types/photo';
 import {
@@ -19,6 +19,8 @@ import { UpdateResultModel } from '../types/updateResult';
 import { FindPhotoByConditionsArgs } from './types/findPhotoByConditions';
 import { CreatePhotoArgs } from './types/createPhoto';
 import { UpdatePhotoArgs } from './types/updatePhoto';
+import { FindPhotosByStringConditionWithPaginationParams } from './types/findPhotosByStringCondition';
+import { FindPhotosWithStringConditionWithPaginationParams } from './types/findPhotosWithStringCondition';
 
 export function ApiPhotosGet() {
   return function (
@@ -103,7 +105,7 @@ export function ApiPhotosPostFindOneBy() {
       propertyKey,
       descriptor,
     );
-    ApiBody({ type: FindPhotoByConditionsArgs })(
+    ApiQuery({ type: FindPhotoByConditionsArgs })(
       target,
       propertyKey,
       descriptor,
@@ -115,7 +117,11 @@ export function ApiPhotosPostFindOneBy() {
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
-      description: 'Bad Request',
+      description: 'Invalid JSON format',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 400,
+      description: 'Validation failed: ',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 404,
@@ -143,8 +149,7 @@ export function ApiPhotosPostFindManyBy() {
       propertyKey,
       descriptor,
     );
-    ApiQuery({ type: PaginationParamsArgs })(target, propertyKey, descriptor);
-    ApiBody({ type: FindPhotoByConditionsArgs })(
+    ApiQuery({ type: FindPhotosByStringConditionWithPaginationParams })(
       target,
       propertyKey,
       descriptor,
@@ -156,7 +161,11 @@ export function ApiPhotosPostFindManyBy() {
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
-      description: 'Bad Request',
+      description: 'Invalid JSON format',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 400,
+      description: 'Validation failed: ',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 404,
@@ -184,7 +193,7 @@ export function ApiPhotosPostFindOneWith() {
       propertyKey,
       descriptor,
     );
-    ApiBody({ type: FindOnePhotoWithConditionsDto })(
+    ApiQuery({ type: FindOnePhotoWithConditionsDto })(
       target,
       propertyKey,
       descriptor,
@@ -196,7 +205,11 @@ export function ApiPhotosPostFindOneWith() {
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
-      description: 'Bad Request',
+      description: 'Invalid JSON format',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 400,
+      description: 'Validation failed: ',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 404,
@@ -224,8 +237,7 @@ export function ApiPhotosPostFindAllWith() {
       propertyKey,
       descriptor,
     );
-    ApiQuery({ type: PaginationParamsArgs })(target, propertyKey, descriptor);
-    ApiBody({ type: FindAllPhotoWithConditionsDto })(
+    ApiQuery({ type: FindPhotosWithStringConditionWithPaginationParams })(
       target,
       propertyKey,
       descriptor,
@@ -237,7 +249,11 @@ export function ApiPhotosPostFindAllWith() {
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
-      description: 'Bad Request',
+      description: 'Invalid JSON format',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 400,
+      description: 'Validation failed: ',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 404,

@@ -5,23 +5,18 @@ import {
   ApiParam,
   ApiQuery,
 } from '@nestjs/swagger';
-import { UserEntity } from 'src/domain/user/entity/user.entity';
 
-import { AttachedUser } from 'src/domain/user/auth/types/attachedUser';
-import {
-  FindAllUserWithConditionsDto,
-  FindOneUserWithConditionsDto,
-} from '../types/FindUserWithConditions';
-import { LoginLocalUserDto } from 'src/domain/user/dto/loginUserLocal.dto';
-import { UpdateResult } from '../../database/abstractRepository/types/updateResult';
 import { PaginationParamsArgs } from '../types/paginationParams';
 import { UserModel } from './types/user';
-import { FindUserByConditionsArgs } from './types/findUserByConditions';
 import { CreateUserLocalArgs } from './types/createUserLocal';
 import { LoginLocalUser } from './types/loginLocalUser';
 import { UpdateUserArgs } from './types/updateUser';
 import { AttachedUserModel } from './types/attachedUser';
 import { UpdateResultModel } from '../types/updateResult';
+import { FindUsersByStringConditionWithPaginationParams } from './types/findUsersByStringCondition';
+import { FindUserWithStringConditionWithPaginationParams } from './types/findUsersWithStringCondition';
+import { FindUserByConditionsArgs } from './types/findUserByConditions';
+import { FindOneUserWithConditionsDto } from '../types/findWithConditions';
 
 export function ApiUsersGet() {
   return function (
@@ -94,11 +89,9 @@ export function ApiUsersPostFindOneBy() {
       propertyKey,
       descriptor,
     );
-    ApiBody({ type: FindUserByConditionsArgs })(
-      target,
-      propertyKey,
-      descriptor,
-    );
+    ApiQuery({
+      type: FindUserByConditionsArgs,
+    })(target, propertyKey, descriptor);
     ApiResponse({
       status: 200,
       description: 'Got the user',
@@ -106,7 +99,11 @@ export function ApiUsersPostFindOneBy() {
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
-      description: 'Bad Request',
+      description: 'Invalid JSON format',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 400,
+      description: 'Validation failed: ',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 404,
@@ -130,12 +127,9 @@ export function ApiUsersPostFindManyBy() {
       propertyKey,
       descriptor,
     );
-    ApiQuery({ type: PaginationParamsArgs })(target, propertyKey, descriptor);
-    ApiBody({ type: FindUserByConditionsArgs })(
-      target,
-      propertyKey,
-      descriptor,
-    );
+    ApiQuery({
+      type: FindUsersByStringConditionWithPaginationParams,
+    })(target, propertyKey, descriptor);
     ApiResponse({
       status: 200,
       description: 'Got all user by condition',
@@ -143,7 +137,11 @@ export function ApiUsersPostFindManyBy() {
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
-      description: 'Bad Request',
+      description: 'Invalid JSON format',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 400,
+      description: 'Validation failed: ',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 404,
@@ -167,11 +165,9 @@ export function ApiUsersPostFindOneWith() {
       propertyKey,
       descriptor,
     );
-    ApiBody({ type: FindOneUserWithConditionsDto })(
-      target,
-      propertyKey,
-      descriptor,
-    );
+    ApiQuery({
+      type: FindOneUserWithConditionsDto,
+    })(target, propertyKey, descriptor);
     ApiResponse({
       status: 200,
       description: 'Got the user by condition',
@@ -179,7 +175,11 @@ export function ApiUsersPostFindOneWith() {
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
-      description: 'Bad Request',
+      description: 'Invalid JSON format',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 400,
+      description: 'Validation failed: ',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 404,
@@ -207,12 +207,9 @@ export function ApiUsersPostFindAllWith() {
       propertyKey,
       descriptor,
     );
-    ApiQuery({ type: PaginationParamsArgs })(target, propertyKey, descriptor);
-    ApiBody({ type: FindAllUserWithConditionsDto })(
-      target,
-      propertyKey,
-      descriptor,
-    );
+    ApiQuery({
+      type: FindUserWithStringConditionWithPaginationParams,
+    })(target, propertyKey, descriptor);
     ApiResponse({
       status: 200,
       description: 'Got all user by condition',
@@ -220,7 +217,11 @@ export function ApiUsersPostFindAllWith() {
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
-      description: 'Bad Request',
+      description: 'Invalid JSON format',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 400,
+      description: 'Validation failed: ',
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 404,

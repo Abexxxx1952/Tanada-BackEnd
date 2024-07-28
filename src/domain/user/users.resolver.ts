@@ -48,7 +48,10 @@ export class UsersResolver {
     @Args()
     { offset, limit }: UserPaginationParamsGqlArgs,
   ): Promise<UserEntity[]> {
-    return await this.usersRepository.findAll(offset, limit);
+    return await this.usersRepository.findAll({
+      skip: offset,
+      take: limit,
+    });
   }
 
   @Query(() => UserGqlModel, { name: 'getUserById', nullable: true })

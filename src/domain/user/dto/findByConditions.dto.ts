@@ -35,11 +35,13 @@ export class FindUserByConditionsDto {
   @IsOptional()
   @IsDate()
   @IsNotEmpty()
+  @Type(() => Date)
   readonly createdAt?: Date;
 
   @IsOptional()
   @IsDate()
   @IsNotEmpty()
+  @Type(() => Date)
   readonly updatedAt?: Date;
 
   @IsOptional()

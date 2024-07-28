@@ -89,7 +89,10 @@ export class UserController {
   async findAll(
     @Query() { offset, limit }: PaginationParams,
   ): Promise<UserEntity[]> {
-    return await this.usersRepository.findAll(offset, limit);
+    return await this.usersRepository.findAll({
+      skip: offset,
+      take: limit,
+    });
   }
 
   @Get('findById/:id')
@@ -100,54 +103,98 @@ export class UserController {
     return await this.usersRepository.findOneById(id);
   }
 
-  @Post('findOneBy')
+  @Get('findOneBy')
   @HttpCode(HttpStatus.OK)
   @UseInterceptorsCacheInterceptor()
   @ApiUsersPostFindOneBy()
   async findOneByCondition(
-    @Body() condition: FindUserByConditionsDto,
+    @Query() condition: { condition: string },
   ): Promise<UserEntity> {
-    return await this.usersRepository.findOneByCondition(condition);
+    let parsedCondition: FindUserByConditionsDto;
+    try {
+      parsedCondition =
+        await this.usersRepository.parsedCondition<FindUserByConditionsDto>(
+          condition,
+          FindUserByConditionsDto,
+        );
+    } catch (error) {
+      throw error;
+    }
+
+    return await this.usersRepository.findOneByCondition(parsedCondition);
   }
 
-  @Post('findManyBy')
+  @Get('findManyBy')
   @HttpCode(HttpStatus.OK)
   @UseInterceptorsCacheInterceptor()
   @ApiUsersPostFindManyBy()
   async findManyByCondition(
     @Query() { offset, limit }: PaginationParams,
-    @Body() condition: FindUserByConditionsDto,
+    @Query() condition: { condition: string },
   ): Promise<UserEntity[]> {
+    let parsedCondition: FindUserByConditionsDto;
+    try {
+      parsedCondition =
+        await this.usersRepository.parsedCondition<FindUserByConditionsDto>(
+          condition,
+          FindUserByConditionsDto,
+        );
+    } catch (error) {
+      throw error;
+    }
+
     return await this.usersRepository.findAllByCondition(
-      condition,
+      parsedCondition,
       offset,
       limit,
     );
   }
 
-  @Post('findOneWith')
+  @Get('findOneWith')
   @HttpCode(HttpStatus.OK)
   @UseInterceptorsCacheInterceptor()
   @ApiUsersPostFindOneWith()
   async findOneWithCondition(
-    @Body() condition: FindOneUserWithConditionsDto,
+    @Query() condition: { condition: string },
   ): Promise<UserEntity> {
-    return await this.usersRepository.findOneWithCondition(condition);
+    let parsedCondition: FindOneUserWithConditionsDto;
+    try {
+      parsedCondition =
+        await this.usersRepository.parsedCondition<FindOneUserWithConditionsDto>(
+          condition,
+          FindOneUserWithConditionsDto,
+        );
+    } catch (error) {
+      throw error;
+    }
+
+    return await this.usersRepository.findOneWithCondition(parsedCondition);
   }
 
-  @Post('findAllWith')
+  @Get('findAllWith')
   @HttpCode(HttpStatus.OK)
   @UseInterceptorsCacheInterceptor()
   @ApiUsersPostFindAllWith()
   async findAllWithCondition(
     @Query() { offset, limit }: PaginationParams,
-    @Body() condition: FindAllUserWithConditionsDto,
+    @Query() condition: { condition: string },
   ): Promise<UserEntity[]> {
-    return await this.usersRepository.findAllWithCondition(
-      condition,
-      offset,
-      limit,
-    );
+    let parsedCondition: FindAllUserWithConditionsDto;
+    try {
+      parsedCondition =
+        await this.usersRepository.parsedCondition<FindAllUserWithConditionsDto>(
+          condition,
+          FindAllUserWithConditionsDto,
+        );
+    } catch (error) {
+      throw error;
+    }
+
+    return await this.usersRepository.findAllWithCondition({
+      ...parsedCondition,
+      skip: offset,
+      take: limit,
+    });
   }
 
   @Get('status')

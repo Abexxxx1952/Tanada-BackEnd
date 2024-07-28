@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 
 import { BaseInterfaceRepository } from './base.interface.repository';
-import { instanceToPlain } from 'class-transformer';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 import {
   BadRequestException,
   ConflictException,
@@ -17,6 +17,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+import { validate } from 'class-validator';
 
 interface HasId {
   id: string | number;
@@ -68,6 +69,7 @@ export abstract class BaseAbstractRepository<T extends HasId>
     const options: FindOptionsWhere<T> = {
       id: id,
     };
+
     try {
       const entity = await this.entity.findOneBy(options);
 
@@ -139,18 +141,14 @@ export abstract class BaseAbstractRepository<T extends HasId>
 
   public async findAllWithCondition(
     condition: FindManyOptions<T>,
-    offset?: number,
-    limit?: number,
   ): Promise<T[]> {
     try {
       const entities = await this.entity.find(condition);
       if (!entities.length) {
         throw new NotFoundException(`${this.entityName}s not found`);
       }
-      const actualOffset = offset ?? 0;
-      const actualLimit = limit ?? entities.length;
 
-      return entities.slice(actualOffset, actualOffset + actualLimit);
+      return entities;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
@@ -159,20 +157,14 @@ export abstract class BaseAbstractRepository<T extends HasId>
     }
   }
 
-  public async findAll(
-    offset?: number,
-    limit?: number,
-    condition?: FindManyOptions<T>,
-  ): Promise<T[]> {
+  public async findAll(condition?: FindManyOptions<T>): Promise<T[]> {
     try {
       const entities = await this.entity.find(condition);
       if (!entities.length) {
         throw new NotFoundException(`${this.entityName}s not found`);
       }
-      const actualOffset = offset ?? 0;
-      const actualLimit = limit ?? entities.length;
 
-      return entities.slice(actualOffset, actualOffset + actualLimit);
+      return entities;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new NotFoundException(error.message);
@@ -290,5 +282,29 @@ export abstract class BaseAbstractRepository<T extends HasId>
   }
   public serialize(entity: T): Record<string, any> {
     return instanceToPlain(entity);
+  }
+
+  public async parsedCondition<T extends object>(
+    condition: { condition: string },
+    DTO: new () => T,
+  ): Promise<T> {
+    let parsedCondition: T;
+    try {
+      parsedCondition = JSON.parse(condition.condition);
+    } catch (error) {
+      throw new BadRequestException('Invalid JSON format');
+    }
+    try {
+      parsedCondition = plainToInstance(DTO, parsedCondition);
+      const errors = await validate(parsedCondition);
+      if (errors.length > 0) {
+        throw new BadRequestException(
+          'Validation failed: ' + errors.toString(),
+        );
+      }
+    } catch (error) {
+      throw error;
+    }
+    return parsedCondition;
   }
 }
