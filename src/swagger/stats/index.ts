@@ -78,7 +78,7 @@ export function ApiStatsPostAddPhotoView() {
       descriptor,
     );
     ApiResponse({
-      status: 200,
+      status: 201,
       description: 'Added photo view',
       type: PhotoStatModel,
     })(target, propertyKey, descriptor);

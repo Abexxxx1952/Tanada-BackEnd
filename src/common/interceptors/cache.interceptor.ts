@@ -100,7 +100,12 @@ export class CacheInterceptor implements NestInterceptor {
                 .handle()
                 .pipe(
                   tap((data) => {
-                    this.cacheManager.set(cacheKey, data);
+                    if (
+                      data !== undefined &&
+                      !context.switchToHttp().getResponse().headersSent
+                    ) {
+                      this.cacheManager.set(cacheKey, data);
+                    }
                   }),
                 )
                 .subscribe({

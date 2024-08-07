@@ -19,14 +19,15 @@ import {
   UseInterceptorsCacheInterceptor,
 } from 'src/common/interceptors/cache.interceptor';
 
+import { UsersStatsResult } from './types/usersStatsResult';
+import { PhotosStatsResult } from './types/photosStatsResult';
+
 import { ApiTags } from '@nestjs/swagger';
 import {
   ApiStatsGetUsers,
   ApiStatsGetPhotos,
   ApiStatsPostAddPhotoView,
 } from '../../swagger/stats';
-import { UsersStatsResult } from './types/usersStatsResult';
-import { PhotosStatsResult } from './types/photosStatsResult';
 
 @ApiTags('v1/stats')
 @Controller('v1/stats')

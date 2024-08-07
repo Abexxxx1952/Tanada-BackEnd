@@ -46,6 +46,11 @@ import { AttachedUser } from './auth/types/attachedUser';
 import { AccessTokenAuthGuard } from './auth/guards/accessToken.guard';
 import { GoogleGuard } from './auth/guards/google.guard';
 import { GitHubGuard } from './auth/guards/gitHub.guard';
+import { UUID } from 'crypto';
+import {
+  UseInterceptorsCacheInterceptor,
+  CacheOptions,
+} from 'src/common/interceptors/cache.interceptor';
 import {
   ApiUsersGet,
   ApiUsersGetFindById,
@@ -65,11 +70,6 @@ import {
   ApiUsersPatchUpdate,
   ApiUsersDeleteDelete,
 } from 'src/swagger/user';
-import { UUID } from 'crypto';
-import {
-  UseInterceptorsCacheInterceptor,
-  CacheOptions,
-} from 'src/common/interceptors/cache.interceptor';
 
 @ApiTags('v1/users')
 @Controller('v1/users')
@@ -255,13 +255,14 @@ export class UserController {
 
   @Get('loginGoogle')
   @UseGuards(GoogleGuard)
+  @HttpCode(HttpStatus.FOUND)
   @ApiUsersGetLoginGoogle()
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   googleAuth() {}
 
   @Get('loginGoogle/callback')
   @UseGuards(GoogleGuard)
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.MOVED_PERMANENTLY)
   @UseInterceptorsCacheInterceptor({
     cache: CacheOptions.InvalidateCacheByKey,
     cacheKey: ['/api/v1/users/', '/api/v1/stats/users'],
@@ -270,19 +271,20 @@ export class UserController {
   async googleAuthCallBack(
     @CurrentUser() currentUser: UserEntity,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<AttachedUser> {
-    return await this.authService.login(currentUser, response);
+  ): Promise<void> {
+    return await this.authService.loginWithProvider(currentUser, response);
   }
 
   @Get('loginGitHub')
   @UseGuards(GitHubGuard)
+  @HttpCode(HttpStatus.FOUND)
   @ApiUsersGetLoginGitHub()
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   gitHubAuth() {}
 
   @Get('loginGitHub/callback')
   @UseGuards(GitHubGuard)
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.MOVED_PERMANENTLY)
   @UseInterceptorsCacheInterceptor({
     cache: CacheOptions.InvalidateCacheByKey,
     cacheKey: ['/api/v1/users/', '/api/v1/stats/users'],
@@ -291,8 +293,8 @@ export class UserController {
   async gitHubAuthCallBack(
     @CurrentUser() currentUser: UserEntity,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<AttachedUser> {
-    return await this.authService.login(currentUser, response);
+  ): Promise<void> {
+    return await this.authService.loginWithProvider(currentUser, response);
   }
 
   @Patch('update')

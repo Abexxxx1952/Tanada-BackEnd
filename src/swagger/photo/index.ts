@@ -5,10 +5,7 @@ import {
   ApiParam,
   ApiQuery,
 } from '@nestjs/swagger';
-import {
-  FindAllPhotosWithConditionsDto,
-  FindOnePhotoWithConditionsDto,
-} from '../types/findWithConditions';
+import { FindOnePhotoWithConditionsDto } from '../types/findWithConditions';
 import { PaginationParamsArgs } from '../types/paginationParams';
 import { PhotoModel } from './types/photo';
 import {

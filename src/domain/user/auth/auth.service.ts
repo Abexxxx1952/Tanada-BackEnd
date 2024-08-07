@@ -15,7 +15,10 @@ import { ModuleRef } from '@nestjs/core';
 import { UserEntity } from '../entity/user.entity';
 import { AttachedUser } from './types/attachedUser';
 import { AttachedUserWithRt } from './types/attachedUserWithRt';
-import { RegistrationSources } from './types/providersOAuth.enum';
+import {
+  RegistrationSources,
+  ExternalRegistrationSources,
+} from './types/providersOAuth.enum';
 import { ParseUserOAuth } from './types/parseUserOAuth';
 
 @Injectable()
@@ -43,14 +46,14 @@ export class AuthService {
 
       response.cookie('Authentication_accessToken', tokens.access_token, {
         httpOnly: true,
-        sameSite: true,
+        sameSite: 'lax',
         path: '/',
         expires: this.getExpiresTimeAT(),
       });
 
       response.cookie('Authentication_refreshToken', tokens.refresh_token, {
         httpOnly: true,
-        sameSite: true,
+        sameSite: 'lax',
         path: this.configService.getOrThrow<string>('REFRESH_TOKEN_PATH'),
         expires: this.getExpiresTimeRT(),
       });
@@ -60,6 +63,27 @@ export class AuthService {
         email: currentUser.email,
         permissions: currentUser.permissions,
       };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async loginWithProvider(
+    currentUser: UserEntity,
+    response: Response,
+  ): Promise<void> {
+    try {
+      const tokens = await this.getTokens(currentUser);
+      await this.updateRtHash(currentUser.id, tokens.refresh_token);
+      response.redirect(
+        this.configService.getOrThrow<string>(
+          'CLIENT_AUTH_PROVIDER_REDIRECT_URL',
+        ) +
+          '?access_token=' +
+          tokens.access_token +
+          '&refresh_token=' +
+          tokens.refresh_token,
+      );
     } catch (error) {
       throw error;
     }
@@ -123,14 +147,14 @@ export class AuthService {
 
       response.cookie('Authentication_accessToken', tokens.access_token, {
         httpOnly: true,
-        sameSite: true,
+        sameSite: 'lax',
         path: '/',
         expires: this.getExpiresTimeAT(),
       });
 
       response.cookie('Authentication_refreshToken', tokens.refresh_token, {
         httpOnly: true,
-        sameSite: true,
+        sameSite: 'lax',
         path: this.configService.getOrThrow<string>('REFRESH_TOKEN_PATH'),
         expires: this.getExpiresTimeRT(),
       });

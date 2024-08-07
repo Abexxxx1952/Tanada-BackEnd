@@ -290,7 +290,7 @@ export function ApiUsersPostLoginLocal() {
     ApiResponse({
       status: 200,
       description: 'User is logged in',
-      type: AttachedUserModel,
+      type: void 0,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
@@ -396,7 +396,7 @@ export function ApiUsersGetLoginGoogle() {
       descriptor,
     );
     ApiResponse({
-      status: 301,
+      status: 302,
       description: 'User redirected',
     })(target, propertyKey, descriptor);
     ApiResponse({
@@ -418,9 +418,9 @@ export function ApiUsersGetLoginGoogleCallback() {
       descriptor,
     );
     ApiResponse({
-      status: 200,
+      status: 301,
       description: 'User is logged in',
-      type: AttachedUserModel,
+      type: void 0,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 500,
@@ -441,7 +441,7 @@ export function ApiUsersGetLoginGitHub() {
       descriptor,
     );
     ApiResponse({
-      status: 301,
+      status: 302,
       description: 'User redirected',
     })(target, propertyKey, descriptor);
     ApiResponse({
@@ -463,9 +463,9 @@ export function ApiUsersGetLoginGitHubCallback() {
       descriptor,
     );
     ApiResponse({
-      status: 200,
+      status: 301,
       description: 'User is logged in',
-      type: AttachedUserModel,
+      type: void 0,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 500,

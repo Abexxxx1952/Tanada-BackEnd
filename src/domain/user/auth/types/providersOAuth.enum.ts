@@ -3,3 +3,7 @@ export enum RegistrationSources {
   GitHub = 'GitHub',
   Local = 'Local',
 }
+export type ExternalRegistrationSources = Exclude<
+  RegistrationSources,
+  RegistrationSources.Local
+>;
