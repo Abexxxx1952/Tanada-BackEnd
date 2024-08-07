@@ -270,8 +270,8 @@ export class UserController {
   async googleAuthCallBack(
     @CurrentUser() currentUser: UserEntity,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<AttachedUser> {
-    return await this.authService.login(currentUser, response);
+  ): Promise<void> {
+    return await this.authService.loginWithProvider(currentUser, response);
   }
 
   @Get('loginGitHub')
@@ -291,8 +291,8 @@ export class UserController {
   async gitHubAuthCallBack(
     @CurrentUser() currentUser: UserEntity,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<AttachedUser> {
-    return await this.authService.login(currentUser, response);
+  ): Promise<void> {
+    return await this.authService.loginWithProvider(currentUser, response);
   }
 
   @Patch('update')

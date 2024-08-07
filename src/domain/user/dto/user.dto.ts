@@ -46,8 +46,7 @@ export class UserDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => PhotoEntity)
-  @IsOptional()
-  readonly photo?: PhotoEntity[];
+  readonly photo: PhotoEntity[];
 
   @IsEnum(UserPermissions, { each: true })
   readonly permissions: UserPermissionsKeys[];

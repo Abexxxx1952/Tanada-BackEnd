@@ -290,7 +290,7 @@ export function ApiUsersPostLoginLocal() {
     ApiResponse({
       status: 200,
       description: 'User is logged in',
-      type: AttachedUserModel,
+      type: void 0,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
@@ -420,7 +420,7 @@ export function ApiUsersGetLoginGoogleCallback() {
     ApiResponse({
       status: 200,
       description: 'User is logged in',
-      type: AttachedUserModel,
+      type: void 0,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 500,
@@ -465,7 +465,7 @@ export function ApiUsersGetLoginGitHubCallback() {
     ApiResponse({
       status: 200,
       description: 'User is logged in',
-      type: AttachedUserModel,
+      type: void 0,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 500,

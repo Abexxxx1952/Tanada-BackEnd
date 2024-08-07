@@ -62,6 +62,7 @@ export class UsersRepository extends BaseAbstractRepository<UserEntity> {
           ...createUserLocalDto,
           password: hashedPassword,
           registrationSources: [RegistrationSources.Local],
+          photo: [],
         });
 
         const user = await this.save(entity);
