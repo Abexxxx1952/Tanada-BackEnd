@@ -1,16 +1,16 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from '../../domain/user/entity/user.entity';
 import { UserWithRelationsService } from './userWithRelations.service';
-import { UsersRepository } from 'src/domain/user/repository/users.repository';
-import { PhotosRepository } from 'src/domain/photo/repository/photos.repository';
-import { PhotoEntity } from 'src/domain/photo/entity/photo.entity';
-import { UserStatsRepository } from 'src/domain/stat/repository/userStats.repository';
-import { PhotoStatsRepository } from 'src/domain/stat/repository/photoStats.repository';
-import { ExternalStorageService } from 'src/externalStorage/externalStorage.service';
-import { UserStatEntity } from 'src/domain/stat/entity/userStat.entity';
-import { PhotoStatEntity } from 'src/domain/stat/entity/photoStat.entity';
-import { ConfigModule } from '@nestjs/config';
+import { UsersRepository } from '../../domain/user/repository/users.repository';
+import { PhotosRepository } from '../../domain/photo/repository/photos.repository';
+import { PhotoEntity } from '../../domain/photo/entity/photo.entity';
+import { UserStatsRepository } from '../../domain/stat/repository/userStats.repository';
+import { PhotoStatsRepository } from '../../domain/stat/repository/photoStats.repository';
+import { ExternalStorageService } from '../../externalStorage/externalStorage.service';
+import { UserStatEntity } from '../../domain/stat/entity/userStat.entity';
+import { PhotoStatEntity } from '../../domain/stat/entity/photoStat.entity';
 
 @Module({
   imports: [

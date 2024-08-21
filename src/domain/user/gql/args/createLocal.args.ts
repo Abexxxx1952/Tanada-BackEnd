@@ -1,7 +1,7 @@
 import { Field, ArgsType } from '@nestjs/graphql';
 import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { CreateUserLocalDto } from '../../dto/createLocal.dto';
 import { Transform } from 'class-transformer';
+import { CreateUserLocalDto } from '../../dto/createLocal.dto';
 
 @ArgsType()
 export class CreateUserGqlArgsLocal implements CreateUserLocalDto {

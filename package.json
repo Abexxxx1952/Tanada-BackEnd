@@ -26,6 +26,8 @@
   },
   "dependencies": {
     "@apollo/server": "^4.10.4",
+    "@graphql-tools/graphql-file-loader": "^8.0.1",
+    "@graphql-tools/load": "^8.0.2",
     "@nestjs/apollo": "^12.2.0",
     "@nestjs/cache-manager": "^2.2.1",
     "@nestjs/common": "^10.0.0",

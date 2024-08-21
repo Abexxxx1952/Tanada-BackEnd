@@ -8,7 +8,6 @@ import {
   UpdateResult,
 } from 'typeorm';
 
-import { BaseInterfaceRepository } from './base.interface.repository';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
 import {
   BadRequestException,
@@ -18,6 +17,7 @@ import {
 } from '@nestjs/common';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { validate } from 'class-validator';
+import { BaseInterfaceRepository } from './base.interface.repository';
 
 interface HasId {
   id: string | number;

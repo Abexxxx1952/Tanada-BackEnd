@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { GraphqlTypeResolver } from './graphqlType.resolver';
 import { GraphqlTypesController } from './graphqlType.controller';
-import { ConfigModule } from '@nestjs/config';
 import { GraphqlTypeService } from './graphqlType.service';
 
 @Module({

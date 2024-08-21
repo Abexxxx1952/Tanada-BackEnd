@@ -1,5 +1,4 @@
 import { Field, ArgsType } from '@nestjs/graphql';
-
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { LoginLocalUserDto } from '../../dto/loginUserLocal.dto';
 

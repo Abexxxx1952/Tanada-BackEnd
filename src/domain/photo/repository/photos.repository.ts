@@ -5,18 +5,18 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeepPartial, UpdateResult, FindOneOptions } from 'typeorm';
 import { BaseAbstractRepository } from '../../../database/abstractRepository/base.abstract.repository';
 import { PhotoEntity } from '../entity/photo.entity';
 import { UsersRepository } from '../../user/repository/users.repository';
 import { UserEntity } from '../../user/entity/user.entity';
-import { ExternalStorageService } from 'src/externalStorage/externalStorage.service';
+import { ExternalStorageService } from '../../../externalStorage/externalStorage.service';
 import { CreateSignedUploadUrlResult } from 'src/externalStorage/types/createSignedUploadUrlResult';
 import { CreatePhotoDto } from '../dto/create.dto';
 import { CreateSignedUploadUrlDto } from '../dto/createSignedUploadUrl.dto';
-import { ConfigService } from '@nestjs/config';
-import { PhotoStatsRepository } from 'src/domain/stat/repository/photoStats.repository';
+import { PhotoStatsRepository } from '../../stat/repository/photoStats.repository';
 
 @Injectable()
 export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {

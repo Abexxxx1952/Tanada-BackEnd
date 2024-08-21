@@ -9,7 +9,7 @@ import {
 import { Type } from 'class-transformer';
 
 import { UserEntity } from '../../user/entity/user.entity';
-import { PhotoStatEntity } from 'src/domain/stat/entity/photoStat.entity';
+import { PhotoStatEntity } from '../../stat/entity/photoStat.entity';
 
 export class FindPhotoByConditionsDto {
   @IsOptional()

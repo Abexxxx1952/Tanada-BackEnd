@@ -5,7 +5,6 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { FindUserByConditionsDto } from './findByConditions.dto';
 import {
   FindOneOptions,
   FindOptionsSelect,
@@ -15,6 +14,7 @@ import {
   FindManyOptions,
 } from 'typeorm';
 import { Type } from 'class-transformer';
+import { FindUserByConditionsDto } from './findByConditions.dto';
 
 type Direction = 'ASC' | 'DESC' | 'asc' | 'desc' | 1 | -1;
 

@@ -1,4 +1,4 @@
-import { ArgsType, Field, InputType, Int } from '@nestjs/graphql';
+import { ArgsType, Field, Int } from '@nestjs/graphql';
 import { IsNumber, IsOptional } from 'class-validator';
 import { PaginationParams } from '../../../../database/abstractRepository/paginationDto/pagination.dto';
 

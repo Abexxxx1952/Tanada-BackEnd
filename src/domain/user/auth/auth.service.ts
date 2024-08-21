@@ -15,10 +15,7 @@ import { ModuleRef } from '@nestjs/core';
 import { UserEntity } from '../entity/user.entity';
 import { AttachedUser } from './types/attachedUser';
 import { AttachedUserWithRt } from './types/attachedUserWithRt';
-import {
-  RegistrationSources,
-  ExternalRegistrationSources,
-} from './types/providersOAuth.enum';
+import { RegistrationSources } from './types/providersOAuth.enum';
 import { ParseUserOAuth } from './types/parseUserOAuth';
 
 @Injectable()

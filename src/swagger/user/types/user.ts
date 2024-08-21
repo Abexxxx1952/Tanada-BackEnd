@@ -4,7 +4,7 @@ import { v5 as uuidv5 } from 'uuid';
 
 import { UserEntity } from '../../../domain/user/entity/user.entity';
 import { PhotoEntity } from '../../../domain/photo/entity/photo.entity';
-import { PhotoModel } from 'src/swagger/photo/types/photo';
+import { PhotoModel } from '../../../swagger/photo/types/photo';
 import { Payload } from '../../../domain/user/types/payload';
 import { UserPermissionsKeys } from '../../../domain/user/permission/permission';
 import { RegistrationSources } from '../../../domain/user/auth/types/providersOAuth.enum';

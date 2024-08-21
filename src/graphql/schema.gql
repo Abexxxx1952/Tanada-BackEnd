@@ -1,0 +1,229 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+directive @sensitive(fields: [String]) on FIELD_DEFINITION
+
+type PayloadModel {
+  key: String!
+  value: String!
+}
+
+type UserModel {
+  id: ID
+  name: String
+  email: String!
+  icon: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  payload: [PayloadModel!]
+  photo: [PhotoModel!]
+  permissions: [String!]!
+  registrationSources: [String!]!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type PhotoModel {
+  id: Int!
+  link: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  user: UserModel!
+  stats: PhotoStatModel!
+}
+
+type PhotoStatModel {
+  id: Int!
+  created: Int
+  viewsCount: Int
+  deleted: Int
+  photoId: Int!
+  photo: PhotoModel!
+}
+
+type UsersStatsResultModel {
+  created: Int!
+  deleted: Int!
+}
+
+type PhotosStatsResultModel {
+  created: Int!
+  views: Int!
+  deleted: Int!
+}
+
+type AttachedUserModel {
+  id: String!
+  email: String!
+  permissions: [String!]!
+}
+
+type UpdateUserResultModel {
+  raw: [JSONObject!]!
+  affected: Int
+  generatedMaps: [JSONObject!]!
+}
+
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject
+
+type CreateSignedUploadUrlResultData {
+  signedUrl: String!
+  token: String!
+  path: String!
+}
+
+type Error {
+  message: String!
+}
+
+type CreateSignedUploadUrlResultModel {
+  data: CreateSignedUploadUrlResultData
+  error: Error
+}
+
+type UpdatePhotoResultModel {
+  raw: [JSONObject!]!
+  affected: Int
+  generatedMaps: [JSONObject!]!
+}
+
+type Query {
+  getGraphqlType: String!
+  getUsers(offset: Int, limit: Int): [UserModel!]
+  getUserById(id: Int!): UserModel
+  getUserOneBy(condition: FindUserByConditionsGqlInput!): UserModel
+  getUserManyBy(condition: FindUserByConditionsGqlInput!, offset: Int, limit: Int): [UserModel!]
+  getUserOneWith(condition: FindOneUserWithConditionsGqlInput!): UserModel
+  userStatus: UserModel
+  getUsersStats: UsersStatsResultModel
+  getPhotosStats: PhotosStatsResultModel
+  getPhotos(offset: Int, limit: Int): [PhotoModel!]
+  getPhotoById(id: Int!): PhotoModel
+  getPhotoOneBy(condition: FindPhotoByConditionsGqlInput!): PhotoModel
+  getPhotoManyBy(condition: FindPhotoByConditionsGqlInput!, offset: Int, limit: Int): [PhotoModel!]
+  getPhotoOneWith(condition: FindOnePhotoWithConditionsGqlInput!): PhotoModel
+}
+
+input FindUserByConditionsGqlInput {
+  id: ID
+  name: String
+  email: String
+  icon: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  photo: [PhotoGqlInput!]
+}
+
+input PhotoGqlInput {
+  id: Int
+  link: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  user: UserGqlInput
+  stats: PhotoStatGqlInput
+}
+
+input UserGqlInput {
+  id: ID
+  name: String
+  email: String
+  icon: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  payload: [PayloadGqlInput!]
+  photo: [PhotoGqlInput!]
+  permissions: [String!]
+  registrationSources: [String!]
+}
+
+input PayloadGqlInput {
+  key: String
+  value: String
+}
+
+input PhotoStatGqlInput {
+  id: Int
+  created: Int
+  viewsCount: Int
+  deleted: Int
+  photoId: Int
+  photo: PhotoGqlInput
+}
+
+input FindOneUserWithConditionsGqlInput {
+  where: FindUserByConditionsGqlInput
+  select: FindUserByConditionsGqlInput
+  order: UserOrderObjectGqlInput
+  relations: FindUserByConditionsGqlInput
+}
+
+input UserOrderObjectGqlInput {
+  id: UserDirection
+  link: UserDirection
+  createdAt: UserDirection
+  updatedAt: UserDirection
+  user: UserDirection
+}
+
+enum UserDirection {
+  ASC
+  DESC
+  asc
+  desc
+  one
+  minusOne
+}
+
+input FindPhotoByConditionsGqlInput {
+  id: Int
+  link: String
+  createdAt: DateTime
+  updatedAt: DateTime
+  user: UserGqlInput
+}
+
+input FindOnePhotoWithConditionsGqlInput {
+  where: [FindPhotoByConditionsGqlInput!]
+  select: FindPhotoByConditionsGqlInput
+  order: PhotoOrderObjectGqlInput
+  relations: FindPhotoByConditionsGqlInput
+}
+
+input PhotoOrderObjectGqlInput {
+  id: PhotoDirection
+  link: PhotoDirection
+  createdAt: PhotoDirection
+  updatedAt: PhotoDirection
+  user: PhotoDirection
+}
+
+enum PhotoDirection {
+  ASC
+  DESC
+  asc
+  desc
+  one
+  minusOne
+}
+
+type Mutation {
+  createUser(email: String!, password: String!, name: String, icon: String): UserModel!
+  loginLocal(email: String!, password: String!): AttachedUserModel!
+  logOut: AttachedUserModel!
+  refresh: String!
+  updateUser(name: String, password: String, icon: String, payload: PayloadGqlInput): UpdateUserResultModel!
+  deleteUser: UserModel!
+  addViewsPhotoStats(id: Int!): PhotoStatModel!
+  createSignedUploadUrl(fileName: String!): CreateSignedUploadUrlResultModel!
+  createPhoto(link: String!): PhotoModel!
+  updatePhotoHard(link: String!, id: Int!): PhotoModel!
+  updatePhotoSoft(link: String!, id: Int!): UpdatePhotoResultModel!
+  deletePhoto(id: Int!): PhotoModel!
+}

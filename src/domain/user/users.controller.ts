@@ -20,8 +20,8 @@ import { UpdateResult } from 'typeorm';
 import { Response } from 'express';
 
 import { ApiTags } from '@nestjs/swagger';
-
-import { CurrentUser } from 'src/common/decorators/currentUser.decorator';
+import { UUID } from 'crypto';
+import { CurrentUser } from '../../common/decorators/currentUser.decorator';
 import { ParseRequestBodyWhenLogging } from '../../common/decorators/setMetadataRequestBodyLogging.decorator';
 import { LoggerHelperInterceptor } from '../../common/interceptors/loggerHelper.interceptor';
 import { UsersRepository } from './repository/users.repository';
@@ -46,11 +46,11 @@ import { AttachedUser } from './auth/types/attachedUser';
 import { AccessTokenAuthGuard } from './auth/guards/accessToken.guard';
 import { GoogleGuard } from './auth/guards/google.guard';
 import { GitHubGuard } from './auth/guards/gitHub.guard';
-import { UUID } from 'crypto';
+
 import {
   UseInterceptorsCacheInterceptor,
   CacheOptions,
-} from 'src/common/interceptors/cache.interceptor';
+} from '../../common/interceptors/cache.interceptor';
 import {
   ApiUsersGet,
   ApiUsersGetFindById,

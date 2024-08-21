@@ -17,7 +17,7 @@ import { Response } from 'express';
 import { UserEntity } from './entity/user.entity';
 import { UsersRepository } from './repository/users.repository';
 import { UpdateResult } from '../../database/abstractRepository/types/updateResult';
-import { CurrentUserGql } from 'src/common/decorators/currentUserGql.decorator';
+import { CurrentUserGql } from '../../common/decorators/currentUserGql.decorator';
 import { AttachedUser } from './auth/types/attachedUser';
 import { AuthService } from './auth/auth.service';
 import { AttachedUserWithRt } from './auth/types/attachedUserWithRt';

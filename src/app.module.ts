@@ -2,6 +2,12 @@ import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import {
+  DirectiveLocation,
+  GraphQLDirective,
+  GraphQLList,
+  GraphQLString,
+} from 'graphql';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
@@ -13,12 +19,7 @@ import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { ExternalStorageModule } from './externalStorage/externalStorage.module';
 import { LoggerGqlPlugin } from './common/plugin/loggerGql.plugin';
 import { sensitiveDirectiveTransformer } from './common/directive/sensitive.directive';
-import {
-  DirectiveLocation,
-  GraphQLDirective,
-  GraphQLList,
-  GraphQLString,
-} from 'graphql';
+
 import { GraphqlTypesModule } from './graphql/graphqlTypeController/graphqlType.module';
 
 @Module({
@@ -57,15 +58,23 @@ import { GraphqlTypesModule } from './graphql/graphqlTypeController/graphqlType.
       inject: [ConfigService],
     }),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
+      imports: [ConfigModule],
+      inject: [ConfigService],
       driver: ApolloDriver,
-      useFactory: () => ({
+      useFactory: async (configService: ConfigService) => ({
         playground: { settings: { 'request.credentials': 'include' } }, // for cookies in playground
-        autoSchemaFile: true,
+        autoSchemaFile:
+          configService.getOrThrow<string>('MODE') === 'production'
+            ? false
+            : join(process.cwd(), 'src', 'graphql', 'schema.gql'),
 
-        definitions: {
-          path: join(process.cwd(), 'src', 'graphql', 'index.ts'),
-          outputAs: 'class',
-        },
+        definitions:
+          configService.getOrThrow<string>('MODE') === 'production'
+            ? null
+            : {
+                path: join(process.cwd(), 'src', 'graphql', 'index.ts'),
+                outputAs: 'class',
+              },
         context: ({ req, res }) => ({ req, res }), // for cookies
         transformSchema: (schema) =>
           sensitiveDirectiveTransformer(schema, 'sensitive'),

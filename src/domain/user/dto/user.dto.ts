@@ -9,7 +9,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { PhotoEntity } from 'src/domain/photo/entity/photo.entity';
+import { PhotoEntity } from '../../photo/entity/photo.entity';
 import { UserPermissions, UserPermissionsKeys } from '../permission/permission';
 import { RegistrationSources } from '../auth/types/providersOAuth.enum';
 

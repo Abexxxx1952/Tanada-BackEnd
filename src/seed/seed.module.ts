@@ -1,9 +1,9 @@
 import { Logger, Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from '../database/databaseNestjsTypeorm.module';
 import { Seeder } from './seed.service';
 import { UserWithRelationsModule } from './userWithRelations/userWithRelations.module';
-import { ConfigModule } from '@nestjs/config';
-import { validate } from 'src/configs/env.validate';
+import { validate } from '../configs/env.validate';
 
 @Module({
   imports: [

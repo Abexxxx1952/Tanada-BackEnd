@@ -3,7 +3,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export function createSwagger(app: INestApplication) {
   const config = new DocumentBuilder()
-    .addCookieAuth('Authentication')
+    .addCookieAuth('Authentication_accessToken')
+    .addCookieAuth('Authentication_refreshToken')
     .setTitle('Travel Blog')
     .setDescription('Travel blog about fictional country named Tanada')
     .setVersion('1.0')

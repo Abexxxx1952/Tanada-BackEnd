@@ -1,7 +1,7 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { v5 as uuidv5 } from 'uuid';
 import { PhotoGqlModel } from '../../../photo/gql/model/photo';
 import { UserPermissionsKeys } from '../../permission/permission';
-import { v5 as uuidv5 } from 'uuid';
 import { RegistrationSources } from '../../auth/types/providersOAuth.enum';
 import { PayloadEGqlModel } from './payload';
 import { UserEntity } from '../../entity/user.entity';

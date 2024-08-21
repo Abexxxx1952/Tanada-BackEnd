@@ -15,7 +15,7 @@ import { UpdatePhotoGqlArgs } from './gql/args/updatePhoto.args';
 import { UpdatePhotoResultGqlModel } from './gql/model/updateResult';
 import { FindPhotoByConditionsGqlInput } from './gql/inputs/findPhotoByConditions.input';
 import { AccessTokenGqlAuthGuard } from '../user/auth/guards/gqlAccessToken.guard';
-import { PermissionGuardGql } from 'src/common/guard/permissionGql.guard';
+import { PermissionGuardGql } from '../../common/guard/permissionGql.guard';
 import { PhotosPermission } from './permission/photos.permission.enum';
 
 @Resolver(() => PhotoGqlModel)

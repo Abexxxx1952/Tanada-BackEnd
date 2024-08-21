@@ -1,6 +1,4 @@
 import { ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
-import { FindPhotoByConditionsDto } from 'src/domain/photo/dto/findByConditions.dto';
-import { FindUserByConditionsDto } from 'src/domain/user/dto/findByConditions.dto';
 import {
   FindOneOptions,
   FindOptionsSelect,
@@ -9,6 +7,8 @@ import {
   FindOptionsRelations,
   FindManyOptions,
 } from 'typeorm';
+import { FindPhotoByConditionsDto } from '../../domain/photo/dto/findByConditions.dto';
+import { FindUserByConditionsDto } from '../../domain/user/dto/findByConditions.dto';
 import { PhotoModel } from '../photo/types/photo';
 import { PhotoEntity } from '../../domain/photo/entity/photo.entity';
 import { UserEntity } from '../../domain/user/entity/user.entity';

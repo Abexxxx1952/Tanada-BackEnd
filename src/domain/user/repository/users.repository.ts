@@ -8,12 +8,12 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeepPartial, UpdateResult } from 'typeorm';
+import * as bcrypt from 'bcrypt';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { BaseAbstractRepository } from '../../../database/abstractRepository/base.abstract.repository';
 import { UserEntity } from '../entity/user.entity';
-import * as bcrypt from 'bcrypt';
 import { RegistrationSources } from '../auth/types/providersOAuth.enum';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
-import { UserStatsRepository } from 'src/domain/stat/repository/userStats.repository';
+import { UserStatsRepository } from '../../stat/repository/userStats.repository';
 
 @Injectable()
 export class UsersRepository extends BaseAbstractRepository<UserEntity> {
