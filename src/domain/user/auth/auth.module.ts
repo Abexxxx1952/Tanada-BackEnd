@@ -7,6 +7,8 @@ import { AccessTokenStrategy } from './strategies/accessToken.strategy';
 import { RefreshTokenStrategy } from './strategies/refreshToken.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { GitHubStrategy } from './strategies/gitHub.strategy';
+import { AccessTokenFromHeadersStrategy } from './strategies/accessTokenFromHeaders.strategy';
+import { RefreshTokenFromHeadersStrategy } from './strategies/refreshTokenFromHeaders.strategy';
 
 @Module({
   imports: [ConfigModule, JwtModule],
@@ -15,7 +17,9 @@ import { GitHubStrategy } from './strategies/gitHub.strategy';
     AuthService,
     LocalStrategy,
     AccessTokenStrategy,
+    AccessTokenFromHeadersStrategy,
     RefreshTokenStrategy,
+    RefreshTokenFromHeadersStrategy,
     GoogleStrategy,
     GitHubStrategy,
   ],

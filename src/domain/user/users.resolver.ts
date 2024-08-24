@@ -32,10 +32,12 @@ import { UpdateUserGqlArgs } from './gql/args/updateUser.args';
 import { AccessTokenGqlAuthGuard } from './auth/guards/gqlAccessToken.guard';
 import { RefreshTokenGqlAuthGuard } from './auth/guards/gqlRefreshToken.guard';
 import { LoginLocalArgs } from './gql/args/loginLocal.args';
+import { Tokens } from './auth/types/tokens';
+import { AccessTokenFromHeadersGqlAuthGuard } from './auth/guards/gqlAccessTokenFromHeaders.guard';
+import { RefreshTokenFromHeadersGqlAuthGuard } from './auth/guards/gqlRefreshTokenFromHeaders.guard';
 
 @Resolver()
 @UseInterceptors(ClassSerializerInterceptor)
-/* @UseInterceptors(LoggerHelperGqlInterceptor) */
 export class UsersResolver {
   constructor(
     @Inject('UsersRepository')
@@ -95,6 +97,14 @@ export class UsersResolver {
     return await this.usersRepository.status(currentUser.email);
   }
 
+  @Query(() => UserGqlModel, { name: 'userStatusFromHeaders', nullable: true })
+  @UseGuards(AccessTokenFromHeadersGqlAuthGuard)
+  async getUserStatusFromHeaders(
+    @CurrentUserGql() currentUser: AttachedUser,
+  ): Promise<UserEntity> {
+    return await this.usersRepository.status(currentUser.email);
+  }
+
   @Mutation(() => UserGqlModel, {
     name: 'createUser',
   })
@@ -134,6 +144,18 @@ export class UsersResolver {
     return await this.authService.logout(currentUser, response);
   }
 
+  @Mutation(() => AttachedUserGqlModel, {
+    name: 'logOutFromHeaders',
+  })
+  @UseGuards(AccessTokenFromHeadersGqlAuthGuard)
+  async logoutFromHeaders(
+    @CurrentUserGql() currentUser: AttachedUser,
+    @Context() context: any,
+  ): Promise<AttachedUser> {
+    const response: Response = context.res;
+    return await this.authService.logout(currentUser, response);
+  }
+
   @Mutation(() => String, {
     name: 'refresh',
   })
@@ -141,7 +163,19 @@ export class UsersResolver {
   async refreshTokens(
     @CurrentUserGql() currentUserWithRt: AttachedUserWithRt,
     @Context() context: any,
-  ): Promise<string> {
+  ): Promise<Tokens> {
+    const response: Response = context.res;
+    return await this.authService.refreshTokens(currentUserWithRt, response);
+  }
+
+  @Mutation(() => String, {
+    name: 'refreshFromHeaders',
+  })
+  @UseGuards(RefreshTokenFromHeadersGqlAuthGuard)
+  async refreshTokensFromHeaders(
+    @CurrentUserGql() currentUserWithRt: AttachedUserWithRt,
+    @Context() context: any,
+  ): Promise<Tokens> {
     const response: Response = context.res;
     return await this.authService.refreshTokens(currentUserWithRt, response);
   }
@@ -162,11 +196,37 @@ export class UsersResolver {
     );
   }
 
+  @Directive('@sensitive(fields: ["password"])')
+  @Mutation(() => UpdateUserResultGqlModel, {
+    name: 'updateUserFromHeaders',
+  })
+  @UseGuards(AccessTokenFromHeadersGqlAuthGuard)
+  async updateUserFromHeaders(
+    @Args() updateUser: UpdateUserGqlArgs,
+    @CurrentUserGql('id') currentUserId: string,
+  ): Promise<UpdateResult> {
+    console.log('updateUser', updateUser, currentUserId);
+    return await this.usersRepository.updateOneUserByIdSoft(
+      currentUserId,
+      updateUser,
+    );
+  }
+
   @Mutation(() => UserGqlModel, {
     name: 'deleteUser',
   })
   @UseGuards(AccessTokenGqlAuthGuard)
   async deleteUser(
+    @CurrentUserGql('id') currentUserId: string,
+  ): Promise<UserEntity> {
+    return await this.usersRepository.removeUserById(currentUserId);
+  }
+
+  @Mutation(() => UserGqlModel, {
+    name: 'deleteUserFromHeaders',
+  })
+  @UseGuards(AccessTokenFromHeadersGqlAuthGuard)
+  async deleteUserFromHeaders(
     @CurrentUserGql('id') currentUserId: string,
   ): Promise<UserEntity> {
     return await this.usersRepository.removeUserById(currentUserId);

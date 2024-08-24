@@ -4,6 +4,8 @@ import {
   ApiResponse,
   ApiParam,
   ApiQuery,
+  ApiCookieAuth,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 
 import { PaginationParamsArgs } from '../types/paginationParams';
@@ -290,7 +292,7 @@ export function ApiUsersPostLoginLocal() {
     ApiResponse({
       status: 200,
       description: 'User is logged in',
-      type: void 0,
+      type: UserModel,
     })(target, propertyKey, descriptor);
     ApiResponse({
       status: 400,
@@ -322,6 +324,43 @@ export function ApiUsersPostLogOut() {
       propertyKey,
       descriptor,
     );
+    ApiCookieAuth('access_token')(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 200,
+      description: 'User is logged out',
+      type: AttachedUserModel,
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 401,
+      description: 'Unauthorized',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 403,
+      description: 'Forbidden',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 500,
+      description: 'Internal Server Error',
+    })(target, propertyKey, descriptor);
+  };
+}
+
+export function ApiUsersPostLogOutFromHeaders() {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) {
+    ApiOperation({ summary: 'Log out user. (AccessToken required)' })(
+      target,
+      propertyKey,
+      descriptor,
+    );
+    ApiBearerAuth('Authorization')(target, propertyKey, descriptor);
     ApiResponse({
       status: 200,
       description: 'User is logged out',
@@ -357,6 +396,46 @@ export function ApiUsersPostRefresh() {
       propertyKey,
       descriptor,
     );
+    ApiCookieAuth('refresh_token')(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 200,
+      description: 'Tokens refreshed',
+      schema: {
+        type: 'string',
+        example: 'Refresh Successful',
+      },
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 401,
+      description: 'Unauthorized',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 403,
+      description: 'Forbidden',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 500,
+      description: 'Internal Server Error',
+    })(target, propertyKey, descriptor);
+  };
+}
+
+export function ApiUsersPostRefreshFromHeaders() {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) {
+    ApiOperation({ summary: 'Refresh tokens. (RefreshToken required)' })(
+      target,
+      propertyKey,
+      descriptor,
+    );
+    ApiBearerAuth('Authorization')(target, propertyKey, descriptor);
     ApiResponse({
       status: 200,
       description: 'Tokens refreshed',
@@ -480,11 +559,48 @@ export function ApiUsersGetStatus() {
     propertyKey: string,
     descriptor: PropertyDescriptor,
   ) {
-    ApiOperation({ summary: 'Get user information. (RefreshToken required)' })(
+    ApiOperation({ summary: 'Get user information. (AccessToken required)' })(
       target,
       propertyKey,
       descriptor,
     );
+    ApiCookieAuth('access_token')(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 200,
+      description: 'Got user information',
+      type: UserModel,
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 401,
+      description: 'Unauthorized',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 403,
+      description: 'Forbidden',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 500,
+      description: 'Internal Server Error',
+    })(target, propertyKey, descriptor);
+  };
+}
+
+export function ApiUsersGetStatusFromHeaders() {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) {
+    ApiOperation({ summary: 'Get user information. (AccessToken required)' })(
+      target,
+      propertyKey,
+      descriptor,
+    );
+    ApiBearerAuth('Authorization')(target, propertyKey, descriptor);
     ApiResponse({
       status: 200,
       description: 'Got user information',
@@ -518,6 +634,42 @@ export function ApiUsersPatchUpdate() {
     ApiOperation({
       summary: 'Update user. (AccessToken required)',
     })(target, propertyKey, descriptor);
+    ApiCookieAuth('access_token')(target, propertyKey, descriptor);
+    ApiBody({ type: UpdateUserArgs })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 200,
+      description: 'User Updated',
+      type: UpdateResultModel,
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 401,
+      description: 'Unauthorized',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 403,
+      description: 'Forbidden',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 500,
+      description: 'Internal Server Error',
+    })(target, propertyKey, descriptor);
+  };
+}
+
+export function ApiUsersPatchUpdateFromHeaders() {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) {
+    ApiOperation({
+      summary: 'Update user. (AccessToken required)',
+    })(target, propertyKey, descriptor);
+    ApiBearerAuth('Authorization')(target, propertyKey, descriptor);
     ApiBody({ type: UpdateUserArgs })(target, propertyKey, descriptor);
     ApiResponse({
       status: 200,
@@ -552,6 +704,41 @@ export function ApiUsersDeleteDelete() {
     ApiOperation({
       summary: 'Delete user. (AccessToken required)',
     })(target, propertyKey, descriptor);
+    ApiCookieAuth('access_token')(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 200,
+      description: 'User deleted',
+      type: UserModel,
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 401,
+      description: 'Unauthorized',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 403,
+      description: 'Forbidden',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 500,
+      description: 'Internal Server Error',
+    })(target, propertyKey, descriptor);
+  };
+}
+
+export function ApiUsersDeleteDeleteFromHeaders() {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) {
+    ApiOperation({
+      summary: 'Delete user. (AccessToken required)',
+    })(target, propertyKey, descriptor);
+    ApiBearerAuth('Authorization')(target, propertyKey, descriptor);
     ApiResponse({
       status: 200,
       description: 'User deleted',

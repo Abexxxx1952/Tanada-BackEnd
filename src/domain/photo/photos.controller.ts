@@ -18,19 +18,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { UpdateResult } from 'typeorm';
 import { CurrentUser } from '../../common/decorators/currentUser.decorator';
-import {
-  ApiPhotosGet,
-  ApiPhotosGetFindById,
-  ApiPhotosPostFindOneBy,
-  ApiPhotosPostFindManyBy,
-  ApiPhotosPostFindOneWith,
-  ApiPhotosPostFindAllWith,
-  ApiPhotosPostCreateSignedUploadUrl,
-  ApiPhotosPostCreate,
-  ApiPhotosPutUpdatePhotoHard,
-  ApiPhotosPatchUpdatePhotoSoft,
-  ApiPhotosDeletePhoto,
-} from '../../swagger/photo/index';
+
 import { PhotosRepository } from './repository/photos.repository';
 import { AccessTokenAuthGuard } from '../user/auth/guards/accessToken.guard';
 import { PermissionGuard } from '../../common/guard/permission.guard';
@@ -50,6 +38,24 @@ import {
 } from '../../common/interceptors/cache.interceptor';
 import { CreateSignedUploadUrlResult } from '../../externalStorage/types/createSignedUploadUrlResult';
 import { CreateSignedUploadUrlDto } from './dto/createSignedUploadUrl.dto';
+import {
+  ApiPhotosGet,
+  ApiPhotosGetFindById,
+  ApiPhotosPostFindOneBy,
+  ApiPhotosPostFindManyBy,
+  ApiPhotosPostFindOneWith,
+  ApiPhotosPostFindAllWith,
+  ApiPhotosPostCreateSignedUploadUrl,
+  ApiPhotosPostCreate,
+  ApiPhotosPutUpdatePhotoHard,
+  ApiPhotosPatchUpdatePhotoSoft,
+  ApiPhotosDeletePhoto,
+  ApiPhotosPostCreateFromHeaders,
+  ApiPhotosPutUpdatePhotoHardFromHeaders,
+  ApiPhotosPatchUpdatePhotoSoftFromHeaders,
+  ApiPhotosDeletePhotoFromHeaders,
+} from '../../swagger/photo';
+import { AccessTokenFromHeadersAuthGuard } from '../user/auth/guards/accessTokenFromHeaders.guard';
 
 @ApiTags('v1/photos')
 @Controller('v1/photos')
@@ -194,6 +200,26 @@ export class PhotoController {
     );
   }
 
+  @Post('createSignedUploadUrlFromHeaders')
+  @UseGuards(
+    PermissionGuard([
+      PhotosPermission.CreatePhoto,
+      PhotosPermission.UpdatePhoto,
+    ]),
+  )
+  @UseGuards(AccessTokenFromHeadersAuthGuard)
+  @HttpCode(HttpStatus.CREATED)
+  @ApiPhotosPostCreateSignedUploadUrl()
+  async createSignedUploadUrlFromHeaders(
+    @CurrentUser('id') currentUserId: string,
+    @Body() createSignedUploadUrlDto: CreateSignedUploadUrlDto,
+  ): Promise<CreateSignedUploadUrlResult> {
+    return await this.photosRepository.createSignedUploadUrl(
+      currentUserId,
+      createSignedUploadUrlDto,
+    );
+  }
+
   @Post('createPhoto')
   @UseGuards(PermissionGuard([PhotosPermission.CreatePhoto]))
   @UseGuards(AccessTokenAuthGuard)
@@ -201,6 +227,22 @@ export class PhotoController {
   @UseInterceptorsCacheInterceptor({ cache: CacheOptions.InvalidateAllCache })
   @ApiPhotosPostCreate()
   async createPhoto(
+    @CurrentUser('id') currentUserId: string,
+    @Body() createPhotoDto: CreatePhotoDto,
+  ): Promise<PhotoEntity> {
+    return await this.photosRepository.createPhoto(
+      currentUserId,
+      createPhotoDto,
+    );
+  }
+
+  @Post('createPhotoFromHeaders')
+  @UseGuards(PermissionGuard([PhotosPermission.CreatePhoto]))
+  @UseGuards(AccessTokenFromHeadersAuthGuard)
+  @HttpCode(HttpStatus.CREATED)
+  @UseInterceptorsCacheInterceptor({ cache: CacheOptions.InvalidateAllCache })
+  @ApiPhotosPostCreateFromHeaders()
+  async createPhotoFromHeaders(
     @CurrentUser('id') currentUserId: string,
     @Body() createPhotoDto: CreatePhotoDto,
   ): Promise<PhotoEntity> {
@@ -226,6 +268,22 @@ export class PhotoController {
     );
   }
 
+  @Put('updatePhotoHardFromHeaders')
+  @UseGuards(PermissionGuard([PhotosPermission.UpdatePhoto]))
+  @UseGuards(AccessTokenFromHeadersAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor({ cache: CacheOptions.InvalidateAllCache })
+  @ApiPhotosPutUpdatePhotoHardFromHeaders()
+  async updatePhotoHardFromHeaders(
+    @CurrentUser('id') currentUserId: string,
+    @Body() updatePhotoDto: UpdatePhotoDto,
+  ): Promise<PhotoEntity> {
+    return await this.photosRepository.updateOnePhotoByIdHard(
+      currentUserId,
+      updatePhotoDto,
+    );
+  }
+
   @Patch('updatePhotoSoft')
   @UseGuards(PermissionGuard([PhotosPermission.UpdatePhoto]))
   @UseGuards(AccessTokenAuthGuard)
@@ -242,6 +300,22 @@ export class PhotoController {
     );
   }
 
+  @Patch('updatePhotoSoftFromHeaders')
+  @UseGuards(PermissionGuard([PhotosPermission.UpdatePhoto]))
+  @UseGuards(AccessTokenFromHeadersAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor({ cache: CacheOptions.InvalidateAllCache })
+  @ApiPhotosPatchUpdatePhotoSoftFromHeaders()
+  async updatePhotoSoftFromHeaders(
+    @CurrentUser('id') currentUserId: string,
+    @Body() updatePhotoDto: UpdatePhotoDto,
+  ): Promise<UpdateResult> {
+    return await this.photosRepository.updateOnePhotoByIdSoft(
+      currentUserId,
+      updatePhotoDto,
+    );
+  }
+
   @Delete('deletePhoto/:id')
   @UseGuards(PermissionGuard([PhotosPermission.DeletePhoto]))
   @UseGuards(AccessTokenAuthGuard)
@@ -249,6 +323,19 @@ export class PhotoController {
   @UseInterceptorsCacheInterceptor({ cache: CacheOptions.InvalidateAllCache })
   @ApiPhotosDeletePhoto()
   async deletePhoto(
+    @CurrentUser('id') currentUserId: string,
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<PhotoEntity> {
+    return await this.photosRepository.removePhotoById(currentUserId, id);
+  }
+
+  @Delete('deletePhotoFromHeaders/:id')
+  @UseGuards(PermissionGuard([PhotosPermission.DeletePhoto]))
+  @UseGuards(AccessTokenFromHeadersAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor({ cache: CacheOptions.InvalidateAllCache })
+  @ApiPhotosDeletePhotoFromHeaders()
+  async deletePhotoFromHeaders(
     @CurrentUser('id') currentUserId: string,
     @Param('id', ParseIntPipe) id: number,
   ): Promise<PhotoEntity> {

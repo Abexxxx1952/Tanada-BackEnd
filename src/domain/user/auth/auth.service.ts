@@ -36,7 +36,7 @@ export class AuthService {
   async login(
     currentUser: UserEntity,
     response: Response,
-  ): Promise<AttachedUser> {
+  ): Promise<UserEntity> {
     try {
       const tokens = await this.getTokens(currentUser);
       await this.updateRtHash(currentUser.id, tokens.refresh_token);
@@ -55,11 +55,7 @@ export class AuthService {
         expires: this.getExpiresTimeRT(),
       });
 
-      return {
-        id: currentUser.id,
-        email: currentUser.email,
-        permissions: currentUser.permissions,
-      };
+      return currentUser;
     } catch (error) {
       throw error;
     }
@@ -117,7 +113,7 @@ export class AuthService {
   async refreshTokens(
     currentUser: AttachedUserWithRt,
     response: Response,
-  ): Promise<string> {
+  ): Promise<Tokens> {
     let userExist: UserEntity;
     try {
       userExist = await this.usersRepository.findOneById(currentUser.id);
@@ -155,7 +151,10 @@ export class AuthService {
         path: this.configService.getOrThrow<string>('REFRESH_TOKEN_PATH'),
         expires: this.getExpiresTimeRT(),
       });
-      return 'Refresh Successful';
+      return {
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token,
+      };
     } catch (error) {
       throw error;
     }

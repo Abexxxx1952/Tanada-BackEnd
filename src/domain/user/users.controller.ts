@@ -12,6 +12,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   Res,
   UseGuards,
   UseInterceptors,
@@ -51,6 +52,9 @@ import {
   UseInterceptorsCacheInterceptor,
   CacheOptions,
 } from '../../common/interceptors/cache.interceptor';
+import { AccessTokenFromHeadersAuthGuard } from './auth/guards/accessTokenFromHeaders.guard';
+import { Tokens } from './auth/types/tokens';
+import { RefreshTokenFromHeadersAuthGuard } from './auth/guards/refreshTokenFromHeaders.guard';
 import {
   ApiUsersGet,
   ApiUsersGetFindById,
@@ -69,7 +73,12 @@ import {
   ApiUsersGetStatus,
   ApiUsersPatchUpdate,
   ApiUsersDeleteDelete,
-} from 'src/swagger/user';
+  ApiUsersGetStatusFromHeaders,
+  ApiUsersPostLogOutFromHeaders,
+  ApiUsersPostRefreshFromHeaders,
+  ApiUsersPatchUpdateFromHeaders,
+  ApiUsersDeleteDeleteFromHeaders,
+} from '../../swagger/user';
 
 @ApiTags('v1/users')
 @Controller('v1/users')
@@ -205,6 +214,16 @@ export class UserController {
     return await this.usersRepository.status(currentUser.email);
   }
 
+  @Get('statusFromHeaders')
+  @UseGuards(AccessTokenFromHeadersAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiUsersGetStatusFromHeaders()
+  async setCookiesFromHeaders(
+    @CurrentUser() currentUser: AttachedUser,
+  ): Promise<UserEntity> {
+    return await this.usersRepository.status(currentUser.email);
+  }
+
   @Post('registration')
   @ParseRequestBodyWhenLogging(CreateUserDtoLocalWithoutPassword)
   @HttpCode(HttpStatus.CREATED)
@@ -227,7 +246,7 @@ export class UserController {
   async loginLocal(
     @CurrentUser() currentUser: UserEntity,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<AttachedUser> {
+  ): Promise<UserEntity> {
     return await this.authService.login(currentUser, response);
   }
 
@@ -242,6 +261,17 @@ export class UserController {
     return await this.authService.logout(currentUser, response);
   }
 
+  @Post('logOutFromHeaders')
+  @UseGuards(AccessTokenFromHeadersAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiUsersPostLogOutFromHeaders()
+  async logoutFromHeaders(
+    @CurrentUser() currentUser: AttachedUser,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<AttachedUser> {
+    return await this.authService.logout(currentUser, response);
+  }
+
   @Post('refresh')
   @UseGuards(RefreshTokenAuthGuard)
   @HttpCode(HttpStatus.OK)
@@ -249,7 +279,18 @@ export class UserController {
   async refreshTokens(
     @CurrentUser() currentUserWithRt: AttachedUserWithRt,
     @Res({ passthrough: true }) response: Response,
-  ): Promise<string> {
+  ): Promise<Tokens> {
+    return await this.authService.refreshTokens(currentUserWithRt, response);
+  }
+
+  @Post('refreshFromHeaders')
+  @UseGuards(RefreshTokenFromHeadersAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiUsersPostRefreshFromHeaders()
+  async refreshTokensFromHeaders(
+    @CurrentUser() currentUserWithRt: AttachedUserWithRt,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<Tokens> {
     return await this.authService.refreshTokens(currentUserWithRt, response);
   }
 
@@ -316,12 +357,42 @@ export class UserController {
     );
   }
 
+  @Patch('updateFromHeaders')
+  @ParseRequestBodyWhenLogging(CreateUserDtoLocalWithoutPassword)
+  @UseGuards(AccessTokenFromHeadersAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor({
+    cache: CacheOptions.InvalidateCacheByKey,
+    cacheKey: ['/api/v1/users/'],
+  })
+  @ApiUsersPatchUpdateFromHeaders()
+  async updateUserFromHeaders(
+    @CurrentUser('id') currentUserId: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ): Promise<UpdateResult> {
+    return await this.usersRepository.updateOneUserByIdSoft(
+      currentUserId,
+      updateUserDto,
+    );
+  }
+
   @Delete('delete')
   @UseGuards(AccessTokenAuthGuard)
   @HttpCode(HttpStatus.OK)
   @UseInterceptorsCacheInterceptor({ cache: CacheOptions.InvalidateAllCache })
   @ApiUsersDeleteDelete()
   async deleteUser(
+    @CurrentUser('id') currentUserId: string,
+  ): Promise<UserEntity> {
+    return await this.usersRepository.removeUserById(currentUserId);
+  }
+
+  @Delete('deleteFromHeaders')
+  @UseGuards(AccessTokenFromHeadersAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptorsCacheInterceptor({ cache: CacheOptions.InvalidateAllCache })
+  @ApiUsersDeleteDeleteFromHeaders()
+  async deleteUserFromHeaders(
     @CurrentUser('id') currentUserId: string,
   ): Promise<UserEntity> {
     return await this.usersRepository.removeUserById(currentUserId);

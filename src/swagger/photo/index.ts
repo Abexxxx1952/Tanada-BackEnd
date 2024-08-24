@@ -4,6 +4,8 @@ import {
   ApiResponse,
   ApiParam,
   ApiQuery,
+  ApiCookieAuth,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { FindOnePhotoWithConditionsDto } from '../types/findWithConditions';
 import { PaginationParamsArgs } from '../types/paginationParams';
@@ -277,6 +279,7 @@ export function ApiPhotosPostCreateSignedUploadUrl() {
       summary:
         'SignedUploadUrl creation. (CreatePhoto permission required. AccessToken required)',
     })(target, propertyKey, descriptor);
+    ApiCookieAuth('access_token')(target, propertyKey, descriptor);
     ApiBody({ type: CreateSignedUploadUrlArgs })(
       target,
       propertyKey,
@@ -320,6 +323,47 @@ export function ApiPhotosPostCreate() {
       summary:
         'Photo creation. (CreatePhoto permission required. AccessToken required)',
     })(target, propertyKey, descriptor);
+    ApiCookieAuth('access_token')(target, propertyKey, descriptor);
+    ApiBody({ type: CreatePhotoArgs })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 201,
+      description: 'Photo is created',
+      type: PhotoModel,
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 400,
+      description: 'Bad Request',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 401,
+      description: 'Unauthorized',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 403,
+      description: 'Forbidden',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 500,
+      description: 'Internal Server Error',
+    })(target, propertyKey, descriptor);
+  };
+}
+
+export function ApiPhotosPostCreateFromHeaders() {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) {
+    ApiOperation({
+      summary:
+        'Photo creation. (CreatePhoto permission required. AccessToken required)',
+    })(target, propertyKey, descriptor);
+    ApiBearerAuth('Authorization')(target, propertyKey, descriptor);
     ApiBody({ type: CreatePhotoArgs })(target, propertyKey, descriptor);
     ApiResponse({
       status: 201,
@@ -359,6 +403,43 @@ export function ApiPhotosPutUpdatePhotoHard() {
       summary:
         'Update photo. (UpdatePhoto permission required. AccessToken required)',
     })(target, propertyKey, descriptor);
+    ApiCookieAuth('access_token')(target, propertyKey, descriptor);
+    ApiBody({ type: UpdatePhotoArgs })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 200,
+      description: 'Photo Updated',
+      type: PhotoModel,
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 401,
+      description: 'Unauthorized',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 403,
+      description: 'Forbidden',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 500,
+      description: 'Internal Server Error',
+    })(target, propertyKey, descriptor);
+  };
+}
+
+export function ApiPhotosPutUpdatePhotoHardFromHeaders() {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) {
+    ApiOperation({
+      summary:
+        'Update photo. (UpdatePhoto permission required. AccessToken required)',
+    })(target, propertyKey, descriptor);
+    ApiBearerAuth('Authorization')(target, propertyKey, descriptor);
     ApiBody({ type: UpdatePhotoArgs })(target, propertyKey, descriptor);
     ApiResponse({
       status: 200,
@@ -394,6 +475,43 @@ export function ApiPhotosPatchUpdatePhotoSoft() {
       summary:
         'Update photo. (UpdatePhoto permission required. AccessToken required)',
     })(target, propertyKey, descriptor);
+    ApiCookieAuth('access_token')(target, propertyKey, descriptor);
+    ApiBody({ type: UpdatePhotoArgs })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 200,
+      description: 'Photo Updated',
+      type: UpdateResultModel,
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 401,
+      description: 'Unauthorized',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 403,
+      description: 'Forbidden',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 500,
+      description: 'Internal Server Error',
+    })(target, propertyKey, descriptor);
+  };
+}
+
+export function ApiPhotosPatchUpdatePhotoSoftFromHeaders() {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) {
+    ApiOperation({
+      summary:
+        'Update photo. (UpdatePhoto permission required. AccessToken required)',
+    })(target, propertyKey, descriptor);
+    ApiBearerAuth('Authorization')(target, propertyKey, descriptor);
     ApiBody({ type: UpdatePhotoArgs })(target, propertyKey, descriptor);
     ApiResponse({
       status: 200,
@@ -429,6 +547,47 @@ export function ApiPhotosDeletePhoto() {
       summary:
         'Delete photo. (DeletePhoto permission required. AccessToken required)',
     })(target, propertyKey, descriptor);
+    ApiCookieAuth('access_token')(target, propertyKey, descriptor);
+    ApiParam({
+      name: 'id',
+      type: 'number',
+      example: '22',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 200,
+      description: 'Photo deleted',
+      type: PhotoModel,
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 401,
+      description: 'Unauthorized',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 403,
+      description: 'Forbidden',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 429,
+      description: 'ThrottlerException: Too Many Requests',
+    })(target, propertyKey, descriptor);
+    ApiResponse({
+      status: 500,
+      description: 'Internal Server Error',
+    })(target, propertyKey, descriptor);
+  };
+}
+
+export function ApiPhotosDeletePhotoFromHeaders() {
+  return function (
+    target: any,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) {
+    ApiOperation({
+      summary:
+        'Delete photo. (DeletePhoto permission required. AccessToken required)',
+    })(target, propertyKey, descriptor);
+    ApiBearerAuth('Authorization')(target, propertyKey, descriptor);
     ApiParam({
       name: 'id',
       type: 'number',

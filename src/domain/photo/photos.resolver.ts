@@ -17,6 +17,7 @@ import { FindPhotoByConditionsGqlInput } from './gql/inputs/findPhotoByCondition
 import { AccessTokenGqlAuthGuard } from '../user/auth/guards/gqlAccessToken.guard';
 import { PermissionGuardGql } from '../../common/guard/permissionGql.guard';
 import { PhotosPermission } from './permission/photos.permission.enum';
+import { AccessTokenFromHeadersGqlAuthGuard } from '../user/auth/guards/gqlAccessTokenFromHeaders.guard';
 
 @Resolver(() => PhotoGqlModel)
 export class PhotosResolver {
@@ -88,6 +89,26 @@ export class PhotosResolver {
     );
   }
 
+  @Mutation(() => CreateSignedUploadUrlResultGqlModel, {
+    name: 'createSignedUploadUrlFromHeaders',
+  })
+  @UseGuards(
+    PermissionGuardGql([
+      PhotosPermission.CreatePhoto,
+      PhotosPermission.UpdatePhoto,
+    ]),
+  )
+  @UseGuards(AccessTokenFromHeadersGqlAuthGuard)
+  async createSignedUploadUrlFromHeaders(
+    @CurrentUserGql('id') currentUserId: string,
+    @Args() createSignedUploadUrl: CreateSignedUploadUrlGqlArgs,
+  ): Promise<CreateSignedUploadUrlResult> {
+    return await this.photosRepository.createSignedUploadUrl(
+      currentUserId,
+      createSignedUploadUrl,
+    );
+  }
+
   @Mutation(() => PhotoGqlModel, {
     name: 'createPhoto',
   })
@@ -101,11 +122,38 @@ export class PhotosResolver {
   }
 
   @Mutation(() => PhotoGqlModel, {
+    name: 'createPhotoFromHeaders',
+  })
+  @UseGuards(PermissionGuardGql([PhotosPermission.CreatePhoto]))
+  @UseGuards(AccessTokenFromHeadersGqlAuthGuard)
+  async createPhotoFromHeaders(
+    @CurrentUserGql('id') currentUserId: string,
+    @Args() createPhoto: CreatePhotoGqlArgs,
+  ): Promise<PhotoEntity> {
+    return await this.photosRepository.createPhoto(currentUserId, createPhoto);
+  }
+
+  @Mutation(() => PhotoGqlModel, {
     name: 'updatePhotoHard',
   })
   @UseGuards(PermissionGuardGql([PhotosPermission.UpdatePhoto]))
   @UseGuards(AccessTokenGqlAuthGuard)
   async updatePhotoHard(
+    @CurrentUserGql('id') currentUserId: string,
+    @Args() updatePhoto: UpdatePhotoGqlArgs,
+  ): Promise<PhotoEntity> {
+    return await this.photosRepository.updateOnePhotoByIdHard(
+      currentUserId,
+      updatePhoto,
+    );
+  }
+
+  @Mutation(() => PhotoGqlModel, {
+    name: 'updatePhotoHardFromHeaders',
+  })
+  @UseGuards(PermissionGuardGql([PhotosPermission.UpdatePhoto]))
+  @UseGuards(AccessTokenFromHeadersGqlAuthGuard)
+  async updatePhotoHardFromHeaders(
     @CurrentUserGql('id') currentUserId: string,
     @Args() updatePhoto: UpdatePhotoGqlArgs,
   ): Promise<PhotoEntity> {
@@ -130,12 +178,39 @@ export class PhotosResolver {
     );
   }
 
+  @Mutation(() => UpdatePhotoResultGqlModel, {
+    name: 'updatePhotoSoftFromHeaders',
+  })
+  @UseGuards(PermissionGuardGql([PhotosPermission.UpdatePhoto]))
+  @UseGuards(AccessTokenFromHeadersGqlAuthGuard)
+  async updatePhotoSoftFromHeaders(
+    @CurrentUserGql('id') currentUserId: string,
+    @Args() updatePhoto: UpdatePhotoGqlArgs,
+  ): Promise<UpdateResult> {
+    return await this.photosRepository.updateOnePhotoByIdSoft(
+      currentUserId,
+      updatePhoto,
+    );
+  }
+
   @Mutation(() => PhotoGqlModel, {
     name: 'deletePhoto',
   })
   @UseGuards(PermissionGuardGql([PhotosPermission.DeletePhoto]))
   @UseGuards(AccessTokenGqlAuthGuard)
   async deletePhoto(
+    @CurrentUserGql('id') currentUserId: string,
+    @Args('id', { type: () => Int }) id: number,
+  ): Promise<PhotoEntity> {
+    return await this.photosRepository.removePhotoById(currentUserId, id);
+  }
+
+  @Mutation(() => PhotoGqlModel, {
+    name: 'deletePhotoFromHeaders',
+  })
+  @UseGuards(PermissionGuardGql([PhotosPermission.DeletePhoto]))
+  @UseGuards(AccessTokenFromHeadersGqlAuthGuard)
+  async deletePhotoFromHeaders(
     @CurrentUserGql('id') currentUserId: string,
     @Args('id', { type: () => Int }) id: number,
   ): Promise<PhotoEntity> {
