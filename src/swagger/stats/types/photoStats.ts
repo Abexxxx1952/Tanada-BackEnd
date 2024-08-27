@@ -14,10 +14,10 @@ export class PhotoStatModel implements PhotoStatEntity {
   viewsCount?: number;
 
   @ApiProperty()
-  deleted?: number;
+  deleted?: number | null;
 
   @ApiProperty()
-  photoId: number;
+  photoId: number | null;
 
   @ApiProperty({
     type: () => PhotoModel,

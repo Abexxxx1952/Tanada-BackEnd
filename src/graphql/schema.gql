@@ -102,6 +102,7 @@ type Query {
   getUserManyBy(condition: FindUserByConditionsGqlInput!, offset: Int, limit: Int): [UserModel!]
   getUserOneWith(condition: FindOneUserWithConditionsGqlInput!): UserModel
   userStatus: UserModel
+  userStatusFromHeaders: UserModel
   getUsersStats: UsersStatsResultModel
   getPhotosStats: PhotosStatsResultModel
   getPhotos(offset: Int, limit: Int): [PhotoModel!]
@@ -217,13 +218,22 @@ type Mutation {
   createUser(email: String!, password: String!, name: String, icon: String): UserModel!
   loginLocal(email: String!, password: String!): AttachedUserModel!
   logOut: AttachedUserModel!
+  logOutFromHeaders: AttachedUserModel!
   refresh: String!
+  refreshFromHeaders: String!
   updateUser(name: String, password: String, icon: String, payload: PayloadGqlInput): UpdateUserResultModel!
+  updateUserFromHeaders(name: String, password: String, icon: String, payload: PayloadGqlInput): UpdateUserResultModel!
   deleteUser: UserModel!
+  deleteUserFromHeaders: UserModel!
   addViewsPhotoStats(id: Int!): PhotoStatModel!
   createSignedUploadUrl(fileName: String!): CreateSignedUploadUrlResultModel!
+  createSignedUploadUrlFromHeaders(fileName: String!): CreateSignedUploadUrlResultModel!
   createPhoto(link: String!): PhotoModel!
+  createPhotoFromHeaders(link: String!): PhotoModel!
   updatePhotoHard(link: String!, id: Int!): PhotoModel!
+  updatePhotoHardFromHeaders(link: String!, id: Int!): PhotoModel!
   updatePhotoSoft(link: String!, id: Int!): UpdatePhotoResultModel!
+  updatePhotoSoftFromHeaders(link: String!, id: Int!): UpdatePhotoResultModel!
   deletePhoto(id: Int!): PhotoModel!
+  deletePhotoFromHeaders(id: Int!): PhotoModel!
 }

@@ -12,17 +12,17 @@ export class PhotoStatEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true })
+  @Column()
   created?: number;
 
-  @Column({ nullable: true })
+  @Column()
   viewsCount?: number;
 
   @Column({ nullable: true })
   deleted?: number;
 
   @Column({ nullable: true })
-  photoId: number | null;
+  photoId: number;
 
   @OneToOne(() => PhotoEntity, (photo) => photo.stats)
   @JoinColumn({ name: 'photoId' })

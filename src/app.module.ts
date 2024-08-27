@@ -32,11 +32,13 @@ import { GraphqlTypesModule } from './graphql/graphqlTypeController/graphqlType.
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
         const mode = configService.getOrThrow('MODE');
+        const ttl = configService.getOrThrow('THROTTLER_TTL');
+        const limit = configService.getOrThrow('THROTTLER_LIMIT');
         const skipIf = mode === 'production' ? () => false : () => true;
         return [
           {
-            ttl: 60000,
-            limit: 10,
+            ttl,
+            limit,
             skipIf,
           },
         ];

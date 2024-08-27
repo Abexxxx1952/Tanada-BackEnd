@@ -205,6 +205,8 @@ export abstract class IQuery {
 
     abstract userStatus(): Nullable<UserModel> | Promise<Nullable<UserModel>>;
 
+    abstract userStatusFromHeaders(): Nullable<UserModel> | Promise<Nullable<UserModel>>;
+
     abstract getUsersStats(): Nullable<UsersStatsResultModel> | Promise<Nullable<UsersStatsResultModel>>;
 
     abstract getPhotosStats(): Nullable<PhotosStatsResultModel> | Promise<Nullable<PhotosStatsResultModel>>;
@@ -227,23 +229,41 @@ export abstract class IMutation {
 
     abstract logOut(): AttachedUserModel | Promise<AttachedUserModel>;
 
+    abstract logOutFromHeaders(): AttachedUserModel | Promise<AttachedUserModel>;
+
     abstract refresh(): string | Promise<string>;
+
+    abstract refreshFromHeaders(): string | Promise<string>;
 
     abstract updateUser(name?: Nullable<string>, password?: Nullable<string>, icon?: Nullable<string>, payload?: Nullable<PayloadGqlInput>): UpdateUserResultModel | Promise<UpdateUserResultModel>;
 
+    abstract updateUserFromHeaders(name?: Nullable<string>, password?: Nullable<string>, icon?: Nullable<string>, payload?: Nullable<PayloadGqlInput>): UpdateUserResultModel | Promise<UpdateUserResultModel>;
+
     abstract deleteUser(): UserModel | Promise<UserModel>;
+
+    abstract deleteUserFromHeaders(): UserModel | Promise<UserModel>;
 
     abstract addViewsPhotoStats(id: number): PhotoStatModel | Promise<PhotoStatModel>;
 
     abstract createSignedUploadUrl(fileName: string): CreateSignedUploadUrlResultModel | Promise<CreateSignedUploadUrlResultModel>;
 
+    abstract createSignedUploadUrlFromHeaders(fileName: string): CreateSignedUploadUrlResultModel | Promise<CreateSignedUploadUrlResultModel>;
+
     abstract createPhoto(link: string): PhotoModel | Promise<PhotoModel>;
+
+    abstract createPhotoFromHeaders(link: string): PhotoModel | Promise<PhotoModel>;
 
     abstract updatePhotoHard(link: string, id: number): PhotoModel | Promise<PhotoModel>;
 
+    abstract updatePhotoHardFromHeaders(link: string, id: number): PhotoModel | Promise<PhotoModel>;
+
     abstract updatePhotoSoft(link: string, id: number): UpdatePhotoResultModel | Promise<UpdatePhotoResultModel>;
 
+    abstract updatePhotoSoftFromHeaders(link: string, id: number): UpdatePhotoResultModel | Promise<UpdatePhotoResultModel>;
+
     abstract deletePhoto(id: number): PhotoModel | Promise<PhotoModel>;
+
+    abstract deletePhotoFromHeaders(id: number): PhotoModel | Promise<PhotoModel>;
 }
 
 export type DateTime = any;
