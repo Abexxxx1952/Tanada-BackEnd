@@ -54,7 +54,7 @@ export class StatController {
     return await this.photoStatsRepository.getPhotosStats();
   }
 
-  @Post('addPhotoView')
+  @Post('addPhotoView/:id')
   @HttpCode(HttpStatus.CREATED)
   @UseInterceptorsCacheInterceptor({ cache: CacheOptions.InvalidateAllCache })
   @ApiStatsPostAddPhotoView()

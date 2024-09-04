@@ -18,7 +18,6 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { UpdateResult } from 'typeorm';
 import { CurrentUser } from '../../common/decorators/currentUser.decorator';
-
 import { PhotosRepository } from './repository/photos.repository';
 import { AccessTokenAuthGuard } from '../user/auth/guards/accessToken.guard';
 import { PermissionGuard } from '../../common/guard/permission.guard';
@@ -38,6 +37,7 @@ import {
 } from '../../common/interceptors/cache.interceptor';
 import { CreateSignedUploadUrlResult } from '../../externalStorage/types/createSignedUploadUrlResult';
 import { CreateSignedUploadUrlDto } from './dto/createSignedUploadUrl.dto';
+import { AccessTokenFromHeadersAuthGuard } from '../user/auth/guards/accessTokenFromHeaders.guard';
 import {
   ApiPhotosGet,
   ApiPhotosGetFindById,
@@ -55,7 +55,6 @@ import {
   ApiPhotosPatchUpdatePhotoSoftFromHeaders,
   ApiPhotosDeletePhotoFromHeaders,
 } from '../../swagger/photo';
-import { AccessTokenFromHeadersAuthGuard } from '../user/auth/guards/accessTokenFromHeaders.guard';
 
 @ApiTags('v1/photos')
 @Controller('v1/photos')

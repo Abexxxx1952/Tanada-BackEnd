@@ -41,6 +41,11 @@ async function bootstrap() {
           frameSrc: [`'self'`, 'sandbox.embed.apollographql.com'],
         },
       },
+      frameguard: { action: 'sameorigin' },
+      hidePoweredBy: true,
+      hsts: true,
+      ieNoOpen: true,
+      noSniff: true,
     }),
   );
 
