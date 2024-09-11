@@ -1,7 +1,6 @@
 import { BeforeInsert } from 'typeorm';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { v5 as uuidv5 } from 'uuid';
-
 import { UserEntity } from '../../../domain/user/entity/user.entity';
 import { PhotoEntity } from '../../../domain/photo/entity/photo.entity';
 import { PhotoModel } from '../../../swagger/photo/types/photo';

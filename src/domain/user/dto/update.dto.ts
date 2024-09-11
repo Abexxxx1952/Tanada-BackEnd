@@ -5,6 +5,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { Payload } from '../types/payload';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -25,5 +26,5 @@ export class UpdateUserDto {
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  readonly payload?: Record<string, string>[];
+  readonly payload?: Payload[];
 }

@@ -2,9 +2,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { UsersRepository } from '../../domain/user/repository/users.repository';
 import { UserEntity } from '../../domain/user/entity/user.entity';
 import { users } from './userWithRelationsGenerator';
-import { PhotosRepository } from 'src/domain/photo/repository/photos.repository';
-import { UserStatsRepository } from 'src/domain/stat/repository/userStats.repository';
-import { PhotoStatsRepository } from 'src/domain/stat/repository/photoStats.repository';
+import { PhotosRepository } from '../../domain/photo/repository/photos.repository';
+import { UserStatsRepository } from '../../domain/stat/repository/userStats.repository';
+import { PhotoStatsRepository } from '../../domain/stat/repository/photoStats.repository';
 
 @Injectable()
 export class UserWithRelationsService {

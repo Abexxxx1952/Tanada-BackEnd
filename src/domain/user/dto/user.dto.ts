@@ -12,14 +12,15 @@ import {
 import { PhotoEntity } from '../../photo/entity/photo.entity';
 import { UserPermissions, UserPermissionsKeys } from '../permission/permission';
 import { RegistrationSources } from '../auth/types/providersOAuth.enum';
+import { Payload } from '../types/payload';
 
 export class UserDto {
   @IsString()
   @IsNotEmpty()
   readonly id: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   @IsNotEmpty()
   readonly name?: string;
 
@@ -31,8 +32,8 @@ export class UserDto {
   @IsNotEmpty()
   readonly password: string;
 
-  @IsString()
   @IsOptional()
+  @IsString()
   readonly icon?: string;
 
   @IsDate()
@@ -54,8 +55,8 @@ export class UserDto {
   @IsEnum(RegistrationSources, { each: true })
   registrationSources: RegistrationSources[];
 
-  @IsArray()
   @IsOptional()
+  @IsArray()
   @ValidateNested({ each: true })
-  payload?: Record<string, string>[];
+  payload?: Payload[];
 }

@@ -6,11 +6,11 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { v5 as uuidv5 } from 'uuid';
 import {
   UserPermissions,
   UserPermissionsKeys,
 } from '../../permission/permission';
-import { v5 as uuidv5 } from 'uuid';
 import { RegistrationSources } from '../../auth/types/providersOAuth.enum';
 import { PayloadGqlInput } from './payload.input';
 import { UserEntity } from '../../entity/user.entity';
@@ -44,7 +44,7 @@ export class UserGqlInput implements UserEntity {
   updatedAt: Date;
 
   @Field(() => [PayloadGqlInput], { nullable: true })
-  @Column({ type: 'jsonb', array: true, nullable: true })
+  @Column({ type: 'jsonb', array: true })
   payload: PayloadGqlInput[];
 
   @Field(() => [PhotoGqlInput], { nullable: true })

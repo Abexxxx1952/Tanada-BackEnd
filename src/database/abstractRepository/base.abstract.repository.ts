@@ -1,4 +1,10 @@
 import {
+  BadRequestException,
+  ConflictException,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import {
   DeepPartial,
   FindManyOptions,
   FindOneOptions,
@@ -7,14 +13,7 @@ import {
   Repository,
   UpdateResult,
 } from 'typeorm';
-
 import { instanceToPlain, plainToInstance } from 'class-transformer';
-import {
-  BadRequestException,
-  ConflictException,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import { validate } from 'class-validator';
 import { BaseInterfaceRepository } from './base.interface.repository';
@@ -66,12 +65,12 @@ export abstract class BaseAbstractRepository<T extends HasId>
   }
 
   public async findOneById(id: any): Promise<T> {
-    const options: FindOptionsWhere<T> = {
+    const condition: FindOptionsWhere<T> = {
       id: id,
     };
 
     try {
-      const entity = await this.entity.findOneBy(options);
+      const entity = await this.entity.findOneBy(condition);
 
       if (!entity) {
         throw new NotFoundException(`${this.entityName} not found`);

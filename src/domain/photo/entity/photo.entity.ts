@@ -7,7 +7,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
 import { UserEntity } from '../../user/entity/user.entity';
 import { PhotoStatEntity } from '../../stat/entity/photoStat.entity';
 

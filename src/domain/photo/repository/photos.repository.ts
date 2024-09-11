@@ -13,10 +13,11 @@ import { PhotoEntity } from '../entity/photo.entity';
 import { UsersRepository } from '../../user/repository/users.repository';
 import { UserEntity } from '../../user/entity/user.entity';
 import { ExternalStorageService } from '../../../externalStorage/externalStorage.service';
-import { CreateSignedUploadUrlResult } from 'src/externalStorage/types/createSignedUploadUrlResult';
+import { CreateSignedUploadUrlResult } from '../../../externalStorage/types/createSignedUploadUrlResult';
 import { CreatePhotoDto } from '../dto/create.dto';
 import { CreateSignedUploadUrlDto } from '../dto/createSignedUploadUrl.dto';
 import { PhotoStatsRepository } from '../../stat/repository/photoStats.repository';
+import { PhotoStatEntity } from '../../stat/entity/photoStat.entity';
 
 @Injectable()
 export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
@@ -93,6 +94,13 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
         throw new ForbiddenException('Access Denied');
       }
 
+      const photoStats: PhotoStatEntity =
+        await this.photoStatsRepository.findOneByCondition({
+          photoId: data.id,
+        });
+      photoStats.viewsCount = 0;
+      await this.photoStatsRepository.save(photoStats);
+
       if (entityToUpdate) {
         Object.assign(entityToUpdate, data);
         return await this.save(entityToUpdate);
@@ -122,6 +130,13 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
           },
         },
       });
+
+      const photoStats: PhotoStatEntity =
+        await this.photoStatsRepository.findOneByCondition({
+          photoId: data.id,
+        });
+      photoStats.viewsCount = 0;
+      await this.photoStatsRepository.save(photoStats);
 
       return await this.entity.update(data.id, data);
     } catch (error) {

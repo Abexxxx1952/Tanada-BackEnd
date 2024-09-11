@@ -12,14 +12,12 @@ import {
   Patch,
   Post,
   Query,
-  Req,
   Res,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { UpdateResult } from 'typeorm';
 import { Response } from 'express';
-
 import { ApiTags } from '@nestjs/swagger';
 import { UUID } from 'crypto';
 import { CurrentUser } from '../../common/decorators/currentUser.decorator';
@@ -47,7 +45,6 @@ import { AttachedUser } from './auth/types/attachedUser';
 import { AccessTokenAuthGuard } from './auth/guards/accessToken.guard';
 import { GoogleGuard } from './auth/guards/google.guard';
 import { GitHubGuard } from './auth/guards/gitHub.guard';
-
 import {
   UseInterceptorsCacheInterceptor,
   CacheOptions,

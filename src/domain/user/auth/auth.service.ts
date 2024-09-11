@@ -4,6 +4,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
@@ -11,7 +12,6 @@ import * as bcrypt from 'bcrypt';
 import { Tokens } from './types/tokens';
 import { JwtPayload } from './types/jwtPayload';
 import { UsersRepository } from '../repository/users.repository';
-import { ModuleRef } from '@nestjs/core';
 import { UserEntity } from '../entity/user.entity';
 import { AttachedUser } from './types/attachedUser';
 import { AttachedUserWithRt } from './types/attachedUserWithRt';

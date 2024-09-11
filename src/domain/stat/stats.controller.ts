@@ -10,18 +10,14 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PhotoStatEntity } from './entity/photoStat.entity';
-
 import { UserStatsRepository } from './repository/userStats.repository';
 import { PhotoStatsRepository } from './repository/photoStats.repository';
-
 import {
   CacheOptions,
   UseInterceptorsCacheInterceptor,
 } from '../../common/interceptors/cache.interceptor';
-
 import { UsersStatsResult } from './types/usersStatsResult';
 import { PhotosStatsResult } from './types/photosStatsResult';
-
 import {
   ApiStatsGetUsers,
   ApiStatsGetPhotos,

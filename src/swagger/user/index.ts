@@ -7,7 +7,6 @@ import {
   ApiCookieAuth,
   ApiBearerAuth,
 } from '@nestjs/swagger';
-
 import { PaginationParamsArgs } from '../types/paginationParams';
 import { UserModel } from './types/user';
 import { CreateUserLocalArgs } from './types/createUserLocal';

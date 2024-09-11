@@ -1,7 +1,8 @@
 import { ArgsType, Field } from '@nestjs/graphql';
-import { IsOptional, IsString } from 'class-validator';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 import { PayloadGqlInput } from '../inputs/payload.input';
 import { UpdateUserDto } from '../../dto/update.dto';
+import { Payload } from '../../types/payload';
 
 @ArgsType()
 export class UpdateUserGqlArgs implements UpdateUserDto {
@@ -20,8 +21,8 @@ export class UpdateUserGqlArgs implements UpdateUserDto {
   @IsString()
   readonly icon?: string;
 
-  @Field(() => PayloadGqlInput, { nullable: true })
+  @Field(() => [PayloadGqlInput], { nullable: true })
   @IsOptional()
-  @IsString()
-  readonly payload?: Record<string, string>[];
+  @IsArray()
+  readonly payload?: Payload[];
 }

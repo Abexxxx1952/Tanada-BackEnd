@@ -221,8 +221,8 @@ type Mutation {
   logOutFromHeaders: AttachedUserModel!
   refresh: String!
   refreshFromHeaders: String!
-  updateUser(name: String, password: String, icon: String, payload: PayloadGqlInput): UpdateUserResultModel!
-  updateUserFromHeaders(name: String, password: String, icon: String, payload: PayloadGqlInput): UpdateUserResultModel!
+  updateUser(name: String, password: String, icon: String, payload: [PayloadGqlInput!]): UpdateUserResultModel!
+  updateUserFromHeaders(name: String, password: String, icon: String, payload: [PayloadGqlInput!]): UpdateUserResultModel!
   deleteUser: UserModel!
   deleteUserFromHeaders: UserModel!
   addViewsPhotoStats(id: Int!): PhotoStatModel!

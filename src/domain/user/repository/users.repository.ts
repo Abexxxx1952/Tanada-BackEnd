@@ -116,7 +116,7 @@ export class UsersRepository extends BaseAbstractRepository<UserEntity> {
         }
         throw error;
       }
-      console.log('data.registrationSources', data.registrationSources);
+
       if (!existUser.registrationSources.includes(RegistrationSources.Local)) {
         data.registrationSources = [
           ...existUser.registrationSources,

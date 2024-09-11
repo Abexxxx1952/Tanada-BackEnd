@@ -1,5 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { UpdateUserDto } from '../../../domain/user/dto/update.dto';
+import { Payload } from 'src/domain/user/types/payload';
 export class UpdateUserArgs implements UpdateUserDto {
   @ApiPropertyOptional()
   readonly name?: string;
@@ -14,5 +15,5 @@ export class UpdateUserArgs implements UpdateUserDto {
     isArray: true,
     type: Object,
   })
-  readonly payload?: Record<string, string>[];
+  readonly payload?: Payload[];
 }

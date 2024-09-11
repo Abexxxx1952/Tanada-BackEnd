@@ -9,7 +9,6 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-
 import { PhotoEntity } from '../../photo/entity/photo.entity';
 export class FindUserByConditionsDto {
   @IsOptional()

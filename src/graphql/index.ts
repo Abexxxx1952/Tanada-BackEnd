@@ -235,9 +235,9 @@ export abstract class IMutation {
 
     abstract refreshFromHeaders(): string | Promise<string>;
 
-    abstract updateUser(name?: Nullable<string>, password?: Nullable<string>, icon?: Nullable<string>, payload?: Nullable<PayloadGqlInput>): UpdateUserResultModel | Promise<UpdateUserResultModel>;
+    abstract updateUser(name?: Nullable<string>, password?: Nullable<string>, icon?: Nullable<string>, payload?: Nullable<PayloadGqlInput[]>): UpdateUserResultModel | Promise<UpdateUserResultModel>;
 
-    abstract updateUserFromHeaders(name?: Nullable<string>, password?: Nullable<string>, icon?: Nullable<string>, payload?: Nullable<PayloadGqlInput>): UpdateUserResultModel | Promise<UpdateUserResultModel>;
+    abstract updateUserFromHeaders(name?: Nullable<string>, password?: Nullable<string>, icon?: Nullable<string>, payload?: Nullable<PayloadGqlInput[]>): UpdateUserResultModel | Promise<UpdateUserResultModel>;
 
     abstract deleteUser(): UserModel | Promise<UserModel>;
 

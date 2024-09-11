@@ -189,7 +189,6 @@ export class UsersResolver {
     @Args() updateUser: UpdateUserGqlArgs,
     @CurrentUserGql('id') currentUserId: string,
   ): Promise<UpdateResult> {
-    console.log('updateUser', updateUser, currentUserId);
     return await this.usersRepository.updateOneUserByIdSoft(
       currentUserId,
       updateUser,
@@ -205,7 +204,6 @@ export class UsersResolver {
     @Args() updateUser: UpdateUserGqlArgs,
     @CurrentUserGql('id') currentUserId: string,
   ): Promise<UpdateResult> {
-    console.log('updateUser', updateUser, currentUserId);
     return await this.usersRepository.updateOneUserByIdSoft(
       currentUserId,
       updateUser,

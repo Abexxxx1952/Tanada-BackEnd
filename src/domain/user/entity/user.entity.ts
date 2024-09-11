@@ -45,7 +45,7 @@ export class UserEntity {
   @Column({ nullable: true })
   hashedRefreshToken?: string;
 
-  @Column({ type: 'jsonb', array: true, nullable: true })
+  @Column({ type: 'jsonb', default: [] })
   payload: Payload[];
 
   @OneToMany(() => PhotoEntity, (photo) => photo.user, {

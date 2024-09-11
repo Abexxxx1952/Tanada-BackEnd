@@ -1,11 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { validateOrReject } from 'class-validator';
 import { PassportStrategy } from '@nestjs/passport';
+import { validateOrReject } from 'class-validator';
+import { plainToClass } from 'class-transformer';
 import { Strategy } from 'passport-local';
 import { AuthService } from '../auth.service';
 import { UserEntity } from '../../entity/user.entity';
-
-import { plainToClass } from 'class-transformer';
 import { LoginLocalUserDto } from '../../dto/loginUserLocal.dto';
 
 @Injectable()

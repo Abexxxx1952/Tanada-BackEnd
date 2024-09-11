@@ -14,9 +14,8 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-
-import { ApiTags } from '@nestjs/swagger';
 import { UpdateResult } from 'typeorm';
+import { ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../../common/decorators/currentUser.decorator';
 import { PhotosRepository } from './repository/photos.repository';
 import { AccessTokenAuthGuard } from '../user/auth/guards/accessToken.guard';
