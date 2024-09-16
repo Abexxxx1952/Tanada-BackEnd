@@ -14,8 +14,8 @@ export class PhotoGqlModel implements PhotoEntity {
   @Field()
   createdAt: Date;
 
-  @Field()
-  updatedAt: Date;
+  @Field({ nullable: true })
+  updatedAt?: Date;
 
   @Field(() => UserGqlModel)
   user: UserGqlModel;

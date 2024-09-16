@@ -9,7 +9,6 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
 import { v5 as uuidv5 } from 'uuid';
 import { PhotoEntity } from '../../photo/entity/photo.entity';
 import { UserPermissions, UserPermissionsKeys } from '../permission/permission';
@@ -38,8 +37,8 @@ export class UserEntity {
   @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @UpdateDateColumn({ nullable: true })
+  updatedAt?: Date;
 
   @Exclude()
   @Column({ nullable: true })

@@ -44,7 +44,7 @@ function createRandomPhoto(user: UserEntity): PhotoEntity {
 function createRandomPhotoStat(photoId: number): PhotoStatEntity {
   const photostat = new PhotoStatEntity();
   photostat.id = faker.number.int({ min: 1, max: 100 });
-  photostat.created = faker.number.int({ min: 1, max: 100 });
+  photostat.createdAt = faker.date.past();
   photostat.viewsCount = faker.number.int({ min: 1, max: 100 });
   photostat.photoId = photoId;
 

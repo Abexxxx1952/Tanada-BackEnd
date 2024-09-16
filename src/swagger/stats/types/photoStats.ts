@@ -2,19 +2,20 @@ import { ApiProperty } from '@nestjs/swagger';
 import { PhotoEntity } from '../../../domain/photo/entity/photo.entity';
 import { PhotoStatEntity } from '../../../domain/stat/entity/photoStat.entity';
 import { PhotoModel } from '../../photo/types/photo';
+import { PhotoViewEntity } from 'src/domain/stat/entity/photoView.entity';
 
 export class PhotoStatModel implements PhotoStatEntity {
   @ApiProperty()
   id: number;
 
   @ApiProperty()
-  created?: number;
+  createdAt: Date;
 
   @ApiProperty()
   viewsCount?: number;
 
   @ApiProperty()
-  deleted?: number | null;
+  deletedAt?: Date | null;
 
   @ApiProperty()
   photoId: number | null;
@@ -23,4 +24,9 @@ export class PhotoStatModel implements PhotoStatEntity {
     type: () => PhotoModel,
   })
   photo: PhotoEntity;
+
+  @ApiProperty({
+    type: () => PhotoViewEntity,
+  })
+  views: PhotoViewEntity[];
 }

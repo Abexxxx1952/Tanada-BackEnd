@@ -15,7 +15,7 @@ type UserModel {
   email: String!
   icon: String
   createdAt: DateTime!
-  updatedAt: DateTime!
+  updatedAt: DateTime
   payload: [PayloadModel!]
   photo: [PhotoModel!]
   permissions: [String!]!
@@ -31,18 +31,26 @@ type PhotoModel {
   id: Int!
   link: String!
   createdAt: DateTime!
-  updatedAt: DateTime!
+  updatedAt: DateTime
   user: UserModel!
   stats: PhotoStatModel!
 }
 
+type PhotoViewModel {
+  id: Int!
+  viewedAt: Int!
+  photoStatId: Int!
+  photoStat: PhotoStatModel!
+}
+
 type PhotoStatModel {
   id: Int!
-  created: Int
+  createdAt: DateTime!
   viewsCount: Int
-  deleted: Int
-  photoId: Int!
+  deletedAt: DateTime
+  photoId: Int
   photo: PhotoModel!
+  views: [PhotoViewModel!]
 }
 
 type UsersStatsResultModel {
@@ -104,7 +112,17 @@ type Query {
   userStatus: UserModel
   userStatusFromHeaders: UserModel
   getUsersStats: UsersStatsResultModel
+  getUsersStatsByDate(condition: FindStatsByDateGqlInput!): UsersStatsResultModel
   getPhotosStats: PhotosStatsResultModel
+  getPhotosStatsById(id: String!): PhotosStatsResultModel
+  getPhotosStatsByDate(condition: FindStatsByDateGqlInput!): PhotosStatsResultModel
+  getPhotosStatsByDateById(id: String!, condition: FindStatsByDateGqlInput!): PhotosStatsResultModel
+  getPhotosStatsForCurrentYearByMonth: [PhotosStatsResultModel!]
+  getPhotosStatsForCurrentYearByMonthById(id: String!): [PhotosStatsResultModel!]
+  getPhotosStatsForCurrentMonthByWeek: [PhotosStatsResultModel!]
+  getPhotosStatsForCurrentMonthByWeekById(id: String!): [PhotosStatsResultModel!]
+  getPhotosStatsForLast7Days: [PhotosStatsResultModel!]
+  getPhotosStatsForLast7DaysById(id: String!): [PhotosStatsResultModel!]
   getPhotos(offset: Int, limit: Int): [PhotoModel!]
   getPhotoById(id: Int!): PhotoModel
   getPhotoOneBy(condition: FindPhotoByConditionsGqlInput!): PhotoModel
@@ -151,11 +169,19 @@ input PayloadGqlInput {
 
 input PhotoStatGqlInput {
   id: Int
-  created: Int
+  createdAt: DateTime
   viewsCount: Int
-  deleted: Int
+  deletedAt: DateTime
   photoId: Int
   photo: PhotoGqlInput
+  views: [PhotoViewGqlInput!]
+}
+
+input PhotoViewGqlInput {
+  id: Int
+  viewedAt: DateTime
+  photoStatId: Int
+  photoStat: PhotoStatGqlInput
 }
 
 input FindOneUserWithConditionsGqlInput {
@@ -180,6 +206,11 @@ enum UserDirection {
   desc
   one
   minusOne
+}
+
+input FindStatsByDateGqlInput {
+  startDate: DateTime!
+  endDate: DateTime!
 }
 
 input FindPhotoByConditionsGqlInput {

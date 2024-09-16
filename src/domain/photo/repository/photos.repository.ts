@@ -172,7 +172,7 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
       if (deleteResultFromStorage !== 'DELETED') {
         throw new InternalServerErrorException();
       }
-      photo.stats.deleted = 1;
+      photo.stats.deletedAt = new Date();
       photo.stats.photoId = null;
       await this.photoStatsRepository.save(photo.stats);
 

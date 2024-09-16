@@ -5,9 +5,9 @@ export class UserStatEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true })
-  created?: number;
+  @Column({ type: 'timestamp', nullable: true })
+  createdAt?: Date;
 
-  @Column({ nullable: true })
-  deleted?: number;
+  @Column({ type: 'timestamp', nullable: true })
+  deletedAt?: Date;
 }

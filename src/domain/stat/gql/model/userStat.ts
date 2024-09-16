@@ -6,9 +6,9 @@ export class UserStatGqlModel implements UserStatEntity {
   @Field(() => Int)
   id: number;
 
-  @Field(() => Int, { nullable: true })
-  created?: number;
+  @Field(() => Date, { nullable: true })
+  createdAt?: Date;
 
-  @Field(() => Int, { nullable: true })
-  deleted?: number;
+  @Field(() => Date, { nullable: true })
+  deletedAt?: Date;
 }

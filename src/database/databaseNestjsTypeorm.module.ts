@@ -12,7 +12,6 @@ import { DatabaseLogger } from './logger/dbLogger';
         const DBType = configService.getOrThrow('DATABASE_TYPE');
         return {
           type: DBType,
-          /* configService.getOrThrow<string>('DB_CONNECTION_STRING') */
           url: `postgresql://${configService.getOrThrow<string>(
             'DATABASE_USER',
           )}:${configService.getOrThrow<string>(

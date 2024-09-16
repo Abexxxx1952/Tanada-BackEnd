@@ -23,8 +23,8 @@ export class UserGqlModel implements UserEntity {
   @Field()
   createdAt: Date;
 
-  @Field()
-  updatedAt: Date;
+  @Field({ nullable: true })
+  updatedAt?: Date;
 
   @Field(() => [PayloadEGqlModel], { nullable: true })
   payload: PayloadEGqlModel[];

@@ -15,7 +15,7 @@
     "migration:generate": "npm run typeorm -- -d ./src/database/ormConfig.ts migration:generate ./src/database/migrations/*",
     "migration:run": "npm run typeorm -- -d ./src/database/ormConfig.ts migration:run",
     "migration:revert": "npm run typeorm -- -d ./src/database/ormConfig.ts migration:revert",
-    "migration:create": "npm run typeorm -- migration:create",
+    "migration:create": "npm run typeorm -- migration:create src/database/migrations/migrations",
     "seed": "ts-node -r tsconfig-paths/register src/seed/seed.ts",
     "db:drop": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js query 'DROP DATABASE IF EXISTS tanadadb'",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",

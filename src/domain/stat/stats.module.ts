@@ -7,10 +7,16 @@ import { PhotoStatEntity } from './entity/photoStat.entity';
 import { UserStatsRepository } from './repository/userStats.repository';
 import { PhotoStatsRepository } from './repository/photoStats.repository';
 import { StatsResolver } from './stats.resolver';
+import { PhotoViewRepository } from './repository/photoView.repository';
+import { PhotoViewEntity } from './entity/photoView.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserStatEntity, PhotoStatEntity]),
+    TypeOrmModule.forFeature([
+      UserStatEntity,
+      PhotoStatEntity,
+      PhotoViewEntity,
+    ]),
     ConfigModule,
   ],
   controllers: [StatController],
@@ -22,6 +28,10 @@ import { StatsResolver } from './stats.resolver';
     {
       provide: 'PhotoStatsRepository',
       useClass: PhotoStatsRepository,
+    },
+    {
+      provide: 'PhotoViewRepository',
+      useClass: PhotoViewRepository,
     },
     StatsResolver,
   ],

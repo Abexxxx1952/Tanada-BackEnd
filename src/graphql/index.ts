@@ -65,11 +65,19 @@ export class PayloadGqlInput {
 
 export class PhotoStatGqlInput {
     id?: Nullable<number>;
-    created?: Nullable<number>;
+    createdAt?: Nullable<DateTime>;
     viewsCount?: Nullable<number>;
-    deleted?: Nullable<number>;
+    deletedAt?: Nullable<DateTime>;
     photoId?: Nullable<number>;
     photo?: Nullable<PhotoGqlInput>;
+    views?: Nullable<PhotoViewGqlInput[]>;
+}
+
+export class PhotoViewGqlInput {
+    id?: Nullable<number>;
+    viewedAt?: Nullable<DateTime>;
+    photoStatId?: Nullable<number>;
+    photoStat?: Nullable<PhotoStatGqlInput>;
 }
 
 export class FindOneUserWithConditionsGqlInput {
@@ -85,6 +93,11 @@ export class UserOrderObjectGqlInput {
     createdAt?: Nullable<UserDirection>;
     updatedAt?: Nullable<UserDirection>;
     user?: Nullable<UserDirection>;
+}
+
+export class FindStatsByDateGqlInput {
+    startDate: DateTime;
+    endDate: DateTime;
 }
 
 export class FindPhotoByConditionsGqlInput {
@@ -121,7 +134,7 @@ export class UserModel {
     email: string;
     icon?: Nullable<string>;
     createdAt: DateTime;
-    updatedAt: DateTime;
+    updatedAt?: Nullable<DateTime>;
     payload?: Nullable<PayloadModel[]>;
     photo?: Nullable<PhotoModel[]>;
     permissions: string[];
@@ -132,18 +145,26 @@ export class PhotoModel {
     id: number;
     link: string;
     createdAt: DateTime;
-    updatedAt: DateTime;
+    updatedAt?: Nullable<DateTime>;
     user: UserModel;
     stats: PhotoStatModel;
 }
 
+export class PhotoViewModel {
+    id: number;
+    viewedAt: number;
+    photoStatId: number;
+    photoStat: PhotoStatModel;
+}
+
 export class PhotoStatModel {
     id: number;
-    created?: Nullable<number>;
+    createdAt: DateTime;
     viewsCount?: Nullable<number>;
-    deleted?: Nullable<number>;
-    photoId: number;
+    deletedAt?: Nullable<DateTime>;
+    photoId?: Nullable<number>;
     photo: PhotoModel;
+    views?: Nullable<PhotoViewModel[]>;
 }
 
 export class UsersStatsResultModel {
@@ -209,7 +230,27 @@ export abstract class IQuery {
 
     abstract getUsersStats(): Nullable<UsersStatsResultModel> | Promise<Nullable<UsersStatsResultModel>>;
 
+    abstract getUsersStatsByDate(condition: FindStatsByDateGqlInput): Nullable<UsersStatsResultModel> | Promise<Nullable<UsersStatsResultModel>>;
+
     abstract getPhotosStats(): Nullable<PhotosStatsResultModel> | Promise<Nullable<PhotosStatsResultModel>>;
+
+    abstract getPhotosStatsById(id: string): Nullable<PhotosStatsResultModel> | Promise<Nullable<PhotosStatsResultModel>>;
+
+    abstract getPhotosStatsByDate(condition: FindStatsByDateGqlInput): Nullable<PhotosStatsResultModel> | Promise<Nullable<PhotosStatsResultModel>>;
+
+    abstract getPhotosStatsByDateById(id: string, condition: FindStatsByDateGqlInput): Nullable<PhotosStatsResultModel> | Promise<Nullable<PhotosStatsResultModel>>;
+
+    abstract getPhotosStatsForCurrentYearByMonth(): Nullable<PhotosStatsResultModel[]> | Promise<Nullable<PhotosStatsResultModel[]>>;
+
+    abstract getPhotosStatsForCurrentYearByMonthById(id: string): Nullable<PhotosStatsResultModel[]> | Promise<Nullable<PhotosStatsResultModel[]>>;
+
+    abstract getPhotosStatsForCurrentMonthByWeek(): Nullable<PhotosStatsResultModel[]> | Promise<Nullable<PhotosStatsResultModel[]>>;
+
+    abstract getPhotosStatsForCurrentMonthByWeekById(id: string): Nullable<PhotosStatsResultModel[]> | Promise<Nullable<PhotosStatsResultModel[]>>;
+
+    abstract getPhotosStatsForLast7Days(): Nullable<PhotosStatsResultModel[]> | Promise<Nullable<PhotosStatsResultModel[]>>;
+
+    abstract getPhotosStatsForLast7DaysById(id: string): Nullable<PhotosStatsResultModel[]> | Promise<Nullable<PhotosStatsResultModel[]>>;
 
     abstract getPhotos(offset?: Nullable<number>, limit?: Nullable<number>): Nullable<PhotoModel[]> | Promise<Nullable<PhotoModel[]>>;
 

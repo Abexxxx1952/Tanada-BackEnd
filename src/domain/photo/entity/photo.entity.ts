@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -21,10 +22,11 @@ export class PhotoEntity {
   @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @UpdateDateColumn({ nullable: true })
+  updatedAt?: Date;
 
   @ManyToOne(() => UserEntity, (user) => user.photo, { cascade: true })
+  @JoinColumn({ name: 'userId' })
   user: UserEntity;
 
   @OneToOne(() => PhotoStatEntity, (stats) => stats.photo, {
