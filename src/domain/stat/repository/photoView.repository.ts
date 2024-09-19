@@ -17,17 +17,16 @@ export class PhotoViewRepository extends BaseAbstractRepository<PhotoViewEntity>
     endDate: Date,
   ): Promise<number> {
     try {
-      const viewsStats = await this.PhotoViewRepository.createQueryBuilder(
-        'photoView',
-      )
-        .select('COUNT(photoView.id)', 'totalViews')
-        .where('photoView.viewedAt BETWEEN :startDate AND :endDate', {
-          startDate,
-          endDate,
-        })
-        .getRawOne();
+      const viewsStats: number =
+        await this.PhotoViewRepository.createQueryBuilder('photoView')
+          .select('COUNT(photoView.id)', 'totalViews')
+          .where('photoView.viewedAt BETWEEN :startDate AND :endDate', {
+            startDate,
+            endDate,
+          })
+          .getCount();
 
-      return viewsStats.totalViews || 0;
+      return viewsStats;
     } catch (error) {
       throw error;
     }
@@ -39,21 +38,20 @@ export class PhotoViewRepository extends BaseAbstractRepository<PhotoViewEntity>
     endDate: Date,
   ): Promise<number> {
     try {
-      const viewsStats = await this.PhotoViewRepository.createQueryBuilder(
-        'photoView',
-      )
-        .select('COUNT(photoView.id)', 'totalViews')
-        .innerJoin('photoView.photoStat', 'photoStat')
-        .innerJoin('photoStat.photo', 'photo')
-        .innerJoin('photo.user', 'user')
-        .where('user.id = :id', { id })
-        .andWhere('photoView.viewedAt BETWEEN :startDate AND :endDate', {
-          startDate,
-          endDate,
-        })
-        .getRawOne();
+      const viewsStats: number =
+        await this.PhotoViewRepository.createQueryBuilder('photoView')
+          .select('COUNT(photoView.id)', 'totalViews')
+          .innerJoin('photoView.photoStat', 'photoStat')
+          .innerJoin('photoStat.photo', 'photo')
+          .innerJoin('photo.user', 'user')
+          .where('user.id = :id', { id })
+          .andWhere('photoView.viewedAt BETWEEN :startDate AND :endDate', {
+            startDate,
+            endDate,
+          })
+          .getCount();
 
-      return viewsStats.totalViews || 0;
+      return viewsStats;
     } catch (error) {
       throw error;
     }
