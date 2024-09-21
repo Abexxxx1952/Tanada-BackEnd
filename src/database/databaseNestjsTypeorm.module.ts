@@ -26,7 +26,7 @@ import { DatabaseLogger } from './logger/dbLogger';
             configService.getOrThrow<string>('MODE') === 'production'
               ? false
               : true,
-          migrations: [__dirname + '/../migrations/**/*{.ts,.js}'],
+          migrations: [__dirname + '/migrations/**/*{.ts,.js}'],
           logger: new DatabaseLogger(),
         };
       },

@@ -157,7 +157,7 @@ export class PhotoController {
   @UseInterceptorsCacheInterceptor()
   @ApiPhotosPostFindAllWith()
   async findAllWithCondition(
-    @Query() { offset, limit }: PaginationParams,
+    @Query() { offset = 0, limit = 10000 }: PaginationParams,
     @Query() condition: { condition: string },
   ): Promise<PhotoEntity[]> {
     let parsedCondition: FindAllPhotoWithConditionsDto;

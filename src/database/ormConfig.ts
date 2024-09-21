@@ -1,6 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 import { config } from 'dotenv';
+import * as path from 'path';
 config();
 
 const configService = new ConfigService();
@@ -14,7 +15,8 @@ const url = `postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}
 export const dataSourceOptions = {
   type: DBType,
   url,
-  entities: [__dirname + '/../**/*.entity.{js,ts}'],
+  entities: [path.join(__dirname, '/../**/*.entity.{js,ts}')],
+  migrations: [path.join(__dirname, '/migrations/**/*{.ts,.js}')],
 };
 
 export default new DataSource(dataSourceOptions);

@@ -182,7 +182,7 @@ export class UserController {
   @UseInterceptorsCacheInterceptor()
   @ApiUsersPostFindAllWith()
   async findAllWithCondition(
-    @Query() { offset, limit }: PaginationParams,
+    @Query() { offset = 0, limit = 10000 }: PaginationParams,
     @Query() condition: { condition: string },
   ): Promise<UserEntity[]> {
     let parsedCondition: FindAllUserWithConditionsDto;
@@ -226,7 +226,11 @@ export class UserController {
   @HttpCode(HttpStatus.CREATED)
   @UseInterceptorsCacheInterceptor({
     cache: CacheOptions.InvalidateCacheByKey,
-    cacheKey: ['/api/v1/users/', '/api/v1/stats/users'],
+    cacheKey: [
+      '/api/v1/users/',
+      '/api/v1/stats/usersStats',
+      '/api/v1/stats/usersStatsByDate',
+    ],
   })
   @ApiUsersPostRegistration()
   async create(
@@ -303,7 +307,11 @@ export class UserController {
   @HttpCode(HttpStatus.MOVED_PERMANENTLY)
   @UseInterceptorsCacheInterceptor({
     cache: CacheOptions.InvalidateCacheByKey,
-    cacheKey: ['/api/v1/users/', '/api/v1/stats/users'],
+    cacheKey: [
+      '/api/v1/users/',
+      '/api/v1/stats/usersStats',
+      '/api/v1/stats/usersStatsByDate',
+    ],
   })
   @ApiUsersGetLoginGoogleCallback()
   async googleAuthCallBack(
@@ -325,7 +333,11 @@ export class UserController {
   @HttpCode(HttpStatus.MOVED_PERMANENTLY)
   @UseInterceptorsCacheInterceptor({
     cache: CacheOptions.InvalidateCacheByKey,
-    cacheKey: ['/api/v1/users/', '/api/v1/stats/users'],
+    cacheKey: [
+      '/api/v1/users/',
+      '/api/v1/stats/usersStats',
+      '/api/v1/stats/usersStatsByDate',
+    ],
   })
   @ApiUsersGetLoginGitHubCallback()
   async gitHubAuthCallBack(
