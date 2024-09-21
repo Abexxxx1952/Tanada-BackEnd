@@ -28,10 +28,8 @@ type MetadataCacheOptions = {
     : string[];
 };
 
-const CacheOption = (option?: MetadataCacheOptions) => {
-  if (option) {
-    return SetMetadata(CACHE_OPTION_KEY, option);
-  }
+export const CacheOptionInvalidateCache = (option: MetadataCacheOptions) => {
+  return SetMetadata(CACHE_OPTION_KEY, option);
 };
 
 @Injectable()
@@ -49,11 +47,11 @@ export class CacheInterceptor implements NestInterceptor {
     context: ExecutionContext,
     next: CallHandler,
   ): Promise<Observable<any>> {
-    const fromReflector =
-      this.reflector.getAllAndOverride<MetadataCacheOptions>(CACHE_OPTION_KEY, [
-        context.getHandler(),
-        context.getClass(),
-      ]);
+    const fromReflector = this.reflector.getAllAndOverride(CACHE_OPTION_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
     if (fromReflector) {
       this.cacheOption = fromReflector;
     }
@@ -146,14 +144,4 @@ export class CacheInterceptor implements NestInterceptor {
       }
     }
   }
-}
-
-export function UseInterceptorsCacheInterceptor(
-  cacheOption?: MetadataCacheOptions,
-) {
-  if (cacheOption) {
-    CacheOption(cacheOption);
-  }
-
-  return UseInterceptors(CacheInterceptor);
 }

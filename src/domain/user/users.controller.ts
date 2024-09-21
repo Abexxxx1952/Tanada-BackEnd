@@ -46,8 +46,9 @@ import { AccessTokenAuthGuard } from './auth/guards/accessToken.guard';
 import { GoogleGuard } from './auth/guards/google.guard';
 import { GitHubGuard } from './auth/guards/gitHub.guard';
 import {
-  UseInterceptorsCacheInterceptor,
   CacheOptions,
+  CacheInterceptor,
+  CacheOptionInvalidateCache,
 } from '../../common/interceptors/cache.interceptor';
 import { AccessTokenFromHeadersAuthGuard } from './auth/guards/accessTokenFromHeaders.guard';
 import { Tokens } from './auth/types/tokens';
@@ -90,7 +91,7 @@ export class UserController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor()
+  @UseInterceptors(CacheInterceptor)
   @ApiUsersGet()
   async findAll(
     @Query() { offset, limit }: PaginationParams,
@@ -103,7 +104,7 @@ export class UserController {
 
   @Get('findById/:id')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor()
+  @UseInterceptors(CacheInterceptor)
   @ApiUsersGetFindById()
   async findOneById(@Param('id', ParseUUIDPipe) id: UUID): Promise<UserEntity> {
     return await this.usersRepository.findOneById(id);
@@ -111,7 +112,7 @@ export class UserController {
 
   @Get('findOneBy')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor()
+  @UseInterceptors(CacheInterceptor)
   @ApiUsersPostFindOneBy()
   async findOneByCondition(
     @Query() condition: { condition: string },
@@ -132,7 +133,7 @@ export class UserController {
 
   @Get('findManyBy')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor()
+  @UseInterceptors(CacheInterceptor)
   @ApiUsersPostFindManyBy()
   async findManyByCondition(
     @Query() { offset, limit }: PaginationParams,
@@ -158,7 +159,7 @@ export class UserController {
 
   @Get('findOneWith')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor()
+  @UseInterceptors(CacheInterceptor)
   @ApiUsersPostFindOneWith()
   async findOneWithCondition(
     @Query() condition: { condition: string },
@@ -179,7 +180,7 @@ export class UserController {
 
   @Get('findAllWith')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor()
+  @UseInterceptors(CacheInterceptor)
   @ApiUsersPostFindAllWith()
   async findAllWithCondition(
     @Query() { offset = 0, limit = 10000 }: PaginationParams,
@@ -224,14 +225,11 @@ export class UserController {
   @Post('registration')
   @ParseRequestBodyWhenLogging(CreateUserDtoLocalWithoutPassword)
   @HttpCode(HttpStatus.CREATED)
-  @UseInterceptorsCacheInterceptor({
+  @CacheOptionInvalidateCache({
     cache: CacheOptions.InvalidateCacheByKey,
-    cacheKey: [
-      '/api/v1/users/',
-      '/api/v1/stats/usersStats',
-      '/api/v1/stats/usersStatsByDate',
-    ],
+    cacheKey: ['/api/v1/users/', '/api/v1/stats/usersStats'],
   })
+  @UseInterceptors(CacheInterceptor)
   @ApiUsersPostRegistration()
   async create(
     @Body() createUserLocalDto: CreateUserLocalDto,
@@ -305,14 +303,11 @@ export class UserController {
   @Get('loginGoogle/callback')
   @UseGuards(GoogleGuard)
   @HttpCode(HttpStatus.MOVED_PERMANENTLY)
-  @UseInterceptorsCacheInterceptor({
+  @CacheOptionInvalidateCache({
     cache: CacheOptions.InvalidateCacheByKey,
-    cacheKey: [
-      '/api/v1/users/',
-      '/api/v1/stats/usersStats',
-      '/api/v1/stats/usersStatsByDate',
-    ],
+    cacheKey: ['/api/v1/users/', '/api/v1/stats/usersStats'],
   })
+  @UseInterceptors(CacheInterceptor)
   @ApiUsersGetLoginGoogleCallback()
   async googleAuthCallBack(
     @CurrentUser() currentUser: UserEntity,
@@ -331,14 +326,11 @@ export class UserController {
   @Get('loginGitHub/callback')
   @UseGuards(GitHubGuard)
   @HttpCode(HttpStatus.MOVED_PERMANENTLY)
-  @UseInterceptorsCacheInterceptor({
+  @CacheOptionInvalidateCache({
     cache: CacheOptions.InvalidateCacheByKey,
-    cacheKey: [
-      '/api/v1/users/',
-      '/api/v1/stats/usersStats',
-      '/api/v1/stats/usersStatsByDate',
-    ],
+    cacheKey: ['/api/v1/users/', '/api/v1/stats/usersStats'],
   })
+  @UseInterceptors(CacheInterceptor)
   @ApiUsersGetLoginGitHubCallback()
   async gitHubAuthCallBack(
     @CurrentUser() currentUser: UserEntity,
@@ -351,10 +343,11 @@ export class UserController {
   @ParseRequestBodyWhenLogging(CreateUserDtoLocalWithoutPassword)
   @UseGuards(AccessTokenAuthGuard)
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor({
+  @CacheOptionInvalidateCache({
     cache: CacheOptions.InvalidateCacheByKey,
     cacheKey: ['/api/v1/users/'],
   })
+  @UseInterceptors(CacheInterceptor)
   @ApiUsersPatchUpdate()
   async updateUser(
     @CurrentUser('id') currentUserId: string,
@@ -370,10 +363,11 @@ export class UserController {
   @ParseRequestBodyWhenLogging(CreateUserDtoLocalWithoutPassword)
   @UseGuards(AccessTokenFromHeadersAuthGuard)
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor({
+  @CacheOptionInvalidateCache({
     cache: CacheOptions.InvalidateCacheByKey,
     cacheKey: ['/api/v1/users/'],
   })
+  @UseInterceptors(CacheInterceptor)
   @ApiUsersPatchUpdateFromHeaders()
   async updateUserFromHeaders(
     @CurrentUser('id') currentUserId: string,
@@ -388,7 +382,8 @@ export class UserController {
   @Delete('delete')
   @UseGuards(AccessTokenAuthGuard)
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor({ cache: CacheOptions.InvalidateAllCache })
+  @CacheOptionInvalidateCache({ cache: CacheOptions.InvalidateAllCache })
+  @UseInterceptors(CacheInterceptor)
   @ApiUsersDeleteDelete()
   async deleteUser(
     @CurrentUser('id') currentUserId: string,
@@ -399,7 +394,8 @@ export class UserController {
   @Delete('deleteFromHeaders')
   @UseGuards(AccessTokenFromHeadersAuthGuard)
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor({ cache: CacheOptions.InvalidateAllCache })
+  @CacheOptionInvalidateCache({ cache: CacheOptions.InvalidateAllCache })
+  @UseInterceptors(CacheInterceptor)
   @ApiUsersDeleteDeleteFromHeaders()
   async deleteUserFromHeaders(
     @CurrentUser('id') currentUserId: string,

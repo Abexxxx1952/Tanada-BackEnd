@@ -8,14 +8,16 @@ import {
   ParseIntPipe,
   Post,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { PhotoStatEntity } from './entity/photoStat.entity';
 import { UserStatsRepository } from './repository/userStats.repository';
 import { PhotoStatsRepository } from './repository/photoStats.repository';
 import {
+  CacheInterceptor,
+  CacheOptionInvalidateCache,
   CacheOptions,
-  UseInterceptorsCacheInterceptor,
 } from '../../common/interceptors/cache.interceptor';
 import { UsersStatsResult } from './types/usersStatsResult';
 import { PhotosStatsResult } from './types/photosStatsResult';
@@ -48,7 +50,7 @@ export class StatController {
 
   @Get('usersStats')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor()
+  @UseInterceptors(CacheInterceptor)
   @ApiStatsGetUsers()
   async getUsersStats(): Promise<UsersStatsResult> {
     return await this.userStatsRepository.getUsersStats();
@@ -56,7 +58,7 @@ export class StatController {
 
   @Get('usersStatsByDate')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor()
+  @UseInterceptors(CacheInterceptor)
   @ApiStatsGetUsersByDate()
   async getUsersStatsByDate(
     @Query() condition: { condition: string },
@@ -80,7 +82,7 @@ export class StatController {
 
   @Get('photosStats')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor()
+  @UseInterceptors(CacheInterceptor)
   @ApiStatsGetPhotos()
   async getPhotosStats(): Promise<PhotosStatsResult> {
     return await this.photoStatsRepository.getPhotosStats();
@@ -88,7 +90,7 @@ export class StatController {
 
   @Get('photosStatsById/:id')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor()
+  @UseInterceptors(CacheInterceptor)
   @ApiStatsGetPhotosById()
   async getPhotosStatsById(
     @Param('id') id: string,
@@ -98,7 +100,8 @@ export class StatController {
 
   @Post('addPhotoView/:id')
   @HttpCode(HttpStatus.CREATED)
-  @UseInterceptorsCacheInterceptor({ cache: CacheOptions.InvalidateAllCache })
+  @CacheOptionInvalidateCache({ cache: CacheOptions.InvalidateAllCache })
+  @UseInterceptors(CacheInterceptor)
   @ApiStatsPostAddPhotoView()
   async addViewsPhotoStats(
     @Param('id', ParseIntPipe) id: number,
@@ -108,7 +111,7 @@ export class StatController {
 
   @Get('photosStatsByDate')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor()
+  @UseInterceptors(CacheInterceptor)
   @ApiStatsGetPhotosByDate()
   async getPhotosStatsByDate(
     @Query() condition: { condition: string },
@@ -132,7 +135,7 @@ export class StatController {
 
   @Get('photosStatsByDateById/:id')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor()
+  @UseInterceptors(CacheInterceptor)
   @ApiStatsGetPhotosByDateById()
   async getPhotosStatsByDateById(
     @Param('id') id: string,
@@ -158,7 +161,7 @@ export class StatController {
 
   @Get('getPhotosStatsForCurrentYearByMonth')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor()
+  @UseInterceptors(CacheInterceptor)
   @ApiStatsGetPhotosForCurrentYearByMonth()
   async getPhotosStatsForCurrentYearByMonth(): Promise<PhotosStatsResult[]> {
     return await this.photoStatsRepository.getPhotosStatsForCurrentYearByMonth();
@@ -166,7 +169,7 @@ export class StatController {
 
   @Get('getPhotosStatsForCurrentYearByMonthById/:id')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor()
+  @UseInterceptors(CacheInterceptor)
   @ApiStatsGetPhotosForCurrentYearByMonthById()
   async getPhotosStatsForCurrentYearByMonthById(
     @Param('id') id: string,
@@ -178,7 +181,7 @@ export class StatController {
 
   @Get('getPhotosStatsForCurrentMonthByWeek')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor()
+  @UseInterceptors(CacheInterceptor)
   @ApiStatsGetPhotosForCurrentMonthByWeek()
   async getPhotosStatsForCurrentMonthByWeek(): Promise<PhotosStatsResult[]> {
     return await this.photoStatsRepository.getPhotosStatsForCurrentMonthByWeek();
@@ -186,7 +189,7 @@ export class StatController {
 
   @Get('getPhotosStatsForCurrentMonthByWeekById/:id')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor()
+  @UseInterceptors(CacheInterceptor)
   @ApiStatsGetPhotosForCurrentMonthByWeekById()
   async getPhotosStatsForCurrentMonthByWeekById(
     @Param('id') id: string,
@@ -198,7 +201,7 @@ export class StatController {
 
   @Get('getPhotosStatsForLast7Days')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor()
+  @UseInterceptors(CacheInterceptor)
   @ApiStatsGetPhotosForLast7Days()
   async getPhotosStatsForLast7Days(): Promise<PhotosStatsResult[]> {
     return await this.photoStatsRepository.getPhotosStatsForLast7Days();
@@ -206,7 +209,7 @@ export class StatController {
 
   @Get('getPhotosStatsForLast7DaysById/:id')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptorsCacheInterceptor()
+  @UseInterceptors(CacheInterceptor)
   @ApiStatsGetPhotosForLast7DaysById()
   async getPhotosStatsForLast7DaysById(
     @Param('id') id: string,
