@@ -23,6 +23,11 @@ export class FindPhotoByConditionsGqlInput implements FindPhotoByConditionsDto {
 
   @Field({ nullable: true })
   @IsOptional()
+  @IsNumber()
+  sortId: number;
+
+  @Field({ nullable: true })
+  @IsOptional()
   @IsDate()
   readonly createdAt?: Date;
 

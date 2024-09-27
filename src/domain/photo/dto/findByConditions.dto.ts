@@ -23,6 +23,12 @@ export class FindPhotoByConditionsDto {
   readonly link?: string;
 
   @IsOptional()
+  @IsNumber()
+  @IsNotEmpty()
+  @Type(() => Number)
+  readonly sortId?: number;
+
+  @IsOptional()
   @IsDate()
   @IsNotEmpty()
   @Type(() => Date)

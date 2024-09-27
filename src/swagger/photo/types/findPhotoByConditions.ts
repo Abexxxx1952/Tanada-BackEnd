@@ -12,6 +12,9 @@ export class FindPhotoByConditionsArgs implements FindPhotoByConditionsDto {
   readonly link?: string;
 
   @ApiPropertyOptional()
+  readonly sortId: number;
+
+  @ApiPropertyOptional()
   readonly createdAt?: Date;
 
   @ApiPropertyOptional()

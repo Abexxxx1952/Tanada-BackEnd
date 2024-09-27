@@ -12,7 +12,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "typeorm": "ts-node ./node_modules/typeorm/cli",
-    "migration:generate": "npm run typeorm -- -d ./src/database/ormConfig.ts migration:generate ./src/database/migrations/*",
+    "migration:generate": "npm run typeorm -- -d ./src/database/ormConfig.ts migration:generate ./src/database/migrations/",
     "migration:run": "npm run typeorm -- -d ./src/database/ormConfig.ts migration:run",
     "migration:revert": "npm run typeorm -- -d ./src/database/ormConfig.ts migration:revert",
     "migration:create": "npm run typeorm -- migration:create src/database/migrations/migrations",

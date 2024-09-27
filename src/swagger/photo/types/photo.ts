@@ -13,6 +13,9 @@ export class PhotoModel implements PhotoEntity {
   link: string;
 
   @ApiProperty()
+  sortId: number;
+
+  @ApiProperty()
   createdAt: Date;
 
   @ApiProperty()

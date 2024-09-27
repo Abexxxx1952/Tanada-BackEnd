@@ -19,6 +19,9 @@ export class PhotoEntity {
   @Column()
   link: string;
 
+  @Column()
+  sortId: number;
+
   @CreateDateColumn()
   createdAt: Date;
 

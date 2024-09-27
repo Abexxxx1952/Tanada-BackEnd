@@ -61,14 +61,23 @@ export class PhotosRepository extends BaseAbstractRepository<PhotoEntity> {
         currentUserId,
       );
 
-      const entity = this.create({ ...data });
+      const maxSortIdResult = await this.entity
+        .createQueryBuilder('photo')
+        .select('MAX(photo.sortId)', 'maxSortId')
+        .where('photo.userId = :userId', { userId: user.id })
+        .getCount();
+
+      const maxSortId = maxSortIdResult ? maxSortIdResult : 0;
+      const sortId = maxSortId + 1;
+
+      const entity = this.create({ ...data, sortId });
 
       const photo = await this.save(entity);
 
       const stats = await this.photoStatsRepository.createPhotoStat(photo.id);
-      const photoWithStats = await this.save({ ...photo, stats, user });
+      const photoWithRelations = await this.save({ ...photo, stats, user });
 
-      return photoWithStats;
+      return photoWithRelations;
     } catch (error) {
       if (error instanceof NotFoundException) {
         throw new ForbiddenException('Access Denied');

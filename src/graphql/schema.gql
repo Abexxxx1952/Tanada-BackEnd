@@ -30,6 +30,7 @@ scalar DateTime
 type PhotoModel {
   id: Int!
   link: String!
+  sortId: Int!
   createdAt: DateTime!
   updatedAt: DateTime
   user: UserModel!
@@ -143,6 +144,7 @@ input FindUserByConditionsGqlInput {
 input PhotoGqlInput {
   id: Int
   link: String
+  sortId: Int
   createdAt: DateTime
   updatedAt: DateTime
   user: UserGqlInput
@@ -216,6 +218,7 @@ input FindStatsByDateGqlInput {
 input FindPhotoByConditionsGqlInput {
   id: Int
   link: String
+  sortId: Float
   createdAt: DateTime
   updatedAt: DateTime
   user: UserGqlInput

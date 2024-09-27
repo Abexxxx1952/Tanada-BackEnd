@@ -11,6 +11,9 @@ export class PhotoGqlModel implements PhotoEntity {
   @Field()
   link: string;
 
+  @Field(() => Int)
+  sortId: number;
+
   @Field()
   createdAt: Date;
 

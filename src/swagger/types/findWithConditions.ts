@@ -39,6 +39,8 @@ class FindPhotoByConditions implements FindPhotoByConditionsDto {
   @ApiPropertyOptional()
   readonly link?: string;
   @ApiPropertyOptional()
+  readonly sortId: number;
+  @ApiPropertyOptional()
   readonly createdAt?: Date;
   @ApiPropertyOptional()
   readonly updatedAt?: Date;

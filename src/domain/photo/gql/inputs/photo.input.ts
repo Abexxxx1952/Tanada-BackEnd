@@ -23,6 +23,10 @@ export class PhotoGqlInput implements PhotoEntity {
   @Column()
   link: string;
 
+  @Field(() => Int, { nullable: true })
+  @Column()
+  sortId: number;
+
   @Field({ nullable: true })
   @CreateDateColumn()
   createdAt: Date;

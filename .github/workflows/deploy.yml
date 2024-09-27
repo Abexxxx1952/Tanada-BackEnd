@@ -22,7 +22,7 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build project
         run: npm run build
@@ -37,6 +37,12 @@ jobs:
           script: |
             cd /home/ubuntu/Tanada
             git pull --rebase origin main
-            npm install
+            npm ci  # Используйте npm ci вместо npm install
             npm run build
             pm2 restart Tanada
+          port: 22
+          protocol: tcp
+          timeout: 30s
+          command_timeout: 20m
+          proxy_port: 22
+          proxy_timeout: 30s

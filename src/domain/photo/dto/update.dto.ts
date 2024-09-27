@@ -1,9 +1,15 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdatePhotoDto {
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  readonly link: string;
+  readonly link?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @IsNotEmpty()
+  readonly sortId?: number;
 
   @IsNumber()
   @IsNotEmpty()

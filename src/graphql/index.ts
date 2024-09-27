@@ -39,6 +39,7 @@ export class FindUserByConditionsGqlInput {
 export class PhotoGqlInput {
     id?: Nullable<number>;
     link?: Nullable<string>;
+    sortId?: Nullable<number>;
     createdAt?: Nullable<DateTime>;
     updatedAt?: Nullable<DateTime>;
     user?: Nullable<UserGqlInput>;
@@ -103,6 +104,7 @@ export class FindStatsByDateGqlInput {
 export class FindPhotoByConditionsGqlInput {
     id?: Nullable<number>;
     link?: Nullable<string>;
+    sortId?: Nullable<number>;
     createdAt?: Nullable<DateTime>;
     updatedAt?: Nullable<DateTime>;
     user?: Nullable<UserGqlInput>;
@@ -144,6 +146,7 @@ export class UserModel {
 export class PhotoModel {
     id: number;
     link: string;
+    sortId: number;
     createdAt: DateTime;
     updatedAt?: Nullable<DateTime>;
     user: UserModel;
