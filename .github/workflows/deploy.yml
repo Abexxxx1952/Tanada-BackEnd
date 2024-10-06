@@ -21,8 +21,16 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Cache npm dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # - name: Install dependencies
+      #   run: sudo npm ci
 
       - name: Build project
         run: npm run build
@@ -43,6 +51,6 @@ jobs:
           port: 22
           protocol: tcp
           timeout: 30s
-          command_timeout: 20m
+          command_timeout: 30m
           proxy_port: 22
           proxy_timeout: 30s

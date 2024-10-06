@@ -15,8 +15,11 @@ const url = `postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}
 export const dataSourceOptions = {
   type: DBType,
   url,
-  entities: [path.join(__dirname, './../**/*.entity.{js,ts}')],
-  migrations: [path.join(__dirname, './migrations/**/*{.ts,.js}')],
+  entities: [path.join(__dirname, '/../**/*.entity.{js,ts}')],
+  migrations: [path.join(__dirname, '/migrations/**/*{.ts,.js}')],
+  cli: {
+    migrationsDir: 'src/database/migrations',
+  },
 };
 
 export default new DataSource(dataSourceOptions);
