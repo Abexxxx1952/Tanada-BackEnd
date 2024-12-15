@@ -31,7 +31,7 @@ export class UserModel implements UserEntity {
 
   hashedRefreshToken?: string;
 
-  @ApiProperty({ type: () => Payload, isArray: true })
+  @ApiProperty({ type: () => PayloadModel, isArray: true })
   payload: Payload[];
 
   @ApiProperty({ type: () => PhotoModel, isArray: true })

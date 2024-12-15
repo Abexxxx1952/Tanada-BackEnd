@@ -1,11 +1,11 @@
-name: Deploy to VPS
+ # name: Deploy to VPS
 
-on:
+ #on:
   push:
     branches:
       - main
 
-jobs:
+ # jobs:
   deploy:
     runs-on: ubuntu-latest
 
@@ -30,7 +30,7 @@ jobs:
             ${{ runner.os }}-node-
 
       # - name: Install dependencies
-      #   run: sudo npm ci
+      # - run: sudo npm ci
 
       - name: Build project
         run: npm run build
