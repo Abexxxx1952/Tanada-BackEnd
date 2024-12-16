@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -136,7 +137,7 @@ export class PhotoController {
 
   @Get('findOneWith')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(CacheInterceptor)
+  @UseInterceptors(CacheInterceptor, ClassSerializerInterceptor)
   @ApiPhotosPostFindOneWith()
   async findOneWithCondition(
     @Query() condition: { condition: string },
@@ -156,7 +157,7 @@ export class PhotoController {
 
   @Get('findAllWith')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(CacheInterceptor)
+  @UseInterceptors(CacheInterceptor, ClassSerializerInterceptor)
   @ApiPhotosPostFindAllWith()
   async findAllWithCondition(
     @Query() { offset = 0, limit = 10000 }: PaginationParams,
