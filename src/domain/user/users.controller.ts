@@ -22,7 +22,6 @@ import { ApiTags } from '@nestjs/swagger';
 import { UUID } from 'crypto';
 import { CurrentUser } from '../../common/decorators/currentUser.decorator';
 import { ParseRequestBodyWhenLogging } from '../../common/decorators/setMetadataRequestBodyLogging.decorator';
-import { LoggerHelperInterceptor } from '../../common/interceptors/loggerHelper.interceptor';
 import { UsersRepository } from './repository/users.repository';
 import { AuthService } from './auth/auth.service';
 import { UserEntity } from './entity/user.entity';
@@ -81,7 +80,6 @@ import {
 @ApiTags('v1/users')
 @Controller('v1/users')
 @UseInterceptors(ClassSerializerInterceptor)
-@UseInterceptors(LoggerHelperInterceptor)
 export class UserController {
   constructor(
     @Inject('UsersRepository')

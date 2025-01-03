@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  MiddlewareConsumer,
+  Module,
+  RequestMethod,
+} from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
@@ -10,7 +15,7 @@ import {
 } from 'graphql';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR, Reflector } from '@nestjs/core';
 import { join } from 'path';
 import { validate } from './configs/env.validate';
 import { DomainModule } from './domain/domain.module';
@@ -21,6 +26,7 @@ import { LoggerGqlPlugin } from './common/plugin/loggerGql.plugin';
 import { sensitiveDirectiveTransformer } from './common/directive/sensitive.directive';
 
 import { GraphqlTypesModule } from './graphql/graphqlTypeController/graphqlType.module';
+import { LoggerHelperInterceptor } from './common/interceptors/loggerHelper.interceptor';
 
 @Module({
   imports: [
@@ -104,6 +110,10 @@ import { GraphqlTypesModule } from './graphql/graphqlTypeController/graphqlType.
   ],
   controllers: [],
   providers: [
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggerHelperInterceptor,
+    },
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
